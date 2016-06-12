@@ -1,11 +1,10 @@
-example_data Package
-====================
+ebu_tt_live.example_data package
+================================
 
-:mod:`example_data` Package
----------------------------
+Module contents
+---------------
 
 .. automodule:: ebu_tt_live.example_data
     :members:
     :undoc-members:
     :show-inheritance:
-

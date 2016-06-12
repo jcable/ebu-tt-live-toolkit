@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+"""
+This module holds the EBU-TT-Live XML bindings. The package contains a raw subpackage, which the PyXB generator should
+fill with the appropriate content based on the XSD provided in the package. The raw subpackage is imported and
+extended/overridden by the bindings package to refine the way the bindings work. Many validation features of XML
+are not available in PyXB such as assertions. PyXB does the basic validation very well but the referential semantics
+are beyond its scope at the time of writing. Those validations and additional features should be covered in here.
+"""
+
 from .raw import *
 from . import raw
 
