@@ -10,6 +10,30 @@
         ttp:frameRate="{{ frame_rate }}"
   {% endif %}
 {% endif %}
+{% if frame_rate_multiplier %}
+  {% if frame_rate_multiplier == "*?Empty?*" %}
+        ttp:frameRateMultiplier=""
+  {% else %}
+        ttp:frameRateMultiplier="{{ frame_rate_multiplier }}"
+  {% endif %}
+{% endif %}
+{% if drop_mode %}
+  {% if drop_mode == "*?Empty?*" %}
+        ttp:dropMode=""
+  {% else %}
+        ttp:dropMode="{{ drop_mode }}"
+  {% endif %}
+{% endif %}
+{% if marker_mode %}
+  {% if marker_mode == "*?Empty?*" %}
+        ttp:markerMode=""
+  {% else %}
+        ttp:markerMode="{{ marker_mode }}"
+  {% endif %}
+{% endif %}
+{% if time_base == "clock" %}
+        ttp:clockMode="local"
+{% endif %}
         xml:lang="en-GB"
         xmlns:ebuttm="urn:ebu:tt:metadata"
         xmlns:ebuttp="urn:ebu:tt:parameters"
@@ -25,9 +49,15 @@
     </tt:styling>
     <tt:layout/>
   </tt:head>
-  <tt:body tt:begin="00:00:05:01" tt:end="00:00:12:12">
+{% if time_base == 'smpte' %}
+  <tt:body begin="00:00:05:01" end="00:00:12:12">
     <tt:div>
-      <tt:p tt:begin="00:00:01:20" tt:end="00:00:04:12" xml:id="ID005">
+      <tt:p begin="00:00:01:20" end="00:00:04:12" xml:id="ID005">
+{% else %}
+  <tt:body begin="00:00:05.01" end="00:00:12.12">
+    <tt:div>
+      <tt:p begin="00:00:01.20" end="00:00:04.12" xml:id="ID005">
+{% endif %}
         <tt:span>Some example text...</tt:span>
         <tt:br/>
         <tt:span>And another line</tt:span>

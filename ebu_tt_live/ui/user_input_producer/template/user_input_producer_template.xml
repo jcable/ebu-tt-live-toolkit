@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<tt:tt
+        ebuttp:sequenceIdentifier="{{ sequence_identifier }}"
+        ebuttp:sequenceNumber="{{ sequence_number }}"
+        ttp:timeBase="{{ time_base }}"
+      {% if clock_mode %}
+        ttp:clockMode="{{ clock_mode }}"
+      {% endif %}
+      {% if time_base == "smpte" %}
+        ttp:frameRate="{{ frame_rate }}"
+        ttp:frameRateMultiplier="{{frm_numerator}} {{frm_denominator}}"
+        ttp:markerMode="{{ marker_mode }}"
+        ttp:dropMode="{{ drop_mode}}"
+      {% endif %}
+        xml:lang="en-GB"
+        xmlns:ebuttm="urn:ebu:tt:metadata"
+        xmlns:ebuttp="urn:ebu:tt:parameters"
+        xmlns:ebutts="urn:ebu:tt:style"
+        xmlns:tt="http://www.w3.org/ns/ttml"
+        xmlns:tts="http://www.w3.org/ns/ttml#styling"
+        xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+        xmlns:xml="http://www.w3.org/XML/1998/namespace">
+  <tt:head>
+    <tt:metadata>
+      <ebuttm:documentMetadata/>
+    </tt:metadata>
+    <tt:styling>
+      <tt:style xml:id="ID001" tts:backgroundColor="rgb(0, 0, 0)" tts:color="rgb(255, 255, 255)"  ebutts:linePadding="0.5c" tts:fontFamily="sansSerif" />
+    </tt:styling>
+    <tt:layout>
+      <tt:region xml:id="bottomRegion" tts:origin="14.375% 60%" tts:extent="71.25% 24%" tts:displayAlign="after" tts:writingMode="lrtb" tts:overflow="visible" />
+    </tt:layout>
+  </tt:head>
+  <tt:body
+  {% if body_begin %}
+    begin="{{ body_begin }}"
+  {% endif %}
+  {% if body_end %}
+    end="{{ body_end }}"
+  {% endif %}
+  {% if dur %}
+    dur="{{ dur }}"
+  {% endif %}
+  >
+    <tt:div region="bottomRegion" style="ID001">
+      <tt:p xml:id="ID002">{{body_content}}</tt:p>
+    </tt:div>
+  </tt:body>
+</tt:tt>

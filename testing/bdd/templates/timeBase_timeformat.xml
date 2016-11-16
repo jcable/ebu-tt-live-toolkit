@@ -5,6 +5,9 @@
         ttp:timeBase="{{ time_base }}"
 {% if time_base == 'smpte' %}
         ttp:frameRate="25"
+        ttp:dropMode="nonDrop"
+        ttp:markerMode="continuous"
+        ttp:frameRateMultiplier="1 1"
 {% endif %}
 {% if time_base == 'clock' %}
         ttp:clockMode='local'
@@ -27,56 +30,71 @@
   <tt:body 
 {% if body_begin %}
   {% if body_begin == "*?Empty?*" %}
-      tt:begin=""
+      begin=""
   {% else %}
-      tt:begin="{{ body_begin }}"
+      begin="{{ body_begin }}"
   {% endif %}
 {% endif %}
 {% if body_end %}
   {% if body_end == "*?Empty?*" %}
-      tt:end=""
+      end=""
   {% else %}
-      tt:end="{{ body_end }}"
+      end="{{ body_end }}"
   {% endif%}
 {% endif %}
 {% if body_dur %}
   {% if body_dur == "*?Empty?*" %}
-      tt:dur=""
+      dur=""
   {% else %}
-      tt:dur="{{ body_dur }}"
+      dur="{{ body_dur }}"
   {% endif %}
 {% endif %}
     >
-    <tt:div>
+    <tt:div
+{% if div_begin %}
+  {% if div_begin == "*?Empty?*" %}
+            begin=""
+  {% else %}
+            begin="{{ div_begin }}"
+  {% endif %}
+{% endif %}
+{% if div_end %}
+  {% if div_end == "*?Empty?*" %}
+            end=""
+  {% else %}
+            end="{{ div_end }}"
+  {% endif %}
+{% endif %}
+      >
       <tt:p
 {% if p_begin %}
   {% if p_begin == "*?Empty?*" %}
-            tt:begin=""
+            begin=""
   {% else %}
-            tt:begin="{{ p_begin }}"
+            begin="{{ p_begin }}"
   {% endif %}
 {% endif %}
 {% if p_end %}
   {% if p_end == "*?Empty?*" %}
-            tt:end=""
+            end=""
   {% else %}
-            tt:end="{{ p_end }}"
+            end="{{ p_end }}"
   {% endif %}
 {% endif %}
             xml:id="ID005">
             <tt:span
 {% if span_begin %}
   {% if span_begin == "*?Empty?*" %}
-                tt:begin=""
+                begin=""
   {% else %}
-                tt:begin="{{ span_begin }}"
+                begin="{{ span_begin }}"
   {% endif %}
 {% endif %}
 {% if span_end %}
   {% if span_end == "*?Empty?*" %}
-                tt:end=""
+                end=""
   {% else %}
-                tt:end="{{ span_end }}"
+                end="{{ span_end }}"
   {% endif %}
 {% endif %}
             >

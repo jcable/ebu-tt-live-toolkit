@@ -24,7 +24,7 @@ packages=[
 
 setup(
     name="ebu-tt-live",
-    version="1.0rc1",
+    version="2.9",
     description="EBU-TT Part 3 library implementing Specification EBU-3370",
     install_requires=[
         "PyXB",
@@ -33,7 +33,8 @@ setup(
         "pyyaml",
         "twisted",
         "autobahn",
-        "nltk"
+        "nltk",
+        "sortedcontainers"
     ],
     license="BSD3",
     packages=packages,
@@ -45,7 +46,10 @@ setup(
             'ebu-dummy-encoder = ebu_tt_live.scripts.ebu_dummy_encoder:main',
             'ebu-interactive-shell = ebu_tt_live.scripts.ebu_interactive_shell:main',
             'ebu-simple-consumer = ebu_tt_live.scripts.ebu_simple_consumer:main',
-            'ebu-simple-producer = ebu_tt_live.scripts.ebu_simple_producer:main'
+            'ebu-simple-producer = ebu_tt_live.scripts.ebu_simple_producer:main',
+            'ebu-user-input-consumer = ebu_tt_live.scripts.ebu_user_input_consumer:main',
+            'ebu-user-input-forwarder = ebu_tt_live.scripts.ebu_user_input_forwarder:main',
+            'ebu-ebuttd-encoder = ebu_tt_live.scripts.ebu_ebuttd_encoder:main'
         ]
     },
     **extra

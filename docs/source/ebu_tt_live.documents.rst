@@ -22,6 +22,25 @@ documents Package
 
 .. automodule:: ebu_tt_live.documents.ebutt3
     :members:
+    :private-members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`ebutt3_segmentation` Module
+---------------------------------
+
+.. automodule:: ebu_tt_live.documents.ebutt3_segmentation
+    :members:
+    :private-members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`ebutt3_splicer` Module
+----------------------------
+
+.. automodule:: ebu_tt_live.documents.ebutt3_splicer
+    :members:
+    :private-members:
     :undoc-members:
     :show-inheritance:
 
