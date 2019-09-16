@@ -2,6 +2,7 @@ from pytest_bdd import scenarios, when, then, given, parsers
 import xml.etree.ElementTree as ET
 
 scenarios('features/styles/ebuttd_style_references.feature')
+scenarios('features/unit_conversion/ebuttd_colour_conversion.feature')
 
 
 @when(parsers.parse('it contains style "{style_name}"'))
@@ -13,9 +14,10 @@ def when_it_contains_style(test_context, template_dict, style_name):
     test_context[style_name] = style
 
 
-@when(parsers.parse('style "{style_name}" has attribute "{attribute}" set to "{value}"'))
-def when_style_has_attribute(test_context, style_name, attribute, value):
-    test_context[style_name][attribute] = value
+@when(parsers.parse('style "{style_name}" has attribute "{attribute}" set to "{ebu_tt_live_value}"'))
+@when(parsers.parse('style "{style_name}" has attribute "{attribute}" set to <ebu_tt_live_value>'))
+def when_style_has_attribute(test_context, style_name, attribute, ebu_tt_live_value):
+    test_context[style_name][attribute] = ebu_tt_live_value
 
 
 @when(parsers.parse('it contains some text with style "{style_name}"'))
@@ -42,15 +44,16 @@ def when_region_has_attribute(test_context, region_id, attribute, value):
     test_context[region_id][attribute] = value
 
 
-@then(parsers.parse('the ebu_tt_d document contains style "{style_name}" with attribute "{attribute}" set to "{value}"'))
-def then_converted_document_has_style(test_context, style_name, attribute, value):
+@then(parsers.parse('the ebu_tt_d document contains style "{style_name}" with attribute "{attribute}" set to "{ebu_tt_d_value}"'))
+@then(parsers.parse('the ebu_tt_d document contains style "{style_name}" with attribute "{attribute}" set to <ebu_tt_d_value>'))
+def then_converted_document_has_style(test_context, style_name, attribute, ebu_tt_d_value):
     ebuttd_document = test_context['ebuttd_document']
     tree = ET.fromstring(ebuttd_document.get_xml())
     elements = tree.findall('{http://www.w3.org/ns/ttml}head/'
                             '{http://www.w3.org/ns/ttml}styling/'
                             '{http://www.w3.org/ns/ttml}style[@{http://www.w3.org/XML/1998/namespace}id="%s"]' % style_name)
     assert len(elements) == 1
-    assert elements[0].get('{http://www.w3.org/ns/ttml#styling}%s' % attribute) == value
+    assert elements[0].get('{http://www.w3.org/ns/ttml#styling}%s' % attribute) == ebu_tt_d_value
 
 
 @then(parsers.parse('the ebu_tt_d document contains region "{region_id}" with attribute "{attribute}" set to "{value}"'))
