@@ -19,7 +19,7 @@ Feature: EBU-TT-D colour conversion
             | ebu_tt_live_value | ebu_tt_d_value |
             | transparent       | #00000000      |
             | black             | #000000ff      |
-            | silver            | #c0c0c0ff      |
+            | SILVER            | #c0c0c0ff      |
             | gray              | #808080ff      |
             | white             | #ffffffff      |
             | maroon            | #800000ff      |

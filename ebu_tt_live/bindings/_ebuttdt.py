@@ -139,7 +139,7 @@ def named_color_to_rgba(named_color):
         "aqua": "00ffffff",
         "cyan": "00ffffff"
     }
-    return '#{}'.format(color_map[named_color])
+    return '#{}'.format(color_map[named_color.lower()])
 
 
 def convert_cell_region_to_percentage(cells_in, cell_resolution):
