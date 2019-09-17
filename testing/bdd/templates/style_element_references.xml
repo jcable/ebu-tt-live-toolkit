@@ -22,7 +22,9 @@
         {% if style.color %} tts:color="{{ style.color }}" {% endif %}
         {% if style.backgroundColor %} tts:backgroundColor="{{ style.backgroundColor }}" {% endif %}
         {% if style.fontFamily %} tts:fontFamily="{{ style.fontFamily }}" {% endif %} 
-        {% if style.padding %} tts:padding="{{style.padding}}" {% endif %}  />
+        {% if style.padding %} tts:padding="{{style.padding}}" {% endif %}
+        {% if style.lineHeight %} tts:lineHeight="{{style.lineHeight}}" {% endif %}
+        {% if style.fontSize %} tts:fontSize="{{style.fontSize}}" {% endif %}  />
         {% endfor %}
     </tt:styling>
     <tt:layout>

@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 
 scenarios('features/styles/ebuttd_style_references.feature')
 scenarios('features/unit_conversion/ebuttd_colour_conversion.feature')
+scenarios('features/unit_conversion/ebuttd_line_height_conversion.feature')
 
 
 @when(parsers.parse('it contains style "{style_name}"'))
@@ -18,6 +19,14 @@ def when_it_contains_style(test_context, template_dict, style_name):
 @when(parsers.parse('style "{style_name}" has attribute "{attribute}" set to <ebu_tt_live_value>'))
 def when_style_has_attribute(test_context, style_name, attribute, ebu_tt_live_value):
     test_context[style_name][attribute] = ebu_tt_live_value
+
+@when(parsers.parse('style "{style_name}" has attribute "{attribute}" set to <lineHeight>'))
+def when_style_has_line_height_attribute(test_context, style_name, attribute, lineHeight):
+    test_context[style_name][attribute] = lineHeight
+
+@when(parsers.parse('style "{style_name}" has attribute "{attribute}" set to <fontSize>'))
+def when_style_has_fontSize_attribute(test_context, style_name, attribute, fontSize):
+    test_context[style_name][attribute] = fontSize
 
 
 @when(parsers.parse('it contains some text with style "{style_name}"'))
