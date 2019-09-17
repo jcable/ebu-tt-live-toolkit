@@ -3,6 +3,8 @@
         ebuttp:sequenceIdentifier="TestSequence"
         ebuttp:sequenceNumber="1"
         ttp:timeBase="media"
+        {% if cell_resolution %} ttp:cellResolution="{{ cell_resolution }}" {% endif %}
+        {% if extent %} tts:extent="{{ extent }}" {% endif %}
         xml:lang="en-GB"
         xmlns:ebuttm="urn:ebu:tt:metadata"
         xmlns:ebuttp="urn:ebu:tt:parameters"
@@ -16,6 +18,7 @@
       <ebuttm:documentMetadata/>
       <f:foreignMetadata>Fake metadata</f:foreignMetadata>
     </tt:metadata>
+    {% if styles %}
     <tt:styling>
       {% for style in styles %}
         <tt:style xml:id="{{ style.id }}" {% if style.style %} style="{{ style.style }}" {% endif %}
@@ -27,10 +30,18 @@
         {% if style.fontSize %} tts:fontSize="{{style.fontSize}}" {% endif %}  />
         {% endfor %}
     </tt:styling>
+    {% endif %}
     <tt:layout>
        {%if regions%}
         {% for region in regions%}
-          <tt:region xml:id="{{region.id}}" style="{{region.style}}" {% if region.padding %} tts:padding="{{region.padding}}" {% endif %} tts:displayAlign="after" tts:extent="71.25% 24%" tts:origin="14.375% 60%" tts:overflow="visible" tts:writingMode="lrtb" />
+          <tt:region xml:id="{{region.id}}"
+            {% if region.style %} style="{{region.style}}" {% endif %}
+            {% if region.padding %} tts:padding="{{region.padding}}" {% endif %}
+            tts:displayAlign="after"
+            tts:extent="{% if region.extent %}{{region.extent}}{% else %}71.25% 24%{% endif %}"
+            tts:origin="{% if region.origin %}{{region.origin}}{% else %}14.375% 60%{% endif %}"
+            tts:overflow="visible"
+            tts:writingMode="lrtb"/>
         {% endfor %}
       {% endif %}
     </tt:layout>

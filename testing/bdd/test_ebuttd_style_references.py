@@ -4,6 +4,17 @@ import xml.etree.ElementTree as ET
 scenarios('features/styles/ebuttd_style_references.feature')
 scenarios('features/unit_conversion/ebuttd_colour_conversion.feature')
 scenarios('features/unit_conversion/ebuttd_line_height_conversion.feature')
+scenarios('features/unit_conversion/ebuttd_origin_extent_conversion.feature')
+
+
+@when(parsers.parse('the document has a cell resolution of "{cell_resolution}"'))
+def when_document_has_cell_resolution(template_dict, cell_resolution):
+    template_dict['cell_resolution'] = cell_resolution
+
+
+@when(parsers.parse('the document has an extent of "{extent}"'))
+def when_document_has_extent(template_dict, extent):
+    template_dict['extent'] = extent
 
 
 @when(parsers.parse('it contains style "{style_name}"'))
@@ -20,9 +31,11 @@ def when_it_contains_style(test_context, template_dict, style_name):
 def when_style_has_attribute(test_context, style_name, attribute, ebu_tt_live_value):
     test_context[style_name][attribute] = ebu_tt_live_value
 
+
 @when(parsers.parse('style "{style_name}" has attribute "{attribute}" set to <lineHeight>'))
 def when_style_has_line_height_attribute(test_context, style_name, attribute, lineHeight):
     test_context[style_name][attribute] = lineHeight
+
 
 @when(parsers.parse('style "{style_name}" has attribute "{attribute}" set to <fontSize>'))
 def when_style_has_fontSize_attribute(test_context, style_name, attribute, fontSize):
