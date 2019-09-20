@@ -144,8 +144,8 @@ def named_color_to_rgba(named_color):
 
 def convert_cell_region_to_percentage(cells_in, cell_resolution):
     return '{}% {}%'.format(
-        (float(cells_in.horizontal) / float(cell_resolution.horizontal)) * 100,
-        (float(cells_in.vertical) / float(cell_resolution.vertical)) * 100
+        round((float(cells_in.horizontal) / float(cell_resolution.horizontal)) * 100, 2),
+        round((float(cells_in.vertical) / float(cell_resolution.vertical)) * 100, 2)
     )
 
 
