@@ -5,6 +5,7 @@ scenarios('features/styles/ebuttd_style_references.feature')
 scenarios('features/unit_conversion/ebuttd_colour_conversion.feature')
 scenarios('features/unit_conversion/ebuttd_line_height_conversion.feature')
 scenarios('features/unit_conversion/ebuttd_origin_extent_conversion.feature')
+scenarios('features/validation/lengthtype_constraints.feature')
 
 
 @when(parsers.parse('the document has a cell resolution of "{cell_resolution}"'))
@@ -68,6 +69,7 @@ def when_it_contains_region(test_context, template_dict, region_id):
 
 
 @when(parsers.parse('region "{region_id}" has attribute "{attribute}" set to "{value}"'))
+@when(parsers.parse('region "{region_id}" has attribute <attribute> set to "{value}"'))
 def when_region_has_attribute(test_context, region_id, attribute, value):
     test_context[region_id][attribute] = value
 

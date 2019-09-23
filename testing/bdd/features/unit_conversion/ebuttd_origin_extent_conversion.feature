@@ -30,12 +30,3 @@ Feature: EBU-TT-D origin and extent conversion
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then the ebu_tt_d document contains region "r1" with attribute "origin" set to "31.25% 75.0%"
         And the ebu_tt_d document contains region "r1" with attribute "extent" set to "34.38% 20.83%"
-
-    Scenario: throw an error and stop the processing if no pixel value for tts:extent is supplied on the tt:tt element
-        Given an xml file <xml_file>
-        When the document does not specify an extent
-        And it contains region "r1"
-        And region "r1" has attribute "origin" set to "200px 360px"
-        And region "r1" has attribute "extent" set to "220px 100px"
-        And it contains some text with region "r1"
-        Then document is invalid
