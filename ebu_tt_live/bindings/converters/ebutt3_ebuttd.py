@@ -38,6 +38,11 @@ class EBUTT3EBUTTDConverter(object):
         if time_base == 'smpte':
             raise NotImplementedError()
 
+    def _process_timing_from_timedelta(self, timing_type):
+        if timing_type is None:
+            return None
+        return ebuttdt.FullClockTimingType.from_timedelta(timing_type)
+
     def _adjusted_font_style_map(self):
         return self._semantic_dataset.setdefault(self._dataset_key_for_font_styles, {})
 
@@ -131,6 +136,7 @@ class EBUTT3EBUTTDConverter(object):
     def convert_tt(self, tt_in, dataset):
         dataset['timeBase'] = tt_in.timeBase
         dataset['cellResolution'] = tt_in.cellResolution
+        dataset['extent'] = tt_in.extent
         new_elem = ttd(
             head=self.convert_element(tt_in.head, dataset),
             body=self.convert_element(tt_in.body, dataset),
@@ -157,8 +163,8 @@ class EBUTT3EBUTTDConverter(object):
                 new_elem.append(item)
 
         metadata = headMetadata_type()
-        metadata.documentMetadata = documentMetadata(conformsToStandard = [
-            'http://www.w3.org/ns/ttml/profile/imsc1/text', 
+        metadata.documentMetadata = documentMetadata(conformsToStandard=[
+            'http://www.w3.org/ns/ttml/profile/imsc1/text',
             'urn:ebu:tt:distribution:2018-04'
         ])
         new_elem.metadata = metadata
@@ -188,10 +194,15 @@ class EBUTT3EBUTTDConverter(object):
         if origin is not None:
             if isinstance(origin, ebuttdt.cellOriginType):
                 origin = ebuttdt.convert_cell_region_to_percentage(origin, dataset['cellResolution'])
+            elif isinstance(origin, ebuttdt.pixelOriginType):
+                origin = ebuttdt.convert_pixel_region_to_percentage(origin, dataset['extent'])
         extent = region_in.extent
         if extent is not None:
             if isinstance(extent, ebuttdt.cellExtentType):
                 extent = ebuttdt.convert_cell_region_to_percentage(extent, dataset['cellResolution'])
+            elif isinstance(extent, ebuttdt.pixelExtentType):
+                extent = ebuttdt.convert_pixel_region_to_percentage(extent, dataset['extent'])
+
         if region_in.padding == None:
             region_validated_styles = [style for style in region_in.validated_styles if style.id in region_in.style]
             for region_style in region_validated_styles:
@@ -203,6 +214,7 @@ class EBUTT3EBUTTDConverter(object):
                 else:
                  if region_style.padding:
                     region_in.padding = region_style.padding
+
         new_elem = d_region_type(
             *self.convert_children(region_in, dataset),
             id=region_in.id,
@@ -267,7 +279,8 @@ class EBUTT3EBUTTDConverter(object):
         new_elem = d_body_type(
             *self.convert_children(body_in, dataset),
             agent=body_in.agent,
-            role=body_in.role
+            role=body_in.role,
+            style=body_in.style
         )
         return new_elem
 
@@ -285,8 +298,8 @@ class EBUTT3EBUTTDConverter(object):
         new_elem = d_p_type(
             *self.convert_children(p_in, dataset),
             space=p_in.space,
-            begin=self._process_timing_type(p_in.begin, dataset=dataset),
-            end=self._process_timing_type(p_in.end, dataset=dataset),
+            begin=None if p_in.is_timed_leaf()==False else self._process_timing_from_timedelta(p_in.computed_begin_time),
+            end=None if p_in.is_timed_leaf()==False else self._process_timing_from_timedelta(p_in.computed_end_time),
             lang=p_in.lang,
             id=p_in.id,
             region=p_in.region,
@@ -300,8 +313,8 @@ class EBUTT3EBUTTDConverter(object):
         new_elem = d_span_type(
             *self.convert_children(span_in, dataset),
             space=span_in.space,
-            begin=self._process_timing_type(span_in.begin, dataset=dataset),
-            end=self._process_timing_type(span_in.end, dataset=dataset),
+            begin=self._process_timing_from_timedelta(span_in.computed_begin_time),
+            end=self._process_timing_from_timedelta(span_in.computed_end_time),
             lang=span_in.lang,
             id=span_in.id,
             style=span_in.style,
