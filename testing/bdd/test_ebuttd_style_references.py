@@ -17,6 +17,12 @@ def when_document_has_extent(template_dict, extent):
     template_dict['extent'] = extent
 
 
+@when('the document does not specify an extent')
+def when_doc_has_no_extent():
+    #Do nothing, default behaviour is no extent
+    pass
+
+
 @when(parsers.parse('it contains style "{style_name}"'))
 def when_it_contains_style(test_context, template_dict, style_name):
     if 'styles' not in template_dict:
