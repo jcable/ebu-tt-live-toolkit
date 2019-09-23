@@ -150,11 +150,10 @@ def convert_cell_region_to_percentage(cells_in, cell_resolution):
 
 
 def convert_pixel_region_to_percentage(pixels_in, extent):
-   return '{}% {}%'.format(
-        (float(pixels_in.horizontal) / float(extent.horizontal)) * 100,
-        (float(pixels_in.vertical) / float(extent.vertical)) * 100
+    return '{}% {}%'.format(
+        round((float(pixels_in.horizontal) / float(extent.horizontal)) * 100, 2),
+        round((float(pixels_in.vertical) / float(extent.vertical)) * 100, 2)
     )
-
 
 
 class TwoDimSizingMixin(object):

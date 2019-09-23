@@ -28,7 +28,7 @@ Feature: EBU-TT-D origin and extent conversion
         And it contains some text with region "r1"
         When the document is generated
         And the EBU-TT-Live document is converted to EBU-TT-D
-        Then the ebu_tt_d document contains region "r1" with attribute "origin" set to "31.25% 75%"
+        Then the ebu_tt_d document contains region "r1" with attribute "origin" set to "31.25% 75.0%"
         And the ebu_tt_d document contains region "r1" with attribute "extent" set to "34.38% 20.83%"
 
     Scenario: throw an error and stop the processing if no pixel value for tts:extent is supplied on the tt:tt element
