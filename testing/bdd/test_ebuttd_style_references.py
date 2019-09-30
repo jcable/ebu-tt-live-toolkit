@@ -70,6 +70,7 @@ def when_it_contains_region(test_context, template_dict, region_id):
 
 @when(parsers.parse('region "{region_id}" has attribute "{attribute}" set to "{value}"'))
 @when(parsers.parse('region "{region_id}" has attribute <attribute> set to "{value}"'))
+@when(parsers.parse('region "{region_id}" has attribute <attribute> set to <value>'))
 def when_region_has_attribute(test_context, region_id, attribute, value):
     test_context[region_id][attribute] = value
 

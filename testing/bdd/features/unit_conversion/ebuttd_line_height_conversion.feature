@@ -18,4 +18,13 @@ Feature: EBU-TT-D lineHeight conversion
 
         Examples:
             | lineHeight | fontSize | ebu_tt_d_value |
-            | 2c         | 2c       | 100.0%         |
+            | 2c         | 2c       | 100%           |
+            | 3c         | 2c       | 150%           |
+            | 1c         | 2c       | 50%            |
+            | 100%       | 2c       | 100%           |
+            | 120%       | 2c       | 120%           |
+            | 120.2%     | 2c       | 120.2%         |
+            | 120.36%    | 2c       | 120.36%        |
+            | 120.123%   | 2c       | 120.12%        |
+            | normal     | 2c       | normal         |
+

@@ -10,11 +10,12 @@ Feature: EBU-TT lengthType validation
         Given an xml file <xml_file>
         When the document does not specify an extent
         And it contains region "r1"
-        And region "r1" has attribute <attribute> set to "200px 360px"
+        And region "r1" has attribute <attribute> set to <value>
         And it contains some text with region "r1"
         Then document is invalid
 
         Examples:
-            | attribute |
-            | origin    |
-            | extent    |
+            | attribute | value       |
+            | origin    | 200px 360px |
+            | extent    | 200px 360px |
+

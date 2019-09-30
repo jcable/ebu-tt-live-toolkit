@@ -115,8 +115,17 @@ class EBUTT3EBUTTDConverter(object):
 
             if isinstance(computed_line_height, ebuttdt.CellLineHeightType):
                 adjusted_style.lineHeight = ebuttdt.PercentageLineHeightType(
-                    computed_line_height.vertical / computed_font_size.vertical * 100
+                    '{0:g}%'.format(round(computed_line_height.vertical / computed_font_size.vertical * 100, 2))
                 )
+            elif isinstance(computed_line_height, ebuttdt.PercentageLineHeightType):
+                adjusted_style.lineHeight = computed_line_height
+            elif isinstance(computed_line_height, ebuttdt.PixelLineHeightType):
+                adjusted_style.lineHeight = ebuttdt.PercentageLineHeightType(
+                    '{0:g}%'.format(round((computed_line_height.vertical / dataset['extent'].vertical)/ computed_font_size.vertical * 100, 2))
+                )
+            elif computed_line_height == 'normal':
+                adjusted_style.lineHeight = computed_line_height
+                
             if celem.style is None:
                 celem.style = [
                     adjusted_style.id
