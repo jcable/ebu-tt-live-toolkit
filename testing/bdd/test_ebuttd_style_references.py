@@ -1,5 +1,8 @@
 from pytest_bdd import scenarios, when, then, given, parsers
+from ebu_tt_live.errors import ExtentMissingError
+from ebu_tt_live.documents.ebutt3 import EBUTT3Document
 import xml.etree.ElementTree as ET
+import pytest
 
 scenarios('features/styles/ebuttd_style_references.feature')
 scenarios('features/unit_conversion/ebuttd_colour_conversion.feature')
@@ -35,6 +38,7 @@ def when_it_contains_style(test_context, template_dict, style_name):
 
 @when(parsers.parse('style "{style_name}" has attribute "{attribute}" set to "{ebu_tt_live_value}"'))
 @when(parsers.parse('style "{style_name}" has attribute "{attribute}" set to <ebu_tt_live_value>'))
+@when(parsers.parse('style "{style_name}" has attribute <attribute> set to <ebu_tt_live_value>'))
 def when_style_has_attribute(test_context, style_name, attribute, ebu_tt_live_value):
     test_context[style_name][attribute] = ebu_tt_live_value
 
@@ -107,3 +111,17 @@ def then_converted_document_has_style_without_attribute(test_context, style_id, 
                             '{http://www.w3.org/ns/ttml}style[@{http://www.w3.org/XML/1998/namespace}id="%s"]' % style_id)
     assert len(elements) == 1
     assert elements[0].get('{http://www.w3.org/ns/ttml#styling}%s' % attribute) == None
+
+@then('document has an ExtentMissingError')
+def invalid_doc(template_file, template_dict):
+
+    xml_file = template_file.render(template_dict)
+    try:
+        EBUTT3Document.create_from_xml(xml_file)
+    except Exception as exc:
+        assert isinstance(exc, ExtentMissingError)    
+    else:
+        pytest.fail('No exception thrown')
+        assert False
+
+ 
