@@ -29,7 +29,8 @@ Feature: Remove style elements that refer to other style elements
 
   Scenario: Convert padding specifed on style applied to region to padding specified only on region when padding is on both style and region
     Given an xml file <xml_file>
-    When  it contains style "s1"
+    When  the document has an extent of "100px 100px"
+    And   it contains style "s1"
     And   style "s1" has attribute "padding" set to "10px"
     And   it contains region "r1"
     And   region "r1" has attribute "style" set to "s1"
@@ -44,7 +45,8 @@ Feature: Remove style elements that refer to other style elements
 
   Scenario: Convert padding specifed on style applied to region to padding specified only on region when padding is only on style
     Given an xml file <xml_file>
-    When  it contains style "s1"
+    When  the document has an extent of "100px 100px"
+    And   it contains style "s1"
     And   style "s1" has attribute "padding" set to "10px"
     And   it contains region "r1"
     And   region "r1" has attribute "style" set to "s1"
@@ -58,7 +60,8 @@ Feature: Remove style elements that refer to other style elements
 
   Scenario: Convert padding specifed on 2 styles applied to a region to padding specified only on region when padding is only on style
     Given an xml file <xml_file>
-    When  it contains style "s1"
+    When  the document has an extent of "100px 100px"
+    And   it contains style "s1"
     And   style "s1" has attribute "padding" set to "10px"
     When  it contains style "s2"
     And   style "s2" has attribute "padding" set to "5px"
@@ -73,7 +76,8 @@ Feature: Remove style elements that refer to other style elements
 
   Scenario: Convert padding specifed on 2 styles where one inherits from another applied to a region to padding specified only on region when padding is only on style
     Given an xml file <xml_file>
-    When  it contains style "s1"
+    When  the document has an extent of "100px 100px"
+    And   it contains style "s1"
     And   style "s1" has attribute "padding" set to "10px"
     When  it contains style "s2"
     And   style "s2" has attribute "padding" set to "5px"
