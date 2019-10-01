@@ -425,6 +425,7 @@ class style_type(StyledElementMixin, IDMixin, SizingValidationMixin, SemanticVal
         self._semantic_register_id(dataset=dataset)
         self._semantic_check_sizing_type(self.fontSize, dataset=dataset)
         self._semantic_check_sizing_type(self.lineHeight, dataset=dataset)
+        self._semantic_check_sizing_type(self.padding, dataset=dataset)
         # Init recursion loop detection lock
         self._styling_lock = threading.Lock()
         self._ordered_styles = None
@@ -1100,6 +1101,7 @@ class region_type(IDMixin, LiveStyledElementMixin, SizingValidationMixin, Semant
         self._semantic_register_id(dataset=dataset)
         self._semantic_check_sizing_type(self.origin, dataset=dataset)
         self._semantic_check_sizing_type(self.extent, dataset=dataset)
+        self._semantic_check_sizing_type(self.padding, dataset=dataset)
         self._semantic_collect_applicable_styles(
             dataset=dataset,
             style_type=self._compatible_style_type,

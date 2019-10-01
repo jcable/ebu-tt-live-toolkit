@@ -98,7 +98,7 @@ class _TimedeltaBindingMixin(object):
 
 def cells_to_pixels(cells_in, root_extent, cell_resolution):
     if not isinstance(root_extent, PixelExtentType):
-        raise Exception()
+        raise ExtentMissingError(root_extent)
     if cells_in.horizontal is not None:
         # 2dimensional
         return cells_in.horizontal * root_extent.horizontal / cell_resolution.horizontal, \
@@ -109,7 +109,7 @@ def cells_to_pixels(cells_in, root_extent, cell_resolution):
 
 def pixels_to_cells(pixels_in, root_extent, cell_resolution):
     if not isinstance(root_extent, PixelExtentType):
-        raise Exception()
+        raise ExtentMissingError(root_extent)
     if pixels_in.horizontal is not None:
         return pixels_in.horizontal * cell_resolution.horizontal / root_extent.horizontal, \
                pixels_in.vertical * cell_resolution.vertical / root_extent.vertical
@@ -518,6 +518,20 @@ class CellLengthType(ebuttdt_raw.cellLengthType):
 
 
 ebuttdt_raw.cellLengthType._SetSupersedingClass(CellLengthType)
+
+
+class PaddingType(SizingValidationMixin, ebuttdt_raw.paddingType):
+    _groups_regex = re.compile('([+-]?\d*(\.\d+)?(px|c|%))(\s([+-]?\d*(\.\d+)?(px|c|%)))?(\s([+-]?\d*(\.\d+)?(px|c|%)))?(\s([+-]?\d*(\.\d+)?(px|c|%)))?')
+
+
+    def _semantic_validate_sizing_context(self, dataset):
+        if 'px' in self:
+            extent = dataset['tt_element'].extent
+            if not isinstance(extent, ebuttdt_raw.pixelExtentType):
+                raise ExtentMissingError(self)
+
+ebuttdt_raw.paddingType._SetSupersedingClass(PaddingType)
+
 
 
 class PixelFontSizeType(TwoDimSizingMixin, SizingValidationMixin, ebuttdt_raw.pixelFontSizeType):
