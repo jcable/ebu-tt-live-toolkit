@@ -87,13 +87,17 @@ class Denester():
         if div_attributes["metadata"] is not None:
             merged_attributes["metadata"].facet.extend(div_attributes["metadata"].facet)
         if parent_attr["begin"] is not None and div_attributes["begin"] is not None:
-             merged_attributes["begin"] = Denester.add_begin_times(parent_attr["begin"], div_attributes["begin"])
+            merged_attributes["begin"] = Denester.add_begin_times(parent_attr["begin"], div_attributes["begin"])
+        elif parent_attr["begin"] is not None and div_attributes["begin"] is None:
+            merged_attributes["begin"] = parent_attr["begin"]
         else:
-             merged_attributes["begin"] = div_attributes["begin"] if parent_attr["begin"] is None else parent_attr["begin"]
+            merged_attributes["begin"] = div_attributes["begin"] if parent_attr["begin"] is None else parent_attr["begin"]
         if parent_attr["end"] is not None and div_attributes["end"] is not None:
-                 merged_attributes["end"] = Denester.add_end_times(parent_attr["end"], div_attributes["end"])
+            merged_attributes["end"] = Denester.add_end_times(parent_attr["end"], div_attributes["end"])
+        elif parent_attr["end"] is not None and div_attributes["end"] is None:
+            merged_attributes["end"] = parent_attr["end"]
         else:
-             merged_attributes["end"] = Denester.calculate_end_times(parent_attr, div_attributes, parent_attr["begin"])
+            merged_attributes["end"] = Denester.calculate_end_times(parent_attr, div_attributes, parent_attr["begin"])
         return merged_attributes
 
     @staticmethod
@@ -148,7 +152,19 @@ class Denester():
                 for ic in c.value.orderedContent():
                     if isinstance(ic.value,span_type):
                         new_spans.extend(Denester.recurse_span(ic.value,dataset))
-                        c.value.span = new_spans
+                c.value.span = new_spans
+                for span in c.value.span:
+                    if c.value.begin is not None:
+                        p_time = c.value.computed_begin_time
+                    else:
+                        p_time = div.computed_begin_time
+
+                    span.compBegin = span.compBegin - p_time
+                    span.compEnd = span.compEnd - p_time
+
+                    span.begin = ebuttdt.FullClockTimingType(span.compBegin)
+                    span.end = ebuttdt.FullClockTimingType(span.compEnd)
+
                 new_div = div_type(
                     id=div.id,
                     style=None if len(merged_attr["styles"]) == 0  else merged_attr["styles"],
@@ -175,6 +191,10 @@ class Denester():
                 new_span = span_type(
                     sc.value
                 )
+                
+                new_span.compBegin = span.computed_begin_time
+                new_span.compEnd = span.computed_end_time
+
                 if len(span_styles) != 0:
                     new_span.style = Denester.compute_span_merged_styles(span_styles, dataset).id if len(span_styles) >1 else span_styles
                 else:
