@@ -63,13 +63,13 @@ def valid_doc(template_file, template_dict):
     assert isinstance(document, EBUTT3Document)
 
 @then('the first document is valid')
-def valid_doc(template_file_one, template_dict):
+def valid_doc_1(template_file_one, template_dict):
     xml_file_1 = template_file_one.render(template_dict)
     document = EBUTT3Document.create_from_xml(xml_file_1)
     assert isinstance(document, EBUTT3Document)
 
 @then('the second document is valid')
-def valid_doc(template_file_two, template_dict):
+def valid_doc_2(template_file_two, template_dict):
     xml_file_2 = template_file_two.render(template_dict)
     document = EBUTT3Document.create_from_xml(xml_file_2)
     assert isinstance(document, EBUTT3Document)
@@ -179,16 +179,24 @@ def when_p_end(p_end, template_dict):
     template_dict['p_end'] = p_end
 
 @when('it has p1 begin time <p1_begin>')
-def when_p_begin(p1_begin, template_dict):
+def when_p1_begin(p1_begin, template_dict):
     template_dict['p1_begin'] = p1_begin
 
 @when('it has p1 end time <p1_end>')
-def when_p_end(p1_end, template_dict):
+def when_p1_end(p1_end, template_dict):
     template_dict['p1_end'] = p1_end
 
 @when('it has span1 begin time <span1_begin>')
 def when_span1_begin(span1_begin, template_dict):
     template_dict['span1_begin'] = span1_begin
+
+@when('it has nestedSpan begin time <nestedSpan_begin>')
+def when_nestedSpan_begin(nestedSpan_begin, template_dict):
+    template_dict['nestedSpan_begin'] = nestedSpan_begin
+
+@when('it has nestedSpan end time <nestedSpan_end>')
+def when_nestedSpan_end(nestedSpan_end, template_dict):
+    template_dict['nestedSpan_end'] = nestedSpan_end
 
 @when('it has span1 end time <span1_end>')
 def when_span1_end(span1_end, template_dict):
