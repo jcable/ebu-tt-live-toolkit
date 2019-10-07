@@ -27,22 +27,16 @@ def then_it_has_nestedSpan_resulted_begin_time(test_context, nestedSpan_resulted
     document = test_context['ebuttd_document']
     tree = ET.fromstring(document.get_xml())
     elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div/{http://www.w3.org/ns/ttml}p/{http://www.w3.org/ns/ttml}span')
-    if nestedSpan_resulted_begin_time != '':
-        document_generated_span_begin_time = elements[1].get('begin')
-        assert nestedSpan_resulted_begin_time == document_generated_span_begin_time
-    else:
-        assert True
+    document_generated_span_begin_time = elements[1].get('begin')
+    assert nestedSpan_resulted_begin_time == document_generated_span_begin_time
 
 @then('nestedSpan resulted end time is <nestedSpan_resulted_end_time>')
 def then_it_has_nestedSpan_resulted_end_time(test_context, nestedSpan_resulted_end_time):
     document = test_context['ebuttd_document']
     tree = ET.fromstring(document.get_xml())
     elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div/{http://www.w3.org/ns/ttml}p/{http://www.w3.org/ns/ttml}span')
-    if nestedSpan_resulted_end_time != '':
-        document_generated_span_end_time = elements[1].get('end')
-        assert nestedSpan_resulted_end_time == document_generated_span_end_time
-    else:
-        assert True
+    document_generated_span_end_time = elements[1].get('end')
+    assert nestedSpan_resulted_end_time == document_generated_span_end_time
 
 @then('span1 resulted begin time is <span1_resulted_begin_time>')
 def then_it_has_span1_resulted_begin_time(test_context, span1_resulted_begin_time):
