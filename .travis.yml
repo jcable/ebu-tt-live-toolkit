@@ -13,3 +13,8 @@ install:
 
 script:
   - make test
+  - echo "Compiling documentation"
+  - make
+  - sudo apt-get -qq update
+  - sudo apt-get install graphviz
+  - python setup.py build_sphinx
