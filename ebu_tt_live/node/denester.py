@@ -154,8 +154,23 @@ class Denester():
                         new_spans.extend(Denester.recurse_span(ic.value,dataset))
                 c.value.span = new_spans
                 for span in c.value.span:
-                    if c.value.begin is not None:
-                        p_time = c.value.computed_begin_time
+                    # The following lines address some test cases but are not a
+                    # general solution, so commented out, however see comments
+                    # on line immediately below.
+                    # if c.value.begin is not None:
+                    #     p_time = c.value.computed_begin_time
+                    # else:
+                    #     p_time = div.computed_begin_time
+
+                    # The following line fails if the parent p element's computed 
+                    # begin time has
+                    # been advanced to its earliest child's computed begin time
+                    # and the p's parent div has a different computed begin time.
+                    # This situation arises especially when the body element has
+                    # a dur but no begin or end times. This may well be some kind
+                    # of bug or incorrect behaviour, but it's hard to sort out
+                    # without breaking a bunch of stuff.
+                    p_time = c.value.computed_begin_time
                     else:
                         p_time = div.computed_begin_time
 

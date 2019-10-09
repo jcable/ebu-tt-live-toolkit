@@ -85,7 +85,10 @@ def invalid_doc(template_file, template_dict):
 def gen_document(template_file, template_dict):
     # TODO: This is legacy and to be removed when tests are refactored
     xml_file = template_file.render(template_dict)
-    document = EBUTT3Document.create_from_xml(xml_file)
+    if 'availability_time' in template_dict:
+        document = EBUTT3Document.create_from_xml(xml_file, template_dict['availability_time'])
+    else:
+        document = EBUTT3Document.create_from_xml(xml_file)
     document.validate()
     return document
 
@@ -93,7 +96,10 @@ def gen_document(template_file, template_dict):
 def when_doc_generated(test_context, template_dict, template_file):
     # This is a more standard-compliant way to do this
     xml_file = template_file.render(template_dict)
-    document = EBUTT3Document.create_from_xml(xml_file)
+    if 'availability_time' in template_dict:
+        document = EBUTT3Document.create_from_xml(xml_file, template_dict['availability_time'])
+    else:
+        document = EBUTT3Document.create_from_xml(xml_file)
     test_context['document'] = document
 
 

@@ -20,9 +20,9 @@ def when_sequence_number(sequence_number, template_dict):
     template_dict['sequence_number'] = sequence_number
 
 @when('it is available at <availability_time>')
-def when_doc_available(test_context, availability_time):
+def when_doc_available(test_context, availability_time, template_dict):
     if availability_time:
-        test_context['document'].availability_time = FullClockTimingType(availability_time).timedelta
+        template_dict['availability_time'] = FullClockTimingType(availability_time).timedelta
 
 
 @then('body active begin time is <body_active_begin>')

@@ -109,7 +109,12 @@ class TimingValidationMixin(object):
         earliest_child_computed_begin = min(children_computed_begin_times)
         if earliest_child_computed_begin > self._computed_begin_time:
             # Adjustment scenario
-            self._computed_begin_time = earliest_child_computed_begin
+            # If no parent element specified a begin time, then we have found
+            # a case for the "earliest specified computed begin time" as per the
+            # specification and we can adjust the begin time to match the
+            # children's begin time.
+            if len(self._semantic_dataset['timing_begin_stack']) == 0:
+                self._computed_begin_time = earliest_child_computed_begin
 
     def _semantic_preprocess_timing(self, dataset, element_content):
         """
@@ -394,6 +399,35 @@ class BodyTimingValidationMixin(TimingValidationMixin):
             end_timedelta = self._semantic_dataset['timing_end_stack'].pop()
 
         return end_timedelta
+
+    def _post_calculate_begin(self, children):
+        """
+        The computed begin time shall be moved down to match that of the earliest child begin time in case the container
+        does not specify a begin time itself. NOTE: This does not modify the syncbase.
+
+        :param children:
+        :return:
+        """
+
+        if not children:
+            if 'availability_time' in self._semantic_dataset:
+                if self.begin is None:
+                    self._computed_begin_time = self._semantic_dataset['availability_time']
+                if self.end is None and self.dur is not None:
+                    self._computed_end_time = self._computed_begin_time + self._dur_timedelta
+            return
+
+        children_computed_begin_times = [item.computed_begin_time for item in children]
+
+        earliest_child_computed_begin = min(children_computed_begin_times)
+        if 'availability_time' in self._semantic_dataset:
+            earliest_child_computed_begin = max(earliest_child_computed_begin, self._semantic_dataset['availability_time'])
+        
+        if earliest_child_computed_begin > self._computed_begin_time:
+            # Adjustment scenario
+            self._computed_begin_time = earliest_child_computed_begin
+            if self.dur is not None and self.begin is None:
+                self._computed_end_time = self._computed_begin_time + self._dur_timedelta
 
     def _semantic_timebase_validation(self, dataset, element_content):
 
