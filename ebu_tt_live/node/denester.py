@@ -171,9 +171,7 @@ class Denester():
                     # of bug or incorrect behaviour, but it's hard to sort out
                     # without breaking a bunch of stuff.
                     p_time = c.value.computed_begin_time
-                    else:
-                        p_time = div.computed_begin_time
-
+                    
                     span.compBegin = span.compBegin - p_time
                     span.compEnd = span.compEnd - p_time
 
