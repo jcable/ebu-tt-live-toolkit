@@ -43,6 +43,27 @@ class XMLtoEBUTT3Adapter(IDocumentDataAdapter):
         return doc, kwargs
 
 
+class XMLtoEBUTT1Adapter(IDocumentDataAdapter):
+    """
+    This converter converts the raw XML documents to the EBUTT1Document type.
+    """
+    _expects = six.text_type
+    _provides = EBUTT1Document
+
+    def convert_data(self, data, availability_time=None, sequence_identifier=None, **kwargs):
+        binding_inst = CreateFromDocument(xml_text=data)
+        if isinstance(binding_inst, tt_type):
+            doc = EBUTT1Document.create_from_raw_binding(
+                binding_inst,
+                availability_time=availability_time
+            )
+
+        kwargs.update(dict(
+            raw_xml=data
+        ))
+        return doc, kwargs
+
+
 class XMLtoEBUTTDAdapter(IDocumentDataAdapter):
     """
     This converter converts the raw XML documents to the EBUTTDDocument type.
