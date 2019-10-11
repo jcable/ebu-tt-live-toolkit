@@ -1,3 +1,5 @@
+from ebu_tt_live.bindings.converters.ebutt1_ebutt3 import EBUTT1EBUTT3Converter
+from ebu_tt_live.documents.ebutt1 import EBUTT1Document
 from .base import AbstractCombinedNode
 from ebu_tt_live.documents import EBUTT3Document
 
@@ -5,7 +7,7 @@ from ebu_tt_live.documents import EBUTT3Document
 class EBUTT1EBUTT3ProducerNode(AbstractCombinedNode):
 
     _ebutt3_converter = None
-    _expects = EBUTT3Document  # TODO change to EBUTT1 when we create that class
+    _expects = EBUTT1Document
     _provides = EBUTT3Document
 
     def __init__(self, node_id, consumer_carriage=None, producer_carriage=None, **kwargs):
@@ -15,6 +17,12 @@ class EBUTT1EBUTT3ProducerNode(AbstractCombinedNode):
             producer_carriage=producer_carriage,
             **kwargs
         )
+        self._ebutt3_converter = EBUTT1EBUTT3Converter()
 
     def process_document(self, document, **kwargs):
-        self.producer_carriage.emit_data(document, **kwargs)
+        # Convert each receiver document into EBU-TT-3
+        if self.is_document(document):
+            converted_doc = EBUTT3Document.create_from_raw_binding(
+                self._ebutt3_converter.convert_document(document.binding)
+            )
+            self.producer_carriage.emit_data(data=converted_doc, **kwargs)

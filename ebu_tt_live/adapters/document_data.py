@@ -1,4 +1,4 @@
-
+from ebu_tt_live.documents.ebutt1 import EBUTT1Document
 from .base import IDocumentDataAdapter
 from ebu_tt_live.documents import EBUTT3EBUTTDConverter, EBUTTDDocument, EBUTT3Document, EBUTTAuthorsGroupControlRequest
 from ebu_tt_live.clocks.media import MediaClock
@@ -54,8 +54,7 @@ class XMLtoEBUTT1Adapter(IDocumentDataAdapter):
         binding_inst = CreateFromDocument(xml_text=data)
         if isinstance(binding_inst, tt_type):
             doc = EBUTT1Document.create_from_raw_binding(
-                binding_inst,
-                availability_time=availability_time
+                binding_inst
             )
 
         kwargs.update(dict(
