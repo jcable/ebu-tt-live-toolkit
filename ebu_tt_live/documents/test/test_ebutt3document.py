@@ -1,10 +1,10 @@
 from unittest import TestCase
 from datetime import timedelta, datetime
-from ebu_tt_live.documents import EBUTT3Document,EBUTT3ObjectBase, EBUTTLiveMessage, EBUTTAuthorsGroupControlRequest
+from ebu_tt_live.documents import EBUTT3Document, EBUTT3ObjectBase, EBUTTAuthorsGroupControlRequest
 import os
 import six
 from ebu_tt_live.utils import compare_xml
-from pyxb.exceptions_ import SimpleFacetValueError
+from pyxb.exceptions_ import MissingAttributeError, SimpleFacetValueError
 
 
 class TestEBUTT3Document(TestCase):
@@ -102,4 +102,26 @@ class TestEBUTT3Document(TestCase):
             time_base='media',
             lang='en-GB',
             authors_group_identifier=''
+        )
+
+    def test_required_sequence_identifier(self):
+        self.assertRaises(
+            MissingAttributeError,
+            EBUTT3Document,
+            sequence_identifier=None,
+            sequence_number=1,
+            time_base='media',
+            lang='en-GB',
+            authors_group_identifier='agIdTest'
+        )
+
+    def test_required_sequence_number(self):
+        self.assertRaises(
+            MissingAttributeError,
+            EBUTT3Document,
+            sequence_identifier='testSeq',
+            sequence_number=None,
+            time_base='media',
+            lang='en-GB',
+            authors_group_identifier='agIdTest'
         )

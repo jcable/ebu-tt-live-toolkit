@@ -358,8 +358,8 @@ Please note that the EBU-TT XML Schema is a helping document and NOT normative b
 		<xs:attribute ref="ttp:dropMode" use="optional"/>
 		<xs:attribute ref="ttp:clockMode" use="optional"/>
 		<xs:attribute ref="ttp:cellResolution" use="optional"/>
-		<xs:attribute ref="ebuttp:sequenceIdentifier" use="required"/>
-		<xs:attribute ref="ebuttp:sequenceNumber" use="required"/>
+		<xs:attribute ref="ebuttp:sequenceIdentifier" use="optional"/>
+		<xs:attribute ref="ebuttp:sequenceNumber" use="optional"/>
 		<xs:attribute ref="ebuttm:authoringDelay" use="optional"/>
 		<xs:attribute ref="ebuttp:authorsGroupIdentifier" use="optional"/>
 		<xs:attribute ref="ebuttp:authorsGroupControlToken" use="optional"/>

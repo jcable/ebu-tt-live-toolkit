@@ -3,7 +3,7 @@ from .base import IDocumentDataAdapter
 from ebu_tt_live.documents import EBUTT3EBUTTDConverter, EBUTTDDocument, EBUTT3Document, EBUTTAuthorsGroupControlRequest
 from ebu_tt_live.clocks.media import MediaClock
 from ebu_tt_live.errors import UnexpectedSequenceIdentifierError
-from ebu_tt_live.bindings import CreateFromDocument, tt_type
+from ebu_tt_live.bindings import CreateFromDocument, tt_type, tt1_tt_type
 import six
 import logging
 
@@ -19,6 +19,7 @@ class XMLtoEBUTT3Adapter(IDocumentDataAdapter):
     _provides = EBUTT3Document
 
     def convert_data(self, data, availability_time=None, sequence_identifier=None, **kwargs):
+        EBUTT3Document.load_types_for_document()
         binding_inst = CreateFromDocument(xml_text=data)
         if isinstance(binding_inst, tt_type):
             doc = EBUTT3Document.create_from_raw_binding(
@@ -51,8 +52,9 @@ class XMLtoEBUTT1Adapter(IDocumentDataAdapter):
     _provides = EBUTT1Document
 
     def convert_data(self, data, availability_time=None, sequence_identifier=None, **kwargs):
+        EBUTT1Document.load_types_for_document()
         binding_inst = CreateFromDocument(xml_text=data)
-        if isinstance(binding_inst, tt_type):
+        if isinstance(binding_inst, tt1_tt_type):
             doc = EBUTT1Document.create_from_raw_binding(
                 binding_inst
             )

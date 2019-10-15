@@ -1,8 +1,6 @@
-from datetime import timedelta
-
-from ebu_tt_live.documents import SubtitleDocument
 from ebu_tt_live import bindings
 from ebu_tt_live.bindings import _ebuttlm as ebuttlm
+from ebu_tt_live.documents import SubtitleDocument
 
 
 class EBUTT1ObjectBase(object):
@@ -46,6 +44,7 @@ class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTT1ObjectBase):
         raise NotImplementedError()
 
     def __init__(self):
+        self.load_types_for_document()
         self._ebutt1_content = bindings.tt()
         self.validate()
 
@@ -59,6 +58,7 @@ class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTT1ObjectBase):
 
     @classmethod
     def create_from_raw_binding(cls, binding):
+        cls.load_types_for_document()
         instance = cls.__new__(cls)
         instance._ebutt1_content = binding
         instance.validate()
@@ -66,8 +66,13 @@ class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTT1ObjectBase):
 
     @classmethod
     def create_from_xml(cls, xml):
+        cls.load_types_for_document()
         instance = cls.create_from_raw_binding(binding=bindings.CreateFromDocument(xml_text=xml))
         return instance
+
+    @classmethod
+    def load_types_for_document(cls):
+        bindings.load_types_for_document('ebutt1')
 
     @property
     def lang(self):
@@ -102,4 +107,3 @@ class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTT1ObjectBase):
 
     def get_element_by_id(self, elem_id, elem_type=None):
         return self.binding.get_element_by_id(elem_id=elem_id, elem_type=elem_type)
-

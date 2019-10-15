@@ -1,4 +1,5 @@
 from .base import SubtitleDocument, TimeBase, DocumentSequence
+from .ebutt1 import EBUTT1Document, EBUTT1ObjectBase
 from .ebutt3 import EBUTT3Document, EBUTT3DocumentSequence, EBUTTAuthorsGroupControlRequest, EBUTT3ObjectBase, \
     EBUTTLiveMessage
 from .ebuttd import EBUTTDDocument

@@ -21,7 +21,7 @@ from ebu_tt_live.errors import SemanticValidationError, OutsideSegmentError
 from ebu_tt_live.strings import ERR_SEMANTIC_VALIDATION_MISSING_ATTRIBUTES, \
     ERR_SEMANTIC_VALIDATION_INVALID_ATTRIBUTES, ERR_SEMANTIC_STYLE_CIRCLE, ERR_SEMANTIC_STYLE_MISSING, \
     ERR_SEMANTIC_ELEMENT_BY_ID_MISSING, ERR_SEMANTIC_VALIDATION_EXPECTED
-from pyxb.exceptions_ import SimpleTypeValueError
+from pyxb.exceptions_ import MissingAttributeError, SimpleTypeValueError, UnrecognizedAttributeError
 from pyxb.utils.domutils import BindingDOMSupport
 from pyxb.binding.basis import ElementContent, NonElementContent
 from datetime import timedelta
@@ -631,6 +631,15 @@ class tt_type(SemanticDocumentMixin, raw.tt_type):
         # Save this for id lookup.
         self._elements_by_id = dataset['elements_by_id']
 
+    def _validateBinding_vx(self):
+        # sequenceIdentifier and sequenceNumber are marked optional in the XSD, but are required in EBU-TT-3
+        if not self.sequenceIdentifier:
+            raise MissingAttributeError(type(self), 'sequenceIdentifier')
+        if not self.sequenceNumber:
+            raise MissingAttributeError(type(self), 'sequenceNumber')
+
+        super(tt_type, self)._validateBinding_vx()
+
     def get_element_by_id(self, elem_id, elem_type=None):
         """
         Lookup an element and return it. Optionally type is checked as well.
@@ -653,7 +662,6 @@ class tt_type(SemanticDocumentMixin, raw.tt_type):
         if self.timeBase == 'smpte':
             return ebuttdt.SMPTETimingType(timedelta_in)
 
-raw.tt_type._SetSupersedingClass(tt_type)
 
 
 # Head classes
@@ -1198,3 +1206,34 @@ class d_style_type(raw.d_style_type):
         return instance
 
 raw.d_style_type._SetSupersedingClass(d_style_type)
+
+
+# EBU TT 1 classes
+# ================
+
+class tt1_tt_type(tt_type):
+
+    def _validateBinding_vx(self):
+        if self.sequenceIdentifier:
+            raise UnrecognizedAttributeError(type(self), 'sequenceIdentifier')
+        if self.sequenceNumber:
+            raise UnrecognizedAttributeError(type(self), 'sequenceNumber')
+
+        super(tt_type, self)._validateBinding_vx()
+
+
+_document_specific_types = {
+    'ebutt1': {
+        raw.tt_type: tt1_tt_type
+    },
+    'ebutt3': {
+        raw.tt_type: tt_type
+    },
+}
+
+
+def load_types_for_document(doc_type):
+    if doc_type not in _document_specific_types:
+        raise KeyError('Invalid parameter. Valid types are %s' % _document_specific_types.keys())
+    for raw_type, superseding_type in _document_specific_types[doc_type].items():
+        raw_type._SetSupersedingClass(superseding_type)

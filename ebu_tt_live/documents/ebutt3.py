@@ -282,6 +282,7 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
 
     def __init__(self, time_base, sequence_number, sequence_identifier, lang, clock_mode=None,
                  availability_time=None, authors_group_identifier=None):
+        self.load_types_for_document()
         if not clock_mode and time_base is TimeBase.CLOCK:
             clock_mode = 'local'
         self._ebutt3_content = bindings.tt(
@@ -305,6 +306,7 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
 
     @classmethod
     def create_from_raw_binding(cls, binding, availability_time=None):
+        cls.load_types_for_document()
         instance = cls.__new__(cls)
         instance._ebutt3_content = binding
         if availability_time is not None:
@@ -314,6 +316,7 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
 
     @classmethod
     def create_from_xml(cls, xml, availability_time=None):
+        cls.load_types_for_document()
         instance = cls.create_from_raw_binding(
             binding=bindings.CreateFromDocument(
                 xml_text=xml
@@ -321,6 +324,10 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
             availability_time=availability_time
         )
         return instance
+
+    @classmethod
+    def load_types_for_document(cls):
+        bindings.load_types_for_document('ebutt3')
 
     def _cmp_key(self):
         return self.sequence_number
