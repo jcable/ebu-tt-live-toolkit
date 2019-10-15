@@ -83,10 +83,7 @@ def no_duplicate_styles(test_context, style_name):
     document = test_context['ebuttd_document']
     tree = ET.fromstring(document.get_xml())
     elements = tree.findall('{http://www.w3.org/ns/ttml}head/{http://www.w3.org/ns/ttml}styling/{http://www.w3.org/ns/ttml}style')
-    print(len(elements))
     for element in elements:
-        print("element")
-        print(element.get("{http://www.w3.org/XML/1998/namespace}id"))
         assert element.get("{http://www.w3.org/XML/1998/namespace}id") != style_name
 
 
@@ -97,10 +94,7 @@ def percentage_size_for_nested_styles(test_context, style_name, size_style):
     elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div/{http://www.w3.org/ns/ttml}p/{http://www.w3.org/ns/ttml}span')
     for element in elements:
         styles = element.get("style").split(" ")
-        print(styles)
         if style_name in styles:
-            print(style_name)
-            print(size_style)
             assert size_style in styles
 
 @when(parsers.parse('it contains a div with id "{div_id}"'))

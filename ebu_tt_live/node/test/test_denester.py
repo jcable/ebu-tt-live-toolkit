@@ -3,6 +3,7 @@ from ebu_tt_live.documents.ebutt3 import EBUTT3Document
 from ebu_tt_live.node.denester import Denester
 from ebu_tt_live.bindings import div_type, p_type, span_type, style_type
 from ebu_tt_live.bindings._ebuttm import divMetadata_type
+from ebu_tt_live.bindings._ebuttdt import FullClockTimingType
 import re
 from datetime import timedelta
 
@@ -143,28 +144,24 @@ class TestNester(TestCase):
             "region": None,
             "metadata": divMetadata_type(facet=[]),
             "lang": "fr",
-            "begin": "00:00:11",
-            "end": "00:00:15"
+            "begin": FullClockTimingType("00:00:11"),
+            "end": FullClockTimingType("00:00:15")
         }
         parent_attr = {
             "styles": ["S2"],
             "lang": "fr",
             "region": None,
             "metadata": divMetadata_type(facet=[]),
-            "begin": "00:00:10",
-            "end": "00:00:20"
+            "begin": FullClockTimingType("00:00:10"),
+            "end": FullClockTimingType("00:00:20")
         }
         actual_div = self.actual_doc.binding.body.div[0].div[0]
         actual_divs_attr = Denester.merge_attr(parent_attr,Denester.div_attr(actual_div))
-        (h, m, s) = actual_divs_attr["begin"].split(':')
-        actual_begin_time = timedelta(hours=int(h), minutes=int(m), seconds=int(s))
-        (h, m, s) = expected_div_attr["begin"].split(':')
-        expected_begin_time = timedelta(hours=int(h), minutes=int(m), seconds=int(s))
+        actual_begin_time = actual_divs_attr["begin"]
+        expected_begin_time = expected_div_attr["begin"].timedelta
         assert expected_begin_time == actual_begin_time
-        (h, m, s) = actual_divs_attr["end"].split(':')
-        actual_end_time = timedelta(hours=int(h), minutes=int(m), seconds=int(s))
-        (h, m, s) = expected_div_attr["end"].split(':')
-        expected_end_time = timedelta(hours=int(h), minutes=int(m), seconds=int(s))
+        actual_end_time = actual_divs_attr["end"]
+        expected_end_time = expected_div_attr["end"].timedelta
         assert expected_begin_time == actual_begin_time
         assert expected_end_time == actual_end_time
     
@@ -174,28 +171,24 @@ class TestNester(TestCase):
             "region": None,
             "metadata": divMetadata_type(facet=[]),
             "lang": "fr",
-            "begin": "00:00:11",
-            "end": "00:00:15"
+            "begin": FullClockTimingType("00:00:11"),
+            "end": FullClockTimingType("00:00:15")
         }
         parent_attr = {
             "styles": ["S2"],
             "lang": "fr",
             "region": None,
             "metadata": divMetadata_type(facet=[]),
-            "begin": "00:00:10",
+            "begin": FullClockTimingType("00:00:10"),
             "end": None
         }
         actual_div = self.actual_doc.binding.body.div[0].div[0]
         actual_divs_attr = Denester.merge_attr(parent_attr,Denester.div_attr(actual_div))
-        (h, m, s) = actual_divs_attr["begin"].split(':')
-        actual_begin_time = timedelta(hours=int(h), minutes=int(m), seconds=int(s))
-        (h, m, s) = expected_div_attr["begin"].split(':')
-        expected_begin_time = timedelta(hours=int(h), minutes=int(m), seconds=int(s))
+        actual_begin_time = actual_divs_attr["begin"]
+        expected_begin_time = expected_div_attr["begin"].timedelta
         assert expected_begin_time == actual_begin_time
-        (h, m, s) = actual_divs_attr["end"].split(':')
-        actual_end_time = timedelta(hours=int(h), minutes=int(m), seconds=int(s))
-        (h, m, s) = expected_div_attr["end"].split(':')
-        expected_end_time = timedelta(hours=int(h), minutes=int(m), seconds=int(s))
+        actual_end_time = actual_divs_attr["end"]
+        expected_end_time = expected_div_attr["end"].timedelta
         assert expected_begin_time == actual_begin_time
         assert expected_end_time == actual_end_time
 
