@@ -918,7 +918,6 @@ class div_type(ContentContainerMixin, IDMixin, RegionedElementMixin, LiveStyledE
         self._semantic_collect_applicable_styles(
             dataset=dataset, style_type=style_type, parent_binding=parent_binding, defer_font_size=True
         )
-        self._semantic_collect_applicable_divs( dataset=dataset,  parent_binding=parent_binding, div_type=self)
         self._semantic_push_styles(dataset=dataset)
 
     def _semantic_after_traversal(self, dataset, element_content=None, parent_binding=None):

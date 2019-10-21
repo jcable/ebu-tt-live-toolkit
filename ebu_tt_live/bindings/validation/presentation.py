@@ -40,9 +40,6 @@ class StyledElementMixin(object):
     _specified_style = None
     _computed_style = None
 
-    def _semantic_collect_applicable_divs(self, dataset, parent_binding,div_type):
-       self._referenced_div = self
-
     def _semantic_collect_applicable_styles(self, dataset, style_type, parent_binding, defer_font_size=False,
                                             extra_referenced_styles=None):
         """
