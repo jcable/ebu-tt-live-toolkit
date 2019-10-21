@@ -224,6 +224,18 @@ def when_span2_begin(span3_begin, template_dict):
 def when_span3_end(span3_end, template_dict):
     template_dict['span3_end'] = span3_end
 
+@when('it has div_region <div_region>')
+def when_div_region(div_region, template_dict):
+    template_dict['div_region'] = div_region
+
+@when('it has p1_region <p1_region>')
+def when_p1_region(p1_region, template_dict):
+    template_dict['p1_region'] = p1_region
+
+@when('it has p2_region <p2_region>')
+def when_p2_region(p2_region, template_dict):
+    template_dict['p2_region'] = p2_region
+
 @then('it has computed end time <computed_end>')
 def valid_computed_end_time(computed_end, gen_document):
     if computed_end:

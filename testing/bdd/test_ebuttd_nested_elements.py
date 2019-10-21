@@ -3,46 +3,38 @@ from pytest_bdd import scenarios, given, when, then, parsers
 
 scenarios('features/nesting/ebuttd_nested_elements.feature')
 
-@then('the p does not have a region attribute')
+@then('p elements do not have a region')
 def then_p_has_no_region(test_context):
     document = test_context['ebuttd_document']
     tree = ET.fromstring(document.get_xml())
     elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div')
+    for element in elements:
+        for item in list(element):
+            if item.tag == "{http://www.w3.org/ns/ttml}p":
+                assert item.get("region") == None
 
-    assert elements[0].get("region") == "R1"
-    assert elements[0][0].get("region") == None
 
-    assert len(elements) == 3
-
-@then('the p has been removed from the div')
+@then('there is one div containing one p')
 def then_p_has_been_removed(test_context):
     document = test_context['ebuttd_document']
     tree = ET.fromstring(document.get_xml())
     elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div')
+    assert len(elements) == 1
+    assert len(elements[0]) == 1
+    assert elements[0][0].tag == "{http://www.w3.org/ns/ttml}p"
 
-    assert elements[1].get("region") == "R2"
-    assert elements[1][0].get("region") == None
-
-    assert len(elements[1]) == 1
-
-@then('the div and p regions remain the same')
-def then_div_and_p_remain_same(test_context):
-    document = test_context['ebuttd_document']
-    tree = ET.fromstring(document.get_xml())
-    elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div')
-
-    assert elements[2].get("region") == "R4"
-    assert elements[2][0].get("region") == None
-
-    assert len(elements[1]) == 1
-
-@then('divs with no p elements are removed')
+@then('all divs contain at least one p element')
 def then_it_contains_no_divs(test_context):
     document = test_context['ebuttd_document']
     tree = ET.fromstring(document.get_xml())
-    elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div')
+    elements = tree.findall('{http://www.w3.org/ns/ttml}body//{http://www.w3.org/ns/ttml}div')
     for element in elements:
         assert len(list(element)) != 0
+        p_count = 0
+        for p in list(element):
+            if p.tag == "{http://www.w3.org/ns/ttml}p":
+                p_count += 1
+        assert p_count > 0
 
 @then('no div contains any other divs')
 def then_div_contains_no_divs(test_context):
@@ -57,19 +49,10 @@ def then_div_contains_no_divs(test_context):
 def then_span_contains_no_spans(test_context):
     document = test_context['ebuttd_document']
     tree = ET.fromstring(document.get_xml())
-    elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div')
-    elements_2 = []
-    elements_3 = []
+    elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div/{http://www.w3.org/ns/ttml}p/{http://www.w3.org/ns/ttml}span')
     for element in elements:
-            elements_2 += tree.findall('{http://www.w3.org/ns/ttml}p')
-    for element in elements_2:
-            elements_3 += tree.findall('{http://www.w3.org/ns/ttml}span')
-
-
-    for element in elements_3:
-        for child in list(element): 
-            assert child.tag != "{http://www.w3.org/ns/ttml}span"
-    pass
+        for tmp in list(element):
+            assert tmp.tag != "{http://www.w3.org/ns/ttml}span"
 
 @then('the second span\'s style is outerinnerYellow')
 def combine_span_styles(test_context):

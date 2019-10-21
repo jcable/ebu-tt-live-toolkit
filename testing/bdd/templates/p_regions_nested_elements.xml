@@ -17,9 +17,6 @@
     <tt:metadata>
       <ebuttm:documentMetadata/>
     </tt:metadata>
-    <tt:styling>
-      <tt:style xml:id="S1" tts:fontSize="1c 2c" ebutts:linePadding="1c" tts:lineHeight="2c" tts:textAlign="center"/>
-    </tt:styling>
     <tt:layout>
         <tt:region xml:id="R1" tts:origin="14% 60%" tts:extent="71.25% 24%" />
         <tt:region xml:id="R2" tts:origin="14% 60%" tts:extent="71.25% 24%" />
@@ -29,32 +26,25 @@
       </tt:layout>
   </tt:head>
   <tt:body begin="123ms" dur="00:00:05">
-    <tt:div xml:id="d1" style="S1" region="R1" >
-      <tt:p xml:id="p1" region="R1">
-        <tt:span>text</tt:span>
-      </tt:p>
-    </tt:div>
+    <tt:div xml:id="D1"
+    {% if div_region != "*empty?*" %}
+    region="{{ div_region }}"
+    {% endif %}
+    >
 
-    <tt:div xml:id="d2" style="S1" xml:lang="en-GB" region="R2" >
-      <tt:p xml:id="p2" region="R3">
-        <tt:span>text</tt:span>
+      <tt:p xml:id="P1"
+      {% if p1_region != "*empty?*" %}
+      region="{{ p1_region }}"
+      {% endif %}
+      >
+      hello
       </tt:p>
-      <tt:p xml:id="p3" region="R2">
-        <tt:span>text</tt:span>
-      </tt:p>
-    </tt:div>
 
-    <tt:div xml:id="d3" style="S1" xml:lang="en-GB" region="R4" >
-      <tt:p xml:id="p4">
-        <tt:span>text</tt:span>
+      {% if p2_region %}
+      <tt:p xml:id="P2" region="{{ p2_region }}" >
+      hello2
       </tt:p>
+      {% endif %}
     </tt:div>
-
-    <tt:div xml:id="d4" style="S1" xml:lang="en-GB" region="R5" >
-      <tt:p xml:id="p5" region="R4">
-        <tt:span>text</tt:span>
-      </tt:p>
-    </tt:div>
-
   </tt:body>
 </tt:tt>

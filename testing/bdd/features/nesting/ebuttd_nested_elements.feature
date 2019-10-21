@@ -6,11 +6,11 @@ Feature: Merging nested elements
         When the document is generated
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
-        And divs with no p elements are removed
+        And all divs contain at least one p element
 
         Examples:
-            | xml_file                              |
-            | nested_elements_hardcoded_no_divs.xml |
+            | xml_file                      |
+            | nested_elements_hardcoded.xml |
 
     Scenario: No div should contain any other divs
         Given an xml file <xml_file>
@@ -25,36 +25,30 @@ Feature: Merging nested elements
 
     Scenario: When the P region matches the div region, remove p region
         Given an xml file <xml_file>
-        When the document is generated
+        When it has div_region <div_region>
+        And it has p1_region <p1_region>
+        And the document is generated
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
-        And the p does not have a region attribute
+        And p elements do not have a region
 
         Examples:
-            | xml_file                                |
-            | p_regions_nested_elements_hardcoded.xml |
+            | xml_file                      | div_region | p1_region |
+            | p_regions_nested_elements.xml | R1         | R1        |
 
     Scenario: When the P region does not match the div region, remove p
         Given an xml file <xml_file>
+        When it has div_region <div_region>
+        And it has p1_region <p1_region>
+        And it has p2_region <p2_region>
         When the document is generated
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
-        And the p has been removed from the div
+        And there is one div containing one p
 
         Examples:
-            | xml_file                                |
-            | p_regions_nested_elements_hardcoded.xml |
-
-    Scenario: When the div has a Region but the P does not, change nothing
-        Given an xml file <xml_file>
-        When the document is generated
-        And the EBU-TT-Live document is converted to EBU-TT-D
-        Then EBUTTD document is valid
-        And the div and p regions remain the same
-
-        Examples:
-            | xml_file                                |
-            | p_regions_nested_elements_hardcoded.xml |
+            | xml_file                      | div_region | p1_region | p2_region |
+            | p_regions_nested_elements.xml | R1         | R1        | R2        |
 
     Scenario: No span should contain any other span
         Given an xml file <xml_file>
