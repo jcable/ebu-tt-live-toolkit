@@ -127,10 +127,14 @@ def gen_second_document(test_context, template_dict, template_file_two):
 def gen_second_document_fixture(test_context, template_dict, template_file_two):
     return gen_second_document(test_context, template_dict, template_file_two)
 
+@when('the EBU-TT-Live document is denested')
+def convert_to_ebuttd(test_context):
+    test_context["document"] = Denester.denest(test_context["document"])
+
 @when('the EBU-TT-Live document is converted to EBU-TT-D')
 def convert_to_ebuttd(test_context):
     ebuttd_converter = EBUTT3EBUTTDConverter(None)
-    doc_xml = Denester.denest(test_context["document"]).get_xml()
+    doc_xml = test_context["document"].get_xml()
     ebutt3_doc = EBUTT3Document.create_from_xml(doc_xml)
     converted_bindings = ebuttd_converter.convert_document(ebutt3_doc.binding)
     ebuttd_document = EBUTTDDocument.create_from_raw_binding(converted_bindings)

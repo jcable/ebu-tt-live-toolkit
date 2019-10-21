@@ -15,6 +15,7 @@ Feature: EBU-TT-D origin and extent conversion
         And region "r1" has attribute "extent" set to "14c 4c"
         And it contains some text with region "r1"
         When the document is generated
+        And the EBU-TT-Live document is denested
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then the ebu_tt_d document contains region "r1" with attribute "origin" set to "31.25% 66.67%"
         And the ebu_tt_d document contains region "r1" with attribute "extent" set to "43.75% 26.67%"
@@ -27,6 +28,7 @@ Feature: EBU-TT-D origin and extent conversion
         And region "r1" has attribute "extent" set to "220px 100px"
         And it contains some text with region "r1"
         When the document is generated
+        And the EBU-TT-Live document is denested
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then the ebu_tt_d document contains region "r1" with attribute "origin" set to "31.25% 75.0%"
         And the ebu_tt_d document contains region "r1" with attribute "extent" set to "34.38% 20.83%"

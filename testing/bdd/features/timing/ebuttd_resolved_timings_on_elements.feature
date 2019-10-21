@@ -12,6 +12,7 @@ Feature: Resolving timings on elements
     And   it has span1 begin time <span1_begin>
     And   it has span1 end time <span1_end>
     When  the document is generated
+    And   the EBU-TT-Live document is denested
     And   the EBU-TT-Live document is converted to EBU-TT-D
     Then  EBUTTD document is valid
     And   span1 resulted begin time is <span1_resulted_begin_time>
@@ -34,6 +35,7 @@ Feature: Resolving timings on elements
     And   it has nestedSpan begin time <nestedSpan_begin>
     And   it has nestedSpan end time <nestedSpan_end>
     When  the document is generated
+    And   the EBU-TT-Live document is denested
     And   the EBU-TT-Live document is converted to EBU-TT-D
     Then  EBUTTD document is valid
     And   span1 resulted begin time is <span1_resulted_begin_time>
@@ -60,6 +62,7 @@ Feature: Resolving timings on elements
     And   it has span1 begin time <span1_begin>
     And   it has span1 end time <span1_end>
     When  the document is generated
+    And   the EBU-TT-Live document is denested
     And   the EBU-TT-Live document is converted to EBU-TT-D
     Then  EBUTTD document is valid
     And   span1 resulted begin time is <span1_resulted_begin_time>
@@ -84,6 +87,7 @@ Feature: Resolving timings on elements
     And   it has p begin time <p_begin>
     And   it has p end time <p_end>
     When  the document is generated
+    And   the EBU-TT-Live document is denested
     And   the EBU-TT-Live document is converted to EBU-TT-D
     Then  p resulted begin time is <p_resulted_begin_time>
     And   p resulted end time is <p_resulted_end_time>
