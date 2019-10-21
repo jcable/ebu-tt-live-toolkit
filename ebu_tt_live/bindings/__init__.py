@@ -21,7 +21,8 @@ from ebu_tt_live.errors import SemanticValidationError, OutsideSegmentError
 from ebu_tt_live.strings import ERR_SEMANTIC_VALIDATION_MISSING_ATTRIBUTES, \
     ERR_SEMANTIC_VALIDATION_INVALID_ATTRIBUTES, ERR_SEMANTIC_STYLE_CIRCLE, ERR_SEMANTIC_STYLE_MISSING, \
     ERR_SEMANTIC_ELEMENT_BY_ID_MISSING, ERR_SEMANTIC_VALIDATION_EXPECTED
-from pyxb.exceptions_ import MissingAttributeError, SimpleTypeValueError, UnrecognizedAttributeError
+from pyxb.exceptions_ import IncompleteElementContentError, MissingAttributeError, SimpleTypeValueError, \
+    UnrecognizedAttributeError
 from pyxb.utils.domutils import BindingDOMSupport
 from pyxb.binding.basis import ElementContent, NonElementContent
 from datetime import timedelta
@@ -1222,12 +1223,25 @@ class tt1_tt_type(tt_type):
         super(tt_type, self)._validateBinding_vx()
 
 
+class tt1_head_type(SemanticValidationMixin, raw.head_type):
+
+    def _validateBinding_vx(self):
+        # EBU-TT-1 documents require styling and layout elements
+        if self.styling is None:
+            raise IncompleteElementContentError(self, None, None, None)
+        if self.layout is None:
+            raise IncompleteElementContentError(self, None, None, None)
+        return super()._validateBinding_vx()
+
+
 _document_specific_types = {
     'ebutt1': {
-        raw.tt_type: tt1_tt_type
+        raw.tt_type: tt1_tt_type,
+        raw.head_type: tt1_head_type,
     },
     'ebutt3': {
-        raw.tt_type: tt_type
+        raw.tt_type: tt_type,
+        raw.head_type: head_type,
     },
 }
 
