@@ -678,8 +678,6 @@ class head_type(SemanticValidationMixin, raw.head_type):
     def merge(self, other_elem, dataset):
         return self
 
-raw.head_type._SetSupersedingClass(head_type)
-
 
 # Body classes
 # ============
@@ -1109,7 +1107,6 @@ class layout(SemanticValidationMixin, raw.layout):
         return self
 
 
-raw.layout._SetSupersedingClass(layout)
 
 # EBU TT D classes
 # ================
@@ -1234,14 +1231,24 @@ class tt1_head_type(SemanticValidationMixin, raw.head_type):
         return super()._validateBinding_vx()
 
 
+class tt1_layout_type(layout):
+
+    def _validateBinding_vx(self):
+        if len(self.region) == 0:
+            raise IncompleteElementContentError(self, None, None, None)
+        return super()._validateBinding_vx()
+
+
 _document_specific_types = {
     'ebutt1': {
         raw.tt_type: tt1_tt_type,
         raw.head_type: tt1_head_type,
+        raw.layout: tt1_layout_type,
     },
     'ebutt3': {
         raw.tt_type: tt_type,
         raw.head_type: head_type,
+        raw.layout: layout,
     },
 }
 

@@ -19,7 +19,7 @@
 {% endif %}
 {% if layout %}
     <tt:layout>
-      <tt:region xml:id="R1" tts:extent="50% 10%" tts:origin="25% 70%"/>
+      {% if region %}<tt:region xml:id="R1" tts:extent="50% 10%" tts:origin="25% 70%"/>{% endif %}
     </tt:layout>
 {% endif %}
   </tt:head>
