@@ -12,16 +12,20 @@
     <tt:metadata>
       <ebuttm:documentMetadata/>
     </tt:metadata>
-{% if styling %}
+    {% if styling %}
     <tt:styling>
+      {% if style %}
       <tt:style xml:id="ID001"/>
+      {% endif %}
     </tt:styling>
-{% endif %}
-{% if layout %}
+    {% endif %}
+    {% if layout %}
     <tt:layout>
-      {% if region %}<tt:region xml:id="R1" tts:extent="50% 10%" tts:origin="25% 70%"/>{% endif %}
+      {% if region %}
+      <tt:region xml:id="R1" tts:extent="50% 10%" tts:origin="25% 70%"/>
+      {% endif %}
     </tt:layout>
-{% endif %}
+    {% endif %}
   </tt:head>
   <tt:body begin="500ms" dur="00:00:05">
     <tt:div>
