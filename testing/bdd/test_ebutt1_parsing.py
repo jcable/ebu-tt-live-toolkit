@@ -16,6 +16,12 @@ def when_document_body_contains_attribute(template_dict, attribute):
     template_dict[attribute] = True
 
 
+@when('the document contains an ebuttp attribute <attribute>')
+def when_document_contains_ebuttp_attribute(template_dict, attribute):
+    template_dict['ebuttp'] = True
+    template_dict[attribute] = True
+
+
 @when('the XML is parsed as an EBU-TT-1 document')
 def when_document_parsed_ebutt1(test_context, template_file, template_dict):
     xml_text = template_file.render(template_dict)

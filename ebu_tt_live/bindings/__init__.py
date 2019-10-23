@@ -1209,6 +1209,12 @@ raw.d_style_type._SetSupersedingClass(d_style_type)
 class tt1_tt_type(tt_type):
 
     def _validateBinding_vx(self):
+        if self.authorsGroupControlToken:
+            raise UnrecognizedAttributeError(type(self), 'authorsGroupControlToken')
+        if self.authorsGroupIdentifier:
+            raise UnrecognizedAttributeError(type(self), 'authorsGroupIdentifier')
+        if self.referenceClockIdentifier:
+            raise UnrecognizedAttributeError(type(self), 'referenceClockIdentifier')
         if self.sequenceIdentifier:
             raise UnrecognizedAttributeError(type(self), 'sequenceIdentifier')
         if self.sequenceNumber:

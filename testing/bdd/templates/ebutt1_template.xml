@@ -2,8 +2,14 @@
 <tt:tt
         ttp:clockMode="local"
         ttp:timeBase="clock"
+        {% if authorsGroupControlToken %} ebuttp:authorsGroupControlToken="1" {% endif %}
+        {% if authorsGroupIdentifier %} ebuttp:authorsGroupIdentifier="group" {% endif %}
+        {% if referenceClockIdentifier %} ebuttp:referenceClockIdentifier="uri://clock" {% endif %}
+        {% if sequenceIdentifier %} ebuttp:sequenceIdentifier="TestSequence" {% endif %}
+        {% if sequenceNumber %} ebuttp:sequenceNumber="1" {% endif %}
         xml:lang="en-GB"
         xmlns:ebuttm="urn:ebu:tt:metadata"
+        {% if ebuttp %} xmlns:ebuttp="urn:ebu:tt:parameters" {% endif %}
         xmlns:tt="http://www.w3.org/ns/ttml"
         xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
         xmlns:tts="http://www.w3.org/ns/ttml#styling"

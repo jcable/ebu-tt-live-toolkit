@@ -46,3 +46,20 @@ Feature: Parsing EBU-TT Part 1 files
     And the document contains a "region" element
     And the document body contains a "dur" attribute
     Then the document fails to parse as an EBU-TT-1 document because of an UnrecognizedAttributeError
+
+  Scenario: tt elements with a ebuttp attributes are not allowed
+    Given an xml file <xml_file>
+    When the document contains a "styling" element
+    And the document contains a "style" element
+    And the document contains a "layout" element
+    And the document contains a "region" element
+    And the document contains an ebuttp attribute <attribute>
+    Then the document fails to parse as an EBU-TT-1 document because of an UnrecognizedAttributeError
+
+    Examples:
+      | attribute                |
+      | authorsGroupControlToken |
+      | authorsGroupIdentifier   |
+      | referenceClockIdentifier |
+      | sequenceIdentifier       |
+      | sequenceNumber           |
