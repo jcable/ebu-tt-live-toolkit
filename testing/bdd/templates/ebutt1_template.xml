@@ -27,7 +27,7 @@
     </tt:layout>
     {% endif %}
   </tt:head>
-  <tt:body begin="500ms" dur="00:00:05">
+  <tt:body begin="500ms" {% if dur %} dur="00:00:05" {% endif %}>
     <tt:div>
       <tt:p begin="500ms" end="3420ms" xml:id="ID005">
         <tt:span>Some example text...</tt:span>

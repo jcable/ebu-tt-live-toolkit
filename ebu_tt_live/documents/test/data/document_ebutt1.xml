@@ -19,7 +19,7 @@
       <tt:region xml:id="R1" tts:extent="50% 10%" tts:origin="25% 70%"/>
     </tt:layout>
   </tt:head>
-  <tt:body begin="500ms" dur="00:00:05">
+  <tt:body begin="500ms">
     <tt:div>
       <tt:p begin="500ms" end="3420ms" xml:id="ID005">
         <tt:span>Some example text...</tt:span>

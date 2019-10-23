@@ -1,7 +1,7 @@
 import pytest
 from pytest_bdd import parsers, scenarios, when, then
 from ebu_tt_live.documents import EBUTT1Document
-from pyxb.exceptions_ import IncompleteElementContentError
+from pyxb.exceptions_ import IncompleteElementContentError, UnrecognizedAttributeError
 
 scenarios('features/ebutt1/ebutt1_validity.feature')
 
@@ -9,6 +9,11 @@ scenarios('features/ebutt1/ebutt1_validity.feature')
 @when(parsers.parse('the document contains a "{element}" element'))
 def when_document_contains_element(template_dict, element):
     template_dict[element] = True
+
+
+@when(parsers.parse('the document body contains a "{attribute}" attribute'))
+def when_document_body_contains_attribute(template_dict, attribute):
+    template_dict[attribute] = True
 
 
 @when('the XML is parsed as an EBU-TT-1 document')
@@ -20,9 +25,18 @@ def when_document_parsed_ebutt1(test_context, template_file, template_dict):
 
 
 @then('the document fails to parse as an EBU-TT-1 document because of an IncompleteElementContentError')
-def then_document_fails_ebutt1(template_file, template_dict):
+def then_document_fails_ebutt1_element(template_file, template_dict):
     xml_text = template_file.render(template_dict)
+    print(xml_text)
     with pytest.raises(IncompleteElementContentError):
+        EBUTT1Document.create_from_xml(xml_text)
+
+
+@then('the document fails to parse as an EBU-TT-1 document because of an UnrecognizedAttributeError')
+def then_document_fails_ebutt1_attribute(template_file, template_dict):
+    xml_text = template_file.render(template_dict)
+    print(xml_text)
+    with pytest.raises(UnrecognizedAttributeError):
         EBUTT1Document.create_from_xml(xml_text)
 
 

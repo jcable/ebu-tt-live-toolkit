@@ -1003,9 +1003,6 @@ class body_type(LiveStyledElementMixin, BodyTimingValidationMixin, SemanticValid
         self._semantic_copy_verify_referenced_styles(dataset=dataset)
 
 
-raw.body_type._SetSupersedingClass(body_type)
-
-
 class styling(SemanticValidationMixin, raw.styling):
 
     def __copy__(self):
@@ -1239,16 +1236,26 @@ class tt1_layout_type(layout):
         return super()._validateBinding_vx()
 
 
+class tt1_body_type(body_type):
+
+    def _validateBinding_vx(self):
+        if self.dur:
+            raise UnrecognizedAttributeError(type(self), 'dur')
+        return super()._validateBinding_vx()
+
+
 _document_specific_types = {
     'ebutt1': {
         raw.tt_type: tt1_tt_type,
         raw.head_type: tt1_head_type,
         raw.layout: tt1_layout_type,
+        raw.body_type: tt1_body_type,
     },
     'ebutt3': {
         raw.tt_type: tt_type,
         raw.head_type: head_type,
         raw.layout: layout,
+        raw.body_type: body_type,
     },
 }
 
