@@ -1,7 +1,17 @@
 <?xml version="1.0" ?>
 <tt:tt
-        ttp:clockMode="local"
-        ttp:timeBase="clock"
+        {% if timeBase %}
+          ttp:timeBase="{{timeBase}}"
+          {% if timeBase == 'smpte' %}
+            ttp:frameRate="25"
+            ttp:dropMode="nonDrop"
+            ttp:markerMode="continuous"
+          {% elif timeBase == 'clock' %}
+            ttp:clockMode="local"
+          {% endif %}
+        {% else %}
+          ttp:timeBase="media"
+        {% endif %}
         {% if authorsGroupControlToken %} ebuttp:authorsGroupControlToken="1" {% endif %}
         {% if authorsGroupIdentifier %} ebuttp:authorsGroupIdentifier="group" {% endif %}
         {% if referenceClockIdentifier %} ebuttp:referenceClockIdentifier="uri://clock" {% endif %}
@@ -33,9 +43,9 @@
     </tt:layout>
     {% endif %}
   </tt:head>
-  <tt:body begin="500ms" {% if dur %} dur="00:00:05" {% endif %}>
+  <tt:body {% if dur %} dur="00:00:05" {% endif %}>
     <tt:div>
-      <tt:p begin="500ms" end="3420ms" xml:id="ID005">
+      <tt:p begin="{% if timeBase == 'smpte' %}00:00:00:12{% else %}500ms{% endif %}" end="{% if timeBase == 'smpte' %}00:00:03:12{% else %}3420ms{% endif %}" xml:id="ID005">
         <tt:span>Some example text...</tt:span>
         <tt:br/>
         <tt:span>And another line</tt:span>

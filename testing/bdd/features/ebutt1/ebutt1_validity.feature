@@ -63,3 +63,19 @@ Feature: Parsing EBU-TT Part 1 files
       | referenceClockIdentifier |
       | sequenceIdentifier       |
       | sequenceNumber           |
+
+  Scenario: EBU-TT-1 permitted timebases
+    Given an xml file <xml_file>
+    When the document contains a "styling" element
+    And the document contains a "style" element
+    And the document contains a "layout" element
+    And the document contains a "region" element
+    And the document's timeBase is set to <timebase>
+    When the XML is parsed as an EBU-TT-1 document
+    Then the EBU-TT-1 document is valid
+
+    Examples:
+      | timebase |
+      | media    |
+      | clock    |
+      | smpte    |
