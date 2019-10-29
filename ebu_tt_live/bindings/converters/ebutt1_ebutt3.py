@@ -1,6 +1,7 @@
 import copy
 import logging
 
+from pyxb.binding import datatypes
 from pyxb.binding.basis import ElementContent, NonElementContent
 
 from ebu_tt_live.bindings import (body_type, head_type, layout,
@@ -29,6 +30,8 @@ class EBUTT1EBUTT3Converter(object):
             return self.convert_unchanged
         elif isinstance(in_element, tt1_layout_type):
             return self.convert_layout
+        elif isinstance(in_element, datatypes.string):
+            return self.convert_unchanged
         else:
             log.warn('Type %s being ignored' % type(in_element))
             return self.convert_unknown
@@ -63,6 +66,17 @@ class EBUTT1EBUTT3Converter(object):
 
     def convert_head(self, head_in, dataset):
         new_elem = head_type()
+
+        # Set ttm:copyright if ebuttm:documentCopyright exists
+        if not(head_in.copyright) and head_in.metadata:
+            if hasattr(head_in.metadata, 'documentMetadata') and \
+                    hasattr(head_in.metadata.documentMetadata, 'documentCopyright'):
+                new_elem.copyright = head_in.metadata.documentMetadata.documentCopyright
+                head_in.metadata.documentMetadata.documentCopyright = None
+            elif hasattr(head_in.metadata, 'documentCopyright'):
+                new_elem.copyright = head_in.metadata.documentCopyright
+                head_in.metadata.documentCopyright = None
+
         head_children = self.convert_children(head_in, dataset)
         for item in head_children:
             if isinstance(item, styling):

@@ -15,11 +15,13 @@
     <tt:metadata>
       <ebuttm:documentMetadata>
         <ebuttm:documentEbuttVersion>v1.0</ebuttm:documentEbuttVersion>
-{% if documentIdentifier %}
-        <ebuttm:documentIdentifier>{{ documentIdentifier }}</ebuttm:documentIdentifier>
+{% if ebuttm_documentIdentifier %}
+        <ebuttm:documentIdentifier>{{ ebuttm_documentIdentifier }}</ebuttm:documentIdentifier>
 {% endif %}
         <ebuttm:documentOriginatingSystem>system_v1</ebuttm:documentOriginatingSystem>
-        <ebuttm:documentCopyright>EBU</ebuttm:documentCopyright>
+{% if ebuttm_documentCopyright %}
+        <ebuttm:documentCopyright>{{ ebuttm_documentCopyright }}</ebuttm:documentCopyright>
+{% endif %}
         <ebuttm:documentReadingSpeed>200</ebuttm:documentReadingSpeed>
         <ebuttm:documentTargetAspectRatio>4:3</ebuttm:documentTargetAspectRatio>
         <ebuttm:documentIntendedTargetFormat>WSTTeletextSubtitles</ebuttm:documentIntendedTargetFormat>
@@ -44,6 +46,9 @@
         <bbctt:otherId type="tapeNumber">DGN630507</bbctt:otherId>
       </bbctt:metadata>
     </tt:metadata>
+{% if ttm_copyright %}
+    <ttm:copyright>{{ ttm_copyright }}</ttm:copyright>
+{% endif %}
     <tt:styling>
       <tt:style xml:id="S1" tts:fontSize="1c 2c" ebutts:linePadding="1c" tts:lineHeight="2c" tts:textAlign="center" />
       <tt:style xml:id="S2" tts:color="white" tts:backgroundColor="black" />

@@ -5,7 +5,7 @@ from ebu_tt_live.documents.converters import EBUTT1EBUTT3Converter
 from pyxb.exceptions_ import IncompleteElementContentError, UnrecognizedAttributeError
 import xml.etree.ElementTree as ET
 
-# scenarios('features/ebutt1/ebutt1_validity.feature')
+scenarios('features/ebutt1/ebutt1_validity.feature')
 scenarios('features/ebutt1/tt1_tt3_conversion.feature')
 
 
@@ -19,8 +19,10 @@ def when_document_body_contains_attribute(template_dict, attribute):
     template_dict[attribute] = True
 
 
+@when(parsers.parse('the document head has element "{key}" set to "{value}"'))
 @when(parsers.parse('the document has metadata "{key}" set to "{value}"'))
 def when_document_has_metadata(template_dict, key, value):
+    key = key.replace(':', '_')
     template_dict[key] = value
 
 
@@ -85,18 +87,43 @@ def then_ebutt3_valid(test_context):
 namespaces = {
     'ebuttp': 'urn:ebu:tt:parameters',
     'ttp': 'http://www.w3.org/ns/ttml#parameter',
+    'tt':  'http://www.w3.org/ns/ttml',
+    'ebuttm': 'urn:ebu:tt:metadata',
+    'ttm': 'http://www.w3.org/ns/ttml#metadata'
 }
 
 
-@then(parsers.parse('the tt element contains the attribute "{attribute}" set to "{value}"'))
-def then_ebutt3_tt_has_attribute(test_context, attribute, value):
+def generate_xpath(prefix, attribute):
     attribute_pair = attribute.split(':')
     if len(attribute_pair) == 2:
         attribute_namespace = namespaces[attribute_pair[0]]
         attribute_name = attribute_pair[1]
-        path = '{%s}%s' % (attribute_namespace, attribute_name)
+        return f'{prefix}{{{attribute_namespace}}}{attribute_name}'
     else:
-        path = attribute_pair[0]
+        return prefix + attribute_pair[0]
+
+
+@then(parsers.parse('the tt element contains the attribute "{attribute}" set to "{value}"'))
+def then_ebutt3_tt_has_attribute(test_context, attribute, value):
     converted_document = test_context['ebutt3_document']
     tree = ET.fromstring(converted_document.get_xml())
-    assert tree.get(path) == value
+    assert tree.get(generate_xpath('', attribute)) == value
+
+
+@then(parsers.parse('the head element contains the element "{element}" set to "{value}"'))
+def then_ebuttt3_head_has_element(test_context, element, value):
+    converted_document = test_context['ebutt3_document']
+    tree = ET.fromstring(converted_document.get_xml())
+    tt = namespaces['tt']
+    prefix = f'{{{tt}}}head/'
+    assert tree.findtext(generate_xpath(prefix, element)) == value
+
+
+@then(parsers.parse('documentMetadata element "{element}" has been removed'))
+def then_metadata_removed(test_context, element):
+    converted_document = test_context['ebutt3_document']
+    tree = ET.fromstring(converted_document.get_xml())
+    tt = namespaces['tt']
+    ebuttm = namespaces['ebuttm']
+    prefix = f'{{{tt}}}head/{{{tt}}}metadata/{{{ebuttm}}}documentMetadata/'
+    assert tree.find(generate_xpath(prefix, element)) is None
