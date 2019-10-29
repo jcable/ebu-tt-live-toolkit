@@ -1,8 +1,12 @@
 import copy
 import logging
 
-from ebu_tt_live.bindings import load_types_for_document, tt1_tt_type, tt
 from pyxb.binding.basis import ElementContent, NonElementContent
+
+from ebu_tt_live.bindings import (body_type, head_type, layout,
+                                  load_types_for_document, tt, tt1_body_type,
+                                  tt1_head_type, tt1_layout_type, tt1_tt_type, styling)
+from ebu_tt_live.bindings._ebuttm import headMetadata_type
 
 log = logging.getLogger(__name__)
 
@@ -15,10 +19,24 @@ class EBUTT1EBUTT3Converter(object):
     def map_type(self, in_element):
         if isinstance(in_element, tt1_tt_type):
             return self.convert_tt
+        elif isinstance(in_element, tt1_head_type):
+            return self.convert_head
+        elif isinstance(in_element, tt1_body_type):
+            return self.convert_body
+        elif isinstance(in_element, headMetadata_type):
+            return self.convert_unchanged
+        elif isinstance(in_element, styling):
+            return self.convert_unchanged
+        elif isinstance(in_element, tt1_layout_type):
+            return self.convert_layout
         else:
+            log.warn('Type %s being ignored' % type(in_element))
             return self.convert_unknown
 
     def convert_tt(self, tt_in, dataset):
+        dataset['timeBase'] = tt_in.timeBase
+
+        # Add sequence identifier which can be taken from document metadata
         document_identifier = 'sequence'
         if hasattr(tt_in, 'head') and hasattr(tt_in.head, 'metadata'):
             if hasattr(tt_in.head.metadata, 'documentMetadata') and \
@@ -30,11 +48,44 @@ class EBUTT1EBUTT3Converter(object):
                 document_identifier = tt_in.head.metadata.documentIdentifier
 
         new_elem = tt(
+            head=self.convert_element(tt_in.head, dataset),
+            body=self.convert_element(tt_in.body, dataset),
+            lang=tt_in.lang,
+            space=tt_in.space,
             sequenceIdentifier=document_identifier,
             sequenceNumber=1,
+            timeBase=tt_in.timeBase,
+            frameRate=tt_in.frameRate,
+            dropMode=tt_in.dropMode,
+            markerMode=tt_in.markerMode,
         )
         return new_elem
 
+    def convert_head(self, head_in, dataset):
+        new_elem = head_type()
+        head_children = self.convert_children(head_in, dataset)
+        for item in head_children:
+            if isinstance(item, styling):
+                new_elem.styling = item
+            elif isinstance(item, layout):
+                new_elem.layout = item
+            elif isinstance(item, headMetadata_type):
+                new_elem.metadata = item
+            else:
+                new_elem.append(item)
+        return new_elem
+
+    def convert_layout(self, layout_in, dataset):
+        new_elem = layout()
+        dataset['ids'] = set()
+        new_elem.merge(layout_in, dataset)
+        return new_elem
+
+    def convert_body(self, body_in, dataset):
+        return body_in
+
+    def convert_unchanged(self, element, dataset):
+        return element
 
     def convert_unknown(self, element, dataset):
         return None
