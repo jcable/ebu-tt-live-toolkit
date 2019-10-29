@@ -41,7 +41,6 @@ def when_document_contains_ebuttp_attribute(template_dict, attribute):
 @when('the XML is parsed as an EBU-TT-1 document')
 def when_document_parsed_ebutt1(test_context, template_file, template_dict):
     xml_text = template_file.render(template_dict)
-    print(xml_text)
     ebutt1_document = EBUTT1Document.create_from_xml(xml_text)
     test_context['ebutt1_document'] = ebutt1_document
 
@@ -57,7 +56,6 @@ def when_convert_tt1_tt3(test_context):
 @then('the document fails to parse as an EBU-TT-1 document because of an IncompleteElementContentError')
 def then_document_fails_ebutt1_element(template_file, template_dict):
     xml_text = template_file.render(template_dict)
-    print(xml_text)
     with pytest.raises(IncompleteElementContentError):
         EBUTT1Document.create_from_xml(xml_text)
 
@@ -65,7 +63,6 @@ def then_document_fails_ebutt1_element(template_file, template_dict):
 @then('the document fails to parse as an EBU-TT-1 document because of an UnrecognizedAttributeError')
 def then_document_fails_ebutt1_attribute(template_file, template_dict):
     xml_text = template_file.render(template_dict)
-    print(xml_text)
     with pytest.raises(UnrecognizedAttributeError):
         EBUTT1Document.create_from_xml(xml_text)
 
