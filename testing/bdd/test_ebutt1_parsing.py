@@ -3,6 +3,7 @@ from pytest_bdd import parsers, scenarios, when, then
 from ebu_tt_live.documents import EBUTT1Document, EBUTT3Document
 from ebu_tt_live.documents.converters import EBUTT1EBUTT3Converter
 from pyxb.exceptions_ import IncompleteElementContentError, UnrecognizedAttributeError
+import xml.etree.ElementTree as ET
 
 # scenarios('features/ebutt1/ebutt1_validity.feature')
 scenarios('features/ebutt1/tt1_tt3_conversion.feature')
@@ -81,7 +82,21 @@ def then_ebutt3_valid(test_context):
     converted_document.validate()
 
 
+namespaces = {
+    'ebuttp': 'urn:ebu:tt:parameters',
+    'ttp': 'http://www.w3.org/ns/ttml#parameter',
+}
+
+
 @then(parsers.parse('the tt element contains the attribute "{attribute}" set to "{value}"'))
 def then_ebutt3_tt_has_attribute(test_context, attribute, value):
-    tt = test_context['ebutt3_binding']
-    assert str(getattr(tt, attribute)) == value
+    attribute_pair = attribute.split(':')
+    if len(attribute_pair) == 2:
+        attribute_namespace = namespaces[attribute_pair[0]]
+        attribute_name = attribute_pair[1]
+        path = '{%s}%s' % (attribute_namespace, attribute_name)
+    else:
+        path = attribute_pair[0]
+    converted_document = test_context['ebutt3_document']
+    tree = ET.fromstring(converted_document.get_xml())
+    assert tree.get(path) == value
