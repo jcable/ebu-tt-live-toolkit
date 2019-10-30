@@ -25,7 +25,7 @@ class EBUTT1EBUTT3Converter(object):
         elif isinstance(in_element, tt1_body_type):
             return self.convert_body
         elif isinstance(in_element, headMetadata_type):
-            return self.convert_unchanged
+            return self.convert_metadata
         elif isinstance(in_element, styling):
             return self.convert_unchanged
         elif isinstance(in_element, tt1_layout_type):
@@ -59,6 +59,7 @@ class EBUTT1EBUTT3Converter(object):
             sequenceNumber=1,
             timeBase=tt_in.timeBase,
             frameRate=tt_in.frameRate,
+            frameRateMultiplier=tt_in.frameRateMultiplier,
             dropMode=tt_in.dropMode,
             markerMode=tt_in.markerMode,
         )
@@ -88,6 +89,29 @@ class EBUTT1EBUTT3Converter(object):
             else:
                 new_elem.append(item)
         return new_elem
+
+    def remove_metadata(self, metadata_in, element_name):
+        if hasattr(metadata_in, 'documentMetadata') and hasattr(metadata_in.documentMetadata, element_name):
+            setattr(metadata_in.documentMetadata, element_name, None)
+        if hasattr(metadata_in, element_name):
+            setattr(metadata_in, element_name, None)
+
+    def convert_metadata(self, metadata_in, dataset):
+        unnecessary_elements = [
+            'documentReadingSpeed',
+            'binaryData',
+            'documentOriginalProgrammeTitle',
+            'documentOriginalEpisodeTitle',
+            'documentTranslatedProgrammeTitle',
+            'documentTranslatedEpisodeTitle',
+            'documentTotalNumberOfSubtitles',
+            'documentMaximumNumberOfDisplayableCharacterInAnyRow',
+            'documentSubtitleListReferenceCode',
+            'documentStartOfProgramme',
+        ]
+        for e in unnecessary_elements:
+            self.remove_metadata(metadata_in, e)
+        return metadata_in
 
     def convert_layout(self, layout_in, dataset):
         new_elem = layout()

@@ -32,7 +32,7 @@
         <ebuttm:documentRevisionNumber>3</ebuttm:documentRevisionNumber>
         <ebuttm:documentTotalNumberOfSubtitles>5</ebuttm:documentTotalNumberOfSubtitles>
         <ebuttm:documentMaximumNumberOfDisplayableCharacterInAnyRow>37</ebuttm:documentMaximumNumberOfDisplayableCharacterInAnyRow>
-        <!-- <ebuttm:documentStartOfProgramme>10:00:00:00</ebuttm:documentStartOfProgramme> -->
+        <ebuttm:documentStartOfProgramme>10:00:00:00</ebuttm:documentStartOfProgramme>
         <ebuttm:documentCountryOfOrigin>UK</ebuttm:documentCountryOfOrigin>
         <ebuttm:documentPublisher>EBU</ebuttm:documentPublisher>
         <ebuttm:documentEditorsName>Joe Bloggs</ebuttm:documentEditorsName>

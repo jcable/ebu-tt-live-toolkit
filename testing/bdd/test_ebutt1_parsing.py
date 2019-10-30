@@ -107,6 +107,13 @@ def then_ebutt3_tt_has_attribute(test_context, attribute, value):
     assert tree.get(generate_xpath('', attribute)) == value
 
 
+@then('the tt element does not contain the attribute <attribute>')
+def then_ebutt3_tt_omits_attribute(test_context, attribute):
+    converted_document = test_context['ebutt3_document']
+    tree = ET.fromstring(converted_document.get_xml())
+    assert tree.get(generate_xpath('', attribute)) is None
+
+
 @then(parsers.parse('the head element contains the element "{element}" set to "{value}"'))
 def then_ebuttt3_head_has_element(test_context, element, value):
     converted_document = test_context['ebutt3_document']
@@ -116,6 +123,7 @@ def then_ebuttt3_head_has_element(test_context, element, value):
     assert tree.findtext(generate_xpath(prefix, element)) == value
 
 
+@then('metadata element <element> does not exist in head/metadata and head/metadata/documentMetadata')
 @then(parsers.parse('documentMetadata element "{element}" has been removed'))
 def then_metadata_removed(test_context, element):
     converted_document = test_context['ebutt3_document']
@@ -123,4 +131,6 @@ def then_metadata_removed(test_context, element):
     tt = namespaces['tt']
     ebuttm = namespaces['ebuttm']
     prefix = f'{{{tt}}}head/{{{tt}}}metadata/{{{ebuttm}}}documentMetadata/'
+    assert tree.find(generate_xpath(prefix, element)) is None
+    prefix = f'{{{tt}}}head/{{{tt}}}metadata/'
     assert tree.find(generate_xpath(prefix, element)) is None
