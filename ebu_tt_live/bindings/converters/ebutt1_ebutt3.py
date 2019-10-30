@@ -62,6 +62,7 @@ class EBUTT1EBUTT3Converter(object):
             frameRateMultiplier=tt_in.frameRateMultiplier,
             dropMode=tt_in.dropMode,
             markerMode=tt_in.markerMode,
+            cellResolution=tt_in.cellResolution
         )
         return new_elem
 

@@ -21,6 +21,7 @@ def when_document_body_contains_attribute(template_dict, attribute):
 
 @when(parsers.parse('the document head has element "{key}" set to "{value}"'))
 @when(parsers.parse('the document has metadata "{key}" set to "{value}"'))
+@when(parsers.parse('the tt element has attribute "{key}" set to "{value}"'))
 def when_document_has_metadata(template_dict, key, value):
     key = key.replace(':', '_')
     template_dict[key] = value

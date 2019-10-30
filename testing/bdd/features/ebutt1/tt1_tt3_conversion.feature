@@ -71,3 +71,12 @@ Feature: Files converted from EBU-TT-1 to EBU-TT-3 are valid
       | ebuttm:documentMaximumNumberOfDisplayableCharacterInAnyRow |
       | ebuttm:documentSubtitleListReferenceCode                   |
       | ebuttm:documentStartOfProgramme                            |
+
+  Scenario: cellResolution is preserved
+    Given an xml file <xml_file>
+    When the tt element has attribute "ttp:cellResolution" set to "40 24"
+    And the XML is parsed as an EBU-TT-1 document
+    And the EBU-TT-1 document is converted to EBU-TT-3
+    Then the EBU-TT-3 document is valid
+    And the tt element contains the attribute "ttp:cellResolution" set to "40 24"
+
