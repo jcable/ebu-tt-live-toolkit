@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 
 scenarios('features/ebutt1/ebutt1_validity.feature')
 scenarios('features/ebutt1/tt1_tt3_conversion.feature')
+scenarios('features/ebutt1/tt1_tt3_timings.feature')
 
 
 @when(parsers.parse('the document contains a "{element}" element'))
@@ -28,9 +29,21 @@ def when_document_has_metadata(template_dict, key, value):
 
 
 @when('the document\'s timeBase is set to <timebase>')
+@when('the tt element has attribute "ttp:timeBase" set to <timebase>')
 def when_document_timebase(template_dict, timebase):
     # timeBase in ebutt1_template.xml is 'media' by default
     template_dict['timeBase'] = timebase
+
+
+@when('the document has metadata "ebuttm:documentStartOfProgramme" set to <startOfProgramme>')
+def when_document_start_of_programme(template_dict, startOfProgramme):
+    template_dict['ebuttm_documentStartOfProgramme'] = startOfProgramme
+
+
+@when('p element has "begin" time set to <in_begin> and "end" time set to <in_end>')
+def when_document_begin_end(template_dict, in_begin, in_end):
+    template_dict['begin'] = in_begin
+    template_dict['end'] = in_end
 
 
 @when('the document contains an ebuttp attribute <attribute>')
@@ -65,6 +78,13 @@ def then_document_fails_ebutt1_element(template_file, template_dict):
 def then_document_fails_ebutt1_attribute(template_file, template_dict):
     xml_text = template_file.render(template_dict)
     with pytest.raises(UnrecognizedAttributeError):
+        EBUTT1Document.create_from_xml(xml_text)
+
+
+@then('the document fails to parse as an EBU-TT-1 document because of an Exception')
+def then_document_fails_ebutt1_exception(template_file, template_dict):
+    xml_text = template_file.render(template_dict)
+    with pytest.raises(Exception):
         EBUTT1Document.create_from_xml(xml_text)
 
 
@@ -135,3 +155,14 @@ def then_metadata_removed(test_context, element):
     assert tree.find(generate_xpath(prefix, element)) is None
     prefix = f'{{{tt}}}head/{{{tt}}}metadata/'
     assert tree.find(generate_xpath(prefix, element)) is None
+
+
+@then('p element has "begin" time set to <out_begin> and "end" time set to <out_end>')
+def then_document_has_begin_end(test_context, out_begin, out_end):
+    converted_document = test_context['ebutt3_document']
+    tree = ET.fromstring(converted_document.get_xml())
+    tt = namespaces['tt']
+    prefix = f'{{{tt}}}body/{{{tt}}}div/{{{tt}}}p'
+    element = tree.find(prefix)
+    assert element.get('begin') == out_begin
+    assert element.get('end') == out_end

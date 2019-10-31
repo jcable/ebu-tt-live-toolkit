@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt:tt xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:tts="http://www.w3.org/ns/ttml#styling"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:ebuttdt="urn:ebu:tt:datatypes"
+  xmlns:ebuttm="urn:ebu:tt:metadata"
+  xmlns:ebutts="urn:ebu:tt:style"
+  xmlns:ebuttExt="urn:ebu:tt:extension"
+  ttp:timeBase="{{timeBase}}"
+{% if timeBase == 'smpte' %}
+  ttp:frameRate="{% if ttp_frameRate %}{{ttp_frameRate}}{% else %}25{% endif %}"
+  ttp:frameRateMultiplier="{% if ttp_frameRateMultiplier %}{{ttp_frameRateMultiplier}}{% else %}1 1{% endif %}"
+  ttp:dropMode="nonDrop"
+  ttp:markerMode="{% if ttp_markerMode %}{{ttp_markerMode}}{% else %}discontinuous{% endif %}"
+{% endif %}
+{% if timeBase == 'clock' %}
+  ttp:clockMode='local'
+{% endif %}
+  ttp:cellResolution="40 24"
+  xml:lang="en-GB"
+  xmlns:bbctt="http://www.bbc.co.uk/ns/bbctt"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.w3.org/ns/ttml">
+  <tt:head>
+    <tt:metadata>
+      <ebuttm:documentMetadata>
+      {% if ebuttm_documentStartOfProgramme %}
+        <ebuttm:documentStartOfProgramme>{{ebuttm_documentStartOfProgramme}}</ebuttm:documentStartOfProgramme>
+      {% endif %}
+      </ebuttm:documentMetadata>
+    </tt:metadata>
+    <tt:styling>
+      <tt:style xml:id="S1" tts:fontSize="1c 2c" ebutts:linePadding="1c" tts:lineHeight="2c" tts:textAlign="center" />
+      <tt:style xml:id="S2" tts:color="white" tts:backgroundColor="black" />
+    </tt:styling>
+    <tt:layout>
+      <tt:region xml:id="R1" tts:origin="0c 18c" tts:extent="40c 6c" tts:displayAlign="after" />
+    </tt:layout>
+  </tt:head>
+  <tt:body ttm:role="caption">
+    <tt:div style="S1">
+      <tt:p xml:id="C1" region="R1" begin="{{begin}}" end="{{end}}" style="S1">
+        <tt:span style="S2">Lorem ipsum dolor sit amet,</tt:span>
+        <tt:br />
+        <tt:span style="S2">consectetur adipiscing elit.</tt:span>
+      </tt:p>
+    </tt:div>
+  </tt:body>
+</tt:tt>
