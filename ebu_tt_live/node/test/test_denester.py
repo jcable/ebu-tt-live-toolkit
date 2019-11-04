@@ -7,7 +7,7 @@ from ebu_tt_live.bindings._ebuttdt import FullClockTimingType
 import re
 from datetime import timedelta
 
-class TestNester(TestCase):
+class TestDenester(TestCase):
     # Given a div within a div, only a single div is returned
 
     def setUp(self):
@@ -221,22 +221,6 @@ class TestNester(TestCase):
         for nested_div in nested_divs:
             unnested_divs.extend(Denester.combine_divs(Denester.recurse(nested_div, dataset)))
         assert len(unnested_divs) == len(expected_divs)
-        
-    def test_merged_metadata(self):
-        expected_divs = self.expected_doc_2.binding.body.div
-        nested_divs =  self.actual_doc_2.binding.body.div
-        dataset={}
-        dataset["styles"] = self.actual_doc_2.binding.head.styling.style
-        unnested_divs =  []
-        for nested_div in nested_divs:
-            unnested_divs.extend(Denester.combine_divs(Denester.recurse(nested_div, dataset)))
-        assert len(unnested_divs) == len(expected_divs)
-        i = 0
-        for div in unnested_divs:
-            print(len(div.metadata.facet))
-        while i < len(unnested_divs):
-            assert len(expected_divs[i].metadata.facet) == len(unnested_divs[i].metadata.facet)  
-            i += 1
 
     def test_nested_spans(self):
         expected_spans = self.expected_doc_4.binding.body.div[0].p[0].span

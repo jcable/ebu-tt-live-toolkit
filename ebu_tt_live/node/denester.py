@@ -79,12 +79,11 @@ class Denester():
         div_attributes["region"] = div.region
         div_attributes["begin"] = div.begin
         div_attributes["end"] = div.end
-        div_attributes["metadata"] = div.metadata
         return div_attributes
     
     @staticmethod
     def merge_attr(parent_attr, div_attributes):
-        merged_attributes ={ "styles": [], "begin": None, "end": None, "lang": None, "region": None, "metadata":divMetadata_type(facet = [])}
+        merged_attributes ={ "styles": [], "begin": None, "end": None, "lang": None, "region": None }
 
         if not isinstance(parent_attr["begin"], timedelta) and parent_attr["begin"] is not None:
             parent_attr["begin"] = parent_attr["begin"].timedelta
@@ -107,10 +106,6 @@ class Denester():
             merged_attributes["region"] = parent_attr["region"]
         elif div_attributes["region"] is not None:
             merged_attributes["region"] = div_attributes["region"]
-        if parent_attr["metadata"].facet is not None:
-            merged_attributes["metadata"].facet.extend(parent_attr["metadata"].facet)
-        if div_attributes["metadata"] is not None:
-            merged_attributes["metadata"].facet.extend(div_attributes["metadata"].facet)
         if parent_attr["begin"] is not None and div_attributes["begin"] is not None:
             merged_attributes["begin"] = parent_attr["begin"] + div_attributes["begin"]
         elif parent_attr["begin"] is not None and div_attributes["begin"] is None:
@@ -143,7 +138,7 @@ class Denester():
         return ebuttdt.FullClockTimingType.from_timedelta(timing_type)
     
     @staticmethod
-    def recurse( div, dataset, merged_attr={"styles": [], "begin": None, "end": None, "lang": None, "region": None, "metadata": divMetadata_type(facet = [])}):
+    def recurse( div, dataset, merged_attr={"styles": [], "begin": None, "end": None, "lang": None, "region": None }):
         merged_attr = Denester.merge_attr(merged_attr, Denester.div_attr(div))
         new_divs = []
         for c in div.orderedContent():
@@ -191,7 +186,6 @@ class Denester():
                     end=Denester.process_timing_from_timedelta(merged_attr["end"]) if merged_attr["end"] is not None else merged_attr["end"],
                     lang=merged_attr["lang"],
                     region=merged_attr["region"],
-                    metadata=merged_attr["metadata"]
                 )   
                 new_div.p.append(c.value)
                 new_divs.append(new_div)
