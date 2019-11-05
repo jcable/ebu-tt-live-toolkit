@@ -1,6 +1,6 @@
 from unittest import TestCase
 from ebu_tt_live.documents.ebutt3 import EBUTT3Document
-from ebu_tt_live.node.denester import merge_attr, div_attr, recurse, recurse_span, combine_divs, compute_span_merged_styles, calculate_font_size
+from ebu_tt_live.node.denester import DenesterNode
 from ebu_tt_live.bindings import div_type, p_type, span_type, style_type
 from ebu_tt_live.bindings._ebuttm import divMetadata_type
 from ebu_tt_live.bindings._ebuttdt import FullClockTimingType
@@ -72,7 +72,7 @@ class TestDenesterNode(TestCase):
             "end":None
         }
         actual_div = self.actual_doc_2.binding.body.div[0].div[0]
-        actual_divs_attr = merge_attr(parent_attr, div_attr(actual_div))
+        actual_divs_attr = DenesterNode.merge_attr(parent_attr, DenesterNode.div_attr(actual_div))
         assert excepted_div_attr["styles"] == actual_divs_attr["styles"]
     
 
@@ -83,7 +83,7 @@ class TestDenesterNode(TestCase):
         dataset["styles"] = self.actual_doc_4.binding.head.styling.style
         unnested_divs =  []
         for nested_div in nested_divs:
-            unnested_divs.extend((combine_divs(recurse(nested_div, dataset))))
+            unnested_divs.extend((DenesterNode.combine_divs(DenesterNode.recurse(nested_div, dataset))))
         assert len(unnested_divs) == len(expected_divs)
 
     def test_merged_attr_lang_only_on_child(self):
@@ -99,7 +99,7 @@ class TestDenesterNode(TestCase):
             "end": None
         }
         actual_div = self.actual_doc_2.binding.body.div[0].div[0]
-        actual_divs_attr = merge_attr(parent_attr, div_attr(actual_div))
+        actual_divs_attr = DenesterNode.merge_attr(parent_attr, DenesterNode.div_attr(actual_div))
         assert expected_div_attr["lang"] == actual_divs_attr["lang"]
     
     def test_merged_attr_lang_only_on_parent(self):
@@ -115,7 +115,7 @@ class TestDenesterNode(TestCase):
             "end": None
         }
         actual_div = self.actual_doc.binding.body.div[0].div[0]
-        actual_divs_attr = merge_attr(parent_attr,div_attr(actual_div))
+        actual_divs_attr = DenesterNode.merge_attr(parent_attr, DenesterNode.div_attr(actual_div))
         assert expected_div_attr["lang"] == actual_divs_attr["lang"]
 
     def test_merged_attr_lang_only_on_both_child_and_parent(self):
@@ -131,7 +131,7 @@ class TestDenesterNode(TestCase):
             "end": None
         }
         actual_div = self.actual_doc.binding.body.div[0].div[1]
-        actual_divs_attr = merge_attr(parent_attr,div_attr(actual_div))
+        actual_divs_attr = DenesterNode.merge_attr(parent_attr, DenesterNode.div_attr(actual_div))
         assert expected_div_attr["lang"] == actual_divs_attr["lang"] 
 
     def test_merged_attr_begin_end_times_on_child_and_parent(self):
@@ -150,7 +150,7 @@ class TestDenesterNode(TestCase):
             "end": FullClockTimingType("00:00:20")
         }
         actual_div = self.actual_doc.binding.body.div[0].div[0]
-        actual_divs_attr = merge_attr(parent_attr,div_attr(actual_div))
+        actual_divs_attr = DenesterNode.merge_attr(parent_attr, DenesterNode.div_attr(actual_div))
         actual_begin_time = actual_divs_attr["begin"]
         expected_begin_time = expected_div_attr["begin"].timedelta
         assert expected_begin_time == actual_begin_time
@@ -175,7 +175,7 @@ class TestDenesterNode(TestCase):
             "end": None
         }
         actual_div = self.actual_doc.binding.body.div[0].div[0]
-        actual_divs_attr = merge_attr(parent_attr,div_attr(actual_div))
+        actual_divs_attr = DenesterNode.merge_attr(parent_attr, DenesterNode.div_attr(actual_div))
         actual_begin_time = actual_divs_attr["begin"]
         expected_begin_time = expected_div_attr["begin"].timedelta
         assert expected_begin_time == actual_begin_time
@@ -191,7 +191,7 @@ class TestDenesterNode(TestCase):
         dataset["styles"] = self.actual_doc_4.binding.head.styling
         unnested_divs =  []
         for nested_div in nested_divs:
-            unnested_divs.extend((combine_divs(recurse(nested_div, dataset))))
+            unnested_divs.extend((DenesterNode.combine_divs(DenesterNode.recurse(nested_div, dataset))))
         assert len(expected_divs)== len(unnested_divs)
 
     def test_merged_attr_same_region(self):
@@ -201,7 +201,7 @@ class TestDenesterNode(TestCase):
         dataset["styles"] = self.actual_doc_4.binding.head.styling.style
         unnested_divs =  []
         for nested_div in nested_divs:
-            unnested_divs.extend((combine_divs(recurse(nested_div, dataset))))
+            unnested_divs.extend((DenesterNode.combine_divs(DenesterNode.recurse(nested_div, dataset))))
         assert unnested_divs[0].region == expected_divs[0].region
 
     def test_combine_same_divs(self):
@@ -211,7 +211,7 @@ class TestDenesterNode(TestCase):
         nested_divs =  self.actual_doc_2.binding.body.div
         unnested_divs =  []
         for nested_div in nested_divs:
-            unnested_divs.extend(combine_divs(recurse(nested_div, dataset)))
+            unnested_divs.extend(DenesterNode.combine_divs(DenesterNode.recurse(nested_div, dataset)))
         assert len(unnested_divs) == len(expected_divs)
 
     def test_nested_spans(self):
@@ -221,7 +221,7 @@ class TestDenesterNode(TestCase):
         dataset={}
         dataset["styles"] = self.actual_doc_4.binding.head.styling.style
         for nested_span in nested_spans:
-            unnested_spans.extend(recurse_span(nested_span, dataset))
+            unnested_spans.extend(DenesterNode.recurse_span(nested_span, dataset))
         assert len(expected_spans) == len(unnested_spans)
 
     def test_compute_spans_have_valid_styles(self):
@@ -231,7 +231,7 @@ class TestDenesterNode(TestCase):
         dataset["styles"] = self.actual_doc_4.binding.head.styling.style
         dataset["document"] = self.actual_doc_4.binding
         for nested_span in nested_spans:
-            unnested_spans.extend(recurse_span(nested_span, dataset))
+            unnested_spans.extend(DenesterNode.recurse_span(nested_span, dataset))
         self.expected_doc_4.binding.body.div[0].p[0].span = unnested_spans
         expected_styles = [style.id for style in self.expected_doc_4.binding.head.styling.style]
         for span in unnested_spans:
@@ -248,7 +248,7 @@ class TestDenesterNode(TestCase):
         dataset = {}
         dataset["styles"] = self.actual_doc_4.binding.head.styling.style
         span_styles =['outer', 'innerYellow']
-        actual_style = compute_span_merged_styles(span_styles, dataset)
+        actual_style = DenesterNode.compute_span_merged_styles(span_styles, dataset)
         assert expected_style.id == actual_style.id
 
 
@@ -261,7 +261,7 @@ class TestDenesterNode(TestCase):
         dataset = {}
         dataset["styles"] = self.actual_doc_4.binding.head.styling.style
         span_styles =['outer', 'innerYellow', 'innerWhite']
-        actual_style = compute_span_merged_styles(span_styles, dataset)
+        actual_style = DenesterNode.compute_span_merged_styles(span_styles, dataset)
         assert expected_style.id == actual_style.id
         
 
@@ -275,7 +275,7 @@ class TestDenesterNode(TestCase):
             for style in dataset["styles"]:
                 if style.id == style_name:
                     styles.append(style)
-        actual_style_font_size = calculate_font_size(styles)
+        actual_style_font_size = DenesterNode.calculate_font_size(styles)
         assert expected_style_font_size == actual_style_font_size 
 
     def test_span_computed_font_size_only_child_has_percentage(self):
@@ -288,7 +288,7 @@ class TestDenesterNode(TestCase):
             for style in dataset["styles"]:
                 if style.id == style_name:
                     styles.append(style)
-        actual_style_font_size = calculate_font_size(styles)
+        actual_style_font_size = DenesterNode.calculate_font_size(styles)
         assert expected_style_font_size == actual_style_font_size
 
     #assuming that child fontsize if absolute it doesn't change
@@ -302,7 +302,7 @@ class TestDenesterNode(TestCase):
             for style in dataset["styles"]:
                 if style.id == style_name:
                     styles.append(style)
-        actual_style_font_size = calculate_font_size(styles)
+        actual_style_font_size = DenesterNode.calculate_font_size(styles)
         assert expected_style_font_size == actual_style_font_size
 
     def test_span_computed_font_size_only_parent_has_absolute_fontsize(self):
@@ -315,7 +315,7 @@ class TestDenesterNode(TestCase):
             for style in dataset["styles"]:
                 if style.id == style_name:
                     styles.append(style)
-        actual_style_font_size = calculate_font_size(styles)
+        actual_style_font_size = DenesterNode.calculate_font_size(styles)
         assert expected_style_font_size == actual_style_font_size
 
     
@@ -329,7 +329,7 @@ class TestDenesterNode(TestCase):
             for style in dataset["styles"]:
                 if style.id == style_name:
                     styles.append(style)
-        actual_style_font_size = calculate_font_size(styles)
+        actual_style_font_size = DenesterNode.calculate_font_size(styles)
         assert expected_style_font_size == actual_style_font_size
 
     def test_nesting_within_absolute_fontsize_c(self):
@@ -342,7 +342,7 @@ class TestDenesterNode(TestCase):
             for style in dataset["styles"]:
                 if style.id == style_name:
                     styles.append(style)
-        actual_style_font_size = calculate_font_size(styles)
+        actual_style_font_size = DenesterNode.calculate_font_size(styles)
         assert expected_style_font_size == actual_style_font_size
 
     def test_nesting_within_absolute_fontsize_px(self):
@@ -356,7 +356,7 @@ class TestDenesterNode(TestCase):
             fontSize="150%"
         )
         styles = [style1, style2]
-        actual_style_font_size = calculate_font_size(styles)
+        actual_style_font_size = DenesterNode.calculate_font_size(styles)
         assert expected_style_font_size == actual_style_font_size
 
     def test_nesting_around_absolute_fontsize_px(self):
@@ -374,7 +374,7 @@ class TestDenesterNode(TestCase):
             fontSize="300%"
         )
         styles = [style3, style1, style2]
-        actual_style_font_size = calculate_font_size(styles)
+        actual_style_font_size = DenesterNode.calculate_font_size(styles)
         assert expected_style_font_size == actual_style_font_size
 
     def test_duplicate_styles_are_not_created(self):
@@ -386,4 +386,4 @@ class TestDenesterNode(TestCase):
             for style in dataset["styles"]:
                 if style.id == style_name:
                     styles.append(style)
-        assert compute_span_merged_styles(span_styles, dataset).id == "nest"
+        assert DenesterNode.compute_span_merged_styles(span_styles, dataset).id == "nest"
