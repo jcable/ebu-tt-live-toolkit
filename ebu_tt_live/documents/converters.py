@@ -3,7 +3,7 @@ from ebu_tt_live.bindings.converters.ebutt3_ebuttd import EBUTT3EBUTTDConverter
 from ebu_tt_live.documents.ebuttd import EBUTTDDocument
 from ebu_tt_live.documents.ebutt3 import EBUTT3Document
 from subprocess import Popen, PIPE
-from ebu_tt_live.node.denester import Denester
+from ebu_tt_live.node.denester import DenesterNode
 import tempfile
 import os
 import logging
@@ -18,13 +18,16 @@ def ebutt3_to_ebuttd(ebutt3_in, media_clock):
     :param ebutt3_in:
     :return:
     """
+    denester_node = DenesterNode(
+        node_id = "denester_node"
+    );
     converter = EBUTT3EBUTTDConverter(media_clock=media_clock)
     # Here we need a thing that makes sure that the times in the input 
     # document do not depend on a body@dur attribute, and that they are
     # absolutised, so a body with no begin or end time but with a dur
     # gets fixed into a body with an end time, which gives the
     # denester an easier job.
-    doc_xml = Denester.denest(ebutt3_in).get_xml()
+    doc_xml = denester_node.process_document(ebutt3_in).get_xml()
     ebutt3_doc = EBUTT3Document.create_from_xml(doc_xml)
     ebuttd_bindings = converter.convert_document(ebutt3_doc.binding)
     ebuttd_document = EBUTTDDocument.create_from_raw_binding(ebuttd_bindings)

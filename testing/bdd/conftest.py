@@ -3,7 +3,7 @@ from jinja2 import Environment, FileSystemLoader
 from ebu_tt_live.documents import EBUTT3Document, EBUTT3DocumentSequence, EBUTTDDocument
 from ebu_tt_live.documents.converters import EBUTT3EBUTTDConverter
 from ebu_tt_live.clocks.local import LocalMachineClock
-from ebu_tt_live.node.denester import Denester
+from ebu_tt_live.node.denester import DenesterNode
 from ebu_tt_live.clocks.media import MediaClock
 from ebu_tt_live.bindings._ebuttdt import FullClockTimingType, LimitedClockTimingType, CellFontSizeType, lineHeightType
 from datetime import timedelta
@@ -11,6 +11,9 @@ import pytest
 import os
 import unittest
 
+denester_node = DenesterNode(
+    node_id = "denester_node"
+);
 
 @given('an xml file <xml_file>')
 def template_file(xml_file):
@@ -129,7 +132,7 @@ def gen_second_document_fixture(test_context, template_dict, template_file_two):
 
 @when('the EBU-TT-Live document is denested')
 def convert_to_ebuttd(test_context):
-    test_context["document"] = Denester.denest(test_context["document"])
+    test_context["document"] = denester_node.process_document(test_context["document"])
 
 @when('the EBU-TT-Live document is converted to EBU-TT-D')
 def convert_to_ebuttd(test_context):
