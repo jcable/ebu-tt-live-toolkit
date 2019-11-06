@@ -52,17 +52,19 @@ class DenesterNode(AbstractCombinedNode):
                     p.region = None
 
         # Removes divs that no longer contain any P elements
-        divs = [div for div in divs if div.p != []]
+        divs = [div for div in divs if len(div.p) != 0]
 
         return divs
 
 
     def combine_divs(divs):
         """
-        Takes the list of unnested divs, where one was created to contain each P elements, and attempts to combine them
+        Takes the list of unnested divs, where one was created to contain each P elements, and attempts to combine them.
+
         A list of new divs is created, the first element being the first div in the list of divs passed in
         Iterating through the passed in divs, where a div has the same attributes as the previous one,
-            add its P list to the current new div's P list
+        add its P list to the current new div's P list.
+        
         Where the current div does not match, add it to the list of new divs and increment j, making it the current new div
         """
         new_divs = []
