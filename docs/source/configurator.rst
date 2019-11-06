@@ -125,6 +125,8 @@ Node type dependent options for [nodeN] : ::
 
    type="distributor" : No options
 
+   type="denester" : No options
+
 Output carriage type dependent options for "carriage": ::
 
    type="direct"

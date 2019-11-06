@@ -81,6 +81,9 @@ class DenesterNode(AbstractCombinedNode):
 
 
     def div_attr(div):
+        """
+        Converts div attributes to an array
+        """
         div_attributes =  {}
         div_attributes["styles"] = div.style
         div_attributes["lang"] = div.lang
@@ -91,6 +94,9 @@ class DenesterNode(AbstractCombinedNode):
 
 
     def merge_attr(parent_attr, div_attributes):
+        """
+        Merges two sets of attributes to ensure they are correctly inherited in the final div
+        """
         merged_attributes ={ "styles": [], "begin": None, "end": None, "lang": None, "region": None }
 
         if not isinstance(parent_attr["begin"], timedelta) and parent_attr["begin"] is not None:
@@ -135,7 +141,7 @@ class DenesterNode(AbstractCombinedNode):
         if child_attr["end"] is not None and parent_attr["end"] is None and time_sync is not None:
             return time_sync+child_attr["end"]
         elif parent_attr["end"] is not None and child_attr["end"] is not None:
-                return parent_attr["end"]-child_attr["end"]
+            return parent_attr["end"]-child_attr["end"]
         else:
             return child_attr["end"]
 
@@ -225,6 +231,9 @@ class DenesterNode(AbstractCombinedNode):
                 
 
     def compute_span_merged_styles(span_styles, dataset):
+        """
+        Combines all the nested styles of the span to create a new one
+        """
         new_style = None
         styles = []
         for style_name in span_styles: # go through styles in xml
@@ -250,6 +259,10 @@ class DenesterNode(AbstractCombinedNode):
 
 
     def create_new_style(new_style, dataset):
+        """
+        Checks if the style it has received is the same in attributes or name as an
+        existing style. If not, a new style is created and added to the dataset
+        """
         for style in dataset["styles"]:
             if new_style.id == style.id:
                 return new_style
@@ -261,6 +274,9 @@ class DenesterNode(AbstractCombinedNode):
 
 
     def calculate_font_size(styles):
+        """
+        Calculates font size for a merged style, using the sizes of the styles it combines
+        """
         font_size = None
 
         for style in styles:
@@ -278,6 +294,9 @@ class DenesterNode(AbstractCombinedNode):
 
             
     def calculate_percentage_font_size(current_font_size, nested_font_size):
+        """
+        Calculates percentage of another font size, ie 50% of 25%, or 30% of 100px
+        """
         if isinstance(current_font_size, ebuttdt.percentageFontSizeType):
             stripped_current_font_size = current_font_size.strip("%")
             stripped_nested_font_size = nested_font_size.strip("%")
@@ -300,6 +319,10 @@ class DenesterNode(AbstractCombinedNode):
 
 
     def get_value_from_style(styles, style_name):
+        """
+        Iterates through the styles of the span, keeping the value from the deepest-nested style (highest priority) 
+        for each attribute
+        """
         value = None
         for style in styles: # list in reverse-priority order, so last item (most important) values inherited
             if getattr(style, style_name) is not None:
