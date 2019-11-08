@@ -2,8 +2,9 @@ Denesting of EBU-TT-Live documents
 ======================================
 
 DenesterNode should be used when a EBU-TT-3 document has a div that contains
-other divs, or a span contains another span. These elements are not
-able to be nested inside each other in EBU-TT-D documents.
+other divs, or a span contains another span, and those nested elements need
+to be flattened, for example before conversion to EBU-TT-D. These elements
+are not able to be nested inside each other in EBU-TT-D documents.
 
 When documents are Denested, any nested elements must be removed from
 their parent elements, while retaining attributes they would have inherited.
@@ -23,7 +24,10 @@ div. This is done by the
 function to reduce the number of divs in the resulting file.
 
 In the combined divs, every p element should have the same region
-as its parent div, or be removed. The
+as its parent div. Any p elements that specify a different region
+to their inherited region are removed here: as per TTML semantics,
+such p elements are never presented.
+The
 :py:func:`ebu_tt_live.node.denester.DenesterNode.check_p_regions`
 function iterates through the divs that have an assigned region and
 removes any p where its region does not match.

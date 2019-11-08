@@ -84,7 +84,7 @@ class DenesterNode(AbstractCombinedNode):
 
     def div_attr(div):
         """
-        Converts div attributes to an array
+        Converts a specific subset of div attributes to an array
         """
         div_attributes =  {}
         div_attributes["styles"] = div.style
