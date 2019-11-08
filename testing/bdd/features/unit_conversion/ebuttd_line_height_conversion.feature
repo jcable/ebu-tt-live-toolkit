@@ -13,6 +13,7 @@ Feature: EBU-TT-D lineHeight conversion
         And style "s1" has attribute "fontSize" set to <fontSize>
         And it contains some text with style "s1"
         When the document is generated
+        And the EBU-TT-Live document is denested
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then the ebu_tt_d document contains style "autogenFontStyle_None_200.0" with attribute "lineHeight" set to <ebu_tt_d_value>
 

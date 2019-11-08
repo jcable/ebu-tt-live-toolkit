@@ -21,6 +21,7 @@ Feature: Remove style elements that refer to other style elements
     And   style "s_top" has attribute "color" set to "yellow"
     And   it contains some text with style "s_top"
     When  the document is generated
+    And   the EBU-TT-Live document is denested
     And   the EBU-TT-Live document is converted to EBU-TT-D
     Then  the ebu_tt_d document contains style "s_top" with attribute "fontFamily" set to "monospace"
     And   the ebu_tt_d document contains style "s_top" with attribute "color" set to "#ffff00ff"
@@ -37,6 +38,7 @@ Feature: Remove style elements that refer to other style elements
     And   region "r1" has attribute "padding" set to "5px"
     And   it contains some text with region "r1"
     When  the document is generated
+    And   the EBU-TT-Live document is denested
     And   the EBU-TT-Live document is converted to EBU-TT-D
     Then  EBUTTD document is valid
     And   the ebu_tt_d document contains style "s1" without a "padding" attribute
@@ -52,6 +54,7 @@ Feature: Remove style elements that refer to other style elements
     And   region "r1" has attribute "style" set to "s1"
     And   it contains some text with region "r1"
     When  the document is generated
+    And   the EBU-TT-Live document is denested
     And   the EBU-TT-Live document is converted to EBU-TT-D
     Then  EBUTTD document is valid
     And   the ebu_tt_d document contains style "s1" without a "padding" attribute
@@ -69,6 +72,7 @@ Feature: Remove style elements that refer to other style elements
     And   region "r1" has attribute "style" set to "s1 s2"
     And   it contains some text with region "r1"
     When  the document is generated
+    And   the EBU-TT-Live document is denested
     And   the EBU-TT-Live document is converted to EBU-TT-D
     Then  EBUTTD document is valid
     And   the ebu_tt_d document contains region "r1" with attribute "padding" set to "5px"
@@ -88,6 +92,7 @@ Feature: Remove style elements that refer to other style elements
     And   region "r1" has attribute "style" set to "s1 s3"
     And   it contains some text with region "r1"
     When  the document is generated
+    And   the EBU-TT-Live document is denested
     And   the EBU-TT-Live document is converted to EBU-TT-D
     Then  EBUTTD document is valid
     And   the ebu_tt_d document contains region "r1" with attribute "padding" set to "5px"

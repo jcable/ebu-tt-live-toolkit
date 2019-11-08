@@ -32,6 +32,7 @@ class StyledElementMixin(object):
     """
     _compatible_style_type = None
     _referenced_styles = None
+    _referenced_divs = None
     _inherited_styles = None
     _region_styles = None
     _validated_styles = None

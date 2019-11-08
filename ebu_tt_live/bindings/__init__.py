@@ -100,6 +100,24 @@ class style_type(StyledElementMixin, IDMixin, SizingValidationMixin, SemanticVal
     }
     _default_attrs = None
 
+    def check_equal(self, other):
+        return (self.backgroundColor == other.backgroundColor and
+            self.padding == other.padding and
+            self.unicodeBidi == other.unicodeBidi and
+            self.color == other.color and
+            self.direction == other.direction and
+            self.fontFamily == other.fontFamily and
+            self.fontStyle == other.fontStyle and
+            self.fontWeight == other.fontWeight and
+            self.linePadding == other.linePadding and
+            self.multiRowAlign == other.multiRowAlign and
+            self.textAlign == other.textAlign and
+            self.textDecoration == other.textDecoration and
+            self.fontSize == other.fontSize and
+            self.lineHeight == other.lineHeight and
+            self.wrapOption == other.wrapOption)
+            
+
     def __repr__(self):
         return '<style ID: {id} at {addr}>'.format(
             id=self.id,
@@ -620,6 +638,7 @@ class tt_type(SemanticDocumentMixin, raw.tt_type):
         # attributes.
         dataset['timing_begin_stack'] = []
         dataset['timing_end_stack'] = []
+        dataset['div_stack'] = []
         dataset['timing_syncbase'] = timedelta()
         dataset['tt_element'] = self
         dataset['styles_stack'] = []
@@ -886,6 +905,9 @@ class div_type(ContentContainerMixin, IDMixin, RegionedElementMixin, LiveStyledE
         )
         return copied_div
 
+    def merge(self, elem):
+        return self
+
     def _semantic_before_traversal(self, dataset, element_content=None, parent_binding=None):
         self._semantic_register_id(dataset=dataset)
         self._semantic_timebase_validation(
@@ -922,6 +944,8 @@ class div_type(ContentContainerMixin, IDMixin, RegionedElementMixin, LiveStyledE
             copied_instance=copied_instance, dataset=dataset, element_content=element_content)
         self._semantic_copy_verify_referenced_styles(dataset=dataset)
         self._semantic_copy_verify_referenced_region(dataset=dataset)
+    
+
 
 
 raw.div_type._SetSupersedingClass(div_type)

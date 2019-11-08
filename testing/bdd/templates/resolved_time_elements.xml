@@ -98,6 +98,29 @@
 {% endif %}
               >
               Some example text...
+              {% if nestedSpan_begin or nestedSpan_end %}
+              <tt:span
+                {% if nestedSpan_begin %}
+                  {% if nestedSpan_begin == "*?Empty?*" %}
+                                begin=""
+                  {% else %}
+                                begin="{{ nestedSpan_begin }}"
+                  {% endif %}
+                {% endif %}
+                {% if nestedSpan_end %}
+                  {% if nestedSpan_end == "*?Empty?*" %}
+                                end=""
+                  {% else %}
+                                end="{{ nestedSpan_end }}"
+                  {% endif%}
+                {% endif %}
+                              >
+                              Some example text...
+                
+                              
+                            </tt:span>
+                {% endif %}
+
             </tt:span>
 {% endif %}
 
