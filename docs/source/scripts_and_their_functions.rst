@@ -114,7 +114,7 @@ This node flattens nested ``div`` and ``span`` elements such that no
 a ``span``. It also removes any ``p`` elements that specify a ``region``
 attribute that differs from a specified region on an ancester element.
 
-If nested ``div`` or ``p`` elements might be present in a document, the
+If nested ``div`` or ``span`` elements might be present in a document, the
 Denester node should be used to flatten them before passing them to the
 EBU-TT-D Encoder, because EBU-TT-D does not permit such nested elements.
 
