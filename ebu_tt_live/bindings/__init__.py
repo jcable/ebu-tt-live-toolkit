@@ -1320,7 +1320,6 @@ class d_styling_type(SemanticValidationMixin, raw.d_styling_type):
     def _semantic_after_subtree_copy(self, copied_instance, dataset, element_content=None):
         pass
 
-
 raw.d_styling_type._SetSupersedingClass(d_styling_type)
 
 
