@@ -21,12 +21,8 @@ from ebu_tt_live.errors import SemanticValidationError, OutsideSegmentError, Reg
 from ebu_tt_live.strings import ERR_SEMANTIC_VALIDATION_MISSING_ATTRIBUTES, \
     ERR_SEMANTIC_VALIDATION_INVALID_ATTRIBUTES, ERR_SEMANTIC_STYLE_CIRCLE, ERR_SEMANTIC_STYLE_MISSING, \
     ERR_SEMANTIC_ELEMENT_BY_ID_MISSING, ERR_SEMANTIC_VALIDATION_EXPECTED
-<<<<<<< HEAD
 from pyxb.exceptions_ import IncompleteElementContentError, MissingAttributeError, SimpleTypeValueError, \
     UnrecognizedAttributeError
-=======
-from pyxb.exceptions_ import MissingAttributeError, SimpleTypeValueError, UnrecognizedAttributeError
->>>>>>> Validate bindings for EBU-TT-1 documents by dynamically setting superseding class on document creation
 from pyxb.utils.domutils import BindingDOMSupport
 from pyxb.binding.basis import ElementContent, NonElementContent
 from datetime import timedelta
@@ -1442,7 +1438,7 @@ class tt1_tt_type(tt_type):
 
 
 class tt1_head_type(SemanticValidationMixin, raw.head_type):
-    
+
     def _validateBinding_vx(self):
         # EBU-TT-1 documents require styling and layout elements
         if self.styling is None:
@@ -1461,7 +1457,7 @@ class tt1_layout_type(layout):
 
 
 class tt1_body_type(body_type):
-    
+
     def _validateBinding_vx(self):
         if self.dur:
             raise UnrecognizedAttributeError(type(self), 'dur')
@@ -1480,10 +1476,12 @@ _document_specific_types = {
         raw.head_type: head_type,
         raw.layout: layout,
         raw.body_type: body_type,
-
+    },
 }
-    def load_types_for_document(doc_type):
-        if doc_type not in _document_specific_types:
-            raise KeyError('Invalid parameter. Valid types are %s' % _document_specific_types.keys())
-         for raw_type, superseding_type in _document_specific_types[doc_type].items():
-            raw_type._SetSupersedingClass(superseding_type)
+
+
+def load_types_for_document(doc_type):
+    if doc_type not in _document_specific_types:
+        raise KeyError('Invalid parameter. Valid types are %s' % _document_specific_types.keys())
+    for raw_type, superseding_type in _document_specific_types[doc_type].items():
+        raw_type._SetSupersedingClass(superseding_type)
