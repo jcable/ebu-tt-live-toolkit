@@ -21,7 +21,8 @@ from ebu_tt_live.errors import SemanticValidationError, OutsideSegmentError, Reg
 from ebu_tt_live.strings import ERR_SEMANTIC_VALIDATION_MISSING_ATTRIBUTES, \
     ERR_SEMANTIC_VALIDATION_INVALID_ATTRIBUTES, ERR_SEMANTIC_STYLE_CIRCLE, ERR_SEMANTIC_STYLE_MISSING, \
     ERR_SEMANTIC_ELEMENT_BY_ID_MISSING, ERR_SEMANTIC_VALIDATION_EXPECTED
-from pyxb.exceptions_ import SimpleTypeValueError
+from pyxb.exceptions_ import IncompleteElementContentError, MissingAttributeError, SimpleTypeValueError, \
+    UnrecognizedAttributeError
 from pyxb.utils.domutils import BindingDOMSupport
 from pyxb.binding.basis import ElementContent, NonElementContent
 from datetime import timedelta
@@ -657,6 +658,15 @@ class tt_type(SemanticDocumentMixin, raw.tt_type):
         # Save this for id lookup.
         self._elements_by_id = dataset['elements_by_id']
 
+    def _validateBinding_vx(self):
+        # sequenceIdentifier and sequenceNumber are marked optional in the XSD, but are required in EBU-TT-3
+        if not self.sequenceIdentifier:
+            raise MissingAttributeError(type(self), 'sequenceIdentifier')
+        if not self.sequenceNumber:
+            raise MissingAttributeError(type(self), 'sequenceNumber')
+
+        super(tt_type, self)._validateBinding_vx()
+
     def get_element_by_id(self, elem_id, elem_type=None):
         """
         Lookup an element and return it. Optionally type is checked as well.
@@ -680,10 +690,6 @@ class tt_type(SemanticDocumentMixin, raw.tt_type):
         if self.timeBase == 'smpte':
             return ebuttdt.SMPTETimingType(timedelta_in)
 
-
-raw.tt_type._SetSupersedingClass(tt_type)
-
-
 # Head classes
 # ============
 
@@ -696,9 +702,6 @@ class head_type(SemanticValidationMixin, raw.head_type):
 
     def merge(self, other_elem, dataset):
         return self
-
-
-raw.head_type._SetSupersedingClass(head_type)
 
 
 # Body classes
@@ -1059,11 +1062,8 @@ class body_type(LiveStyledElementMixin, BodyTimingValidationMixin, SemanticValid
         self._semantic_copy_verify_referenced_styles(dataset=dataset)
 
 
-raw.body_type._SetSupersedingClass(body_type)
-
-
 class styling(SemanticValidationMixin, raw.styling):
-
+    
     def __copy__(self):
         copied_styling = styling()
         return copied_styling
@@ -1166,7 +1166,6 @@ class layout(SemanticValidationMixin, raw.layout):
         return self
 
 
-raw.layout._SetSupersedingClass(layout)
 
 # EBU TT D classes
 # ================
@@ -1342,7 +1341,7 @@ raw.d_style_type._SetSupersedingClass(d_style_type)
 
 
 class d_body_type(SemanticValidationMixin, raw.d_body_type):
-
+    
 
     def _semantic_before_copy(self, dataset, element_content=None):
         self._assert_in_segment(
@@ -1418,3 +1417,71 @@ class d_span_type(IDMixin, TimingValidationMixin,StyledElementMixin ,SemanticVal
     def _semantic_after_traversal(self, dataset, element_content=None, parent_binding=None):
         self._semantic_postprocess_timing(
                 dataset=dataset, element_content=element_content)
+# EBU TT 1 classes
+# ================
+
+class tt1_tt_type(tt_type):
+
+    def _validateBinding_vx(self):
+        if self.authorsGroupControlToken:
+            raise UnrecognizedAttributeError(type(self), 'authorsGroupControlToken')
+        if self.authorsGroupIdentifier:
+            raise UnrecognizedAttributeError(type(self), 'authorsGroupIdentifier')
+        if self.referenceClockIdentifier:
+            raise UnrecognizedAttributeError(type(self), 'referenceClockIdentifier')
+        if self.sequenceIdentifier:
+            raise UnrecognizedAttributeError(type(self), 'sequenceIdentifier')
+        if self.sequenceNumber:
+            raise UnrecognizedAttributeError(type(self), 'sequenceNumber')
+
+        super(tt_type, self)._validateBinding_vx()
+
+
+class tt1_head_type(SemanticValidationMixin, raw.head_type):
+
+    def _validateBinding_vx(self):
+        # EBU-TT-1 documents require styling and layout elements
+        if self.styling is None:
+            raise IncompleteElementContentError(self, None, None, None)
+        if self.layout is None:
+            raise IncompleteElementContentError(self, None, None, None)
+        return super()._validateBinding_vx()
+
+
+class tt1_layout_type(layout):
+
+    def _validateBinding_vx(self):
+        if len(self.region) == 0:
+            raise IncompleteElementContentError(self, None, None, None)
+        return super()._validateBinding_vx()
+
+
+class tt1_body_type(body_type):
+
+    def _validateBinding_vx(self):
+        if self.dur:
+            raise UnrecognizedAttributeError(type(self), 'dur')
+        return super()._validateBinding_vx()
+
+
+_document_specific_types = {
+    'ebutt1': {
+        raw.tt_type: tt1_tt_type,
+        raw.head_type: tt1_head_type,
+        raw.layout: tt1_layout_type,
+        raw.body_type: tt1_body_type,
+    },
+    'ebutt3': {
+        raw.tt_type: tt_type,
+        raw.head_type: head_type,
+        raw.layout: layout,
+        raw.body_type: body_type,
+    },
+}
+
+
+def load_types_for_document(doc_type):
+    if doc_type not in _document_specific_types:
+        raise KeyError('Invalid parameter. Valid types are %s' % _document_specific_types.keys())
+    for raw_type, superseding_type in _document_specific_types[doc_type].items():
+        raw_type._SetSupersedingClass(superseding_type)

@@ -171,6 +171,7 @@ Input carriage type dependent options for "carriage": ::
 Adapters will be automatically selected if not specified, or can be manually specified: ::
 
     adapters
+    ├─xml->ebutt1 : XML serialisation to EBU-TT Part 1
     ├─xml->ebutt3 : XML serialisation to EBU-TT Part 3
     ├─xml->ebuttd : XML serialisation to EBU-TT-D
     ├─ebutt3->xml : EBU-TT Part 3 to XML serialisation

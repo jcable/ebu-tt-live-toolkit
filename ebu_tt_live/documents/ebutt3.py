@@ -1,5 +1,5 @@
 import logging
-from .base import SubtitleDocument, TimeBase, CloningDocumentSequence
+from .base import SubtitleDocument, TimeBase, CloningDocumentSequence, EBUTTDocumentBase
 from .ebutt3_segmentation import EBUTT3Segmenter
 from .ebutt3_splicer import EBUTT3Splicer
 from ebu_tt_live import bindings
@@ -25,31 +25,7 @@ log = logging.getLogger(__name__)
 document_logger = logging.getLogger('document_logger')
 
 
-
-class EBUTT3ObjectBase(object):
-
-    message_type_mapping = {}
-
-    def get_xml(self):
-        raise NotImplementedError()
-
-    def get_dom(self):
-        raise NotImplementedError()
-
-    @classmethod
-    def create_from_xml(cls, xml, **kwargs):
-        instance = bindings.CreateFromDocument(
-            xml_text=xml
-        )
-        if isinstance(instance, ebuttlm.message_type):
-            return cls.message_type_mapping[instance.header.type].create_from_raw_binding(instance)
-
-    @classmethod
-    def create_from_raw_binding(cls, **kwargs):
-        raise NotImplementedError()
-
-
-class EBUTTLiveMessage(EBUTT3ObjectBase):
+class EBUTTLiveMessage(EBUTTDocumentBase):
 
     _sender = None
     _recipient = None
@@ -132,10 +108,10 @@ class EBUTTAuthorsGroupControlRequest(EBUTTLiveMessage):
         )
 
 # Register the class in the base class
-EBUTT3ObjectBase.message_type_mapping[EBUTTAuthorsGroupControlRequest.message_type_id] = EBUTTAuthorsGroupControlRequest
+EBUTTDocumentBase.message_type_mapping[EBUTTAuthorsGroupControlRequest.message_type_id] = EBUTTAuthorsGroupControlRequest
 
 
-class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
+class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
     """
     This class wraps the binding object representation of the XML and provides the features the applications in the
     specification require. e.g:availability time.
@@ -158,6 +134,7 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
 
     def __init__(self, time_base, sequence_number, sequence_identifier, lang, clock_mode=None,
                  availability_time=None, authors_group_identifier=None):
+        self.load_types_for_document()
         if not clock_mode and time_base is TimeBase.CLOCK:
             clock_mode = 'local'
         self._ebutt3_content = bindings.tt(
@@ -181,6 +158,7 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
 
     @classmethod
     def create_from_raw_binding(cls, binding, availability_time=None):
+        cls.load_types_for_document()
         instance = cls.__new__(cls)
         instance._ebutt3_content = binding
         if availability_time is not None:
@@ -190,6 +168,7 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
 
     @classmethod
     def create_from_xml(cls, xml, availability_time=None):
+        cls.load_types_for_document()
         instance = cls.create_from_raw_binding(
             binding=bindings.CreateFromDocument(
                 xml_text=xml
@@ -197,6 +176,10 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
             availability_time=availability_time
         )
         return instance
+
+    @classmethod
+    def load_types_for_document(cls):
+        bindings.load_types_for_document('ebutt3')
 
     def _cmp_key(self):
         return self.sequence_number

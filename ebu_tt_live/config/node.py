@@ -260,6 +260,24 @@ class SimpleProducer(ProducerMixin, NodeBase):
         self.backend.call_periodically(self.component.resume_producing, interval=self.config.interval)
 
 
+class EBUTT1EBUTT3Producer(ProducerMixin, ConsumerMixin, NodeBase):
+    required_config = Namespace()
+    required_config.add_option('id', default='ebutt1-ebutt3-producer')
+    required_config.add_option('sequence_identifier', default='SequenceFromEBUTT1')
+
+
+    def _create_component(self, config):
+        self.component = processing_node.EBUTT1EBUTT3ProducerNode(
+            node_id=self.config.id
+        )
+
+    def __init__(self, config, local_config):
+        super(EBUTT1EBUTT3Producer, self).__init__(config, local_config)
+        self._create_component(config)
+        self._create_input(config)
+        self._create_output(config)
+
+
 class EBUTTDEncoder(ProducerMixin, ConsumerMixin, NodeBase):
 
     required_config = Namespace()
@@ -325,6 +343,7 @@ class Handover(ConsumerMixin, ProducerMixin, NodeBase):
 
         self.backend.register_component_start(self)
 
+
 class DeDuplicator(ConsumerMixin, ProducerMixin, NodeBase):
     required_config = Namespace()
     required_config.add_option('id', default='de-duplicator')
@@ -354,6 +373,7 @@ nodes_by_type = {
     'simple-producer': SimpleProducer,
     'resequencer': ReSequencer,
     'deduplicator': DeDuplicator,
+    'ebutt1-ebutt3-producer': EBUTT1EBUTT3Producer,
     'ebuttd-encoder': EBUTTDEncoder,
     'buffer-delay': BufferDelay,
     'retiming-delay': RetimingDelay,
