@@ -4,7 +4,7 @@
             "id": "producer1",
             "type": "ebutt1-ebutt3-producer",
             "show_time": false,
-            "sequence_identifier": "TestSequence1",
+            "sequence_identifier": "SequenceFromEBUTT1",
             "input": {
                 "carriage": {
                     "type": "filesystem",

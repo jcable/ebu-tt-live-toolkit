@@ -1,37 +1,10 @@
 from ebu_tt_live import bindings
 from ebu_tt_live.bindings import _ebuttlm as ebuttlm
 from ebu_tt_live.documents import SubtitleDocument
+from ebu_tt_live.documents.base import EBUTTDocumentBase
+from ebu_tt_live.documents.time_utils import TimelineUtilMixin
 
-
-class EBUTT1ObjectBase(object):
-    message_type_mapping = {}
-
-    def get_xml(self):
-        raise NotImplementedError()
-
-    def get_dom(self):
-        raise NotImplementedError()
-
-    @classmethod
-    def create_from_xml(cls, xml):
-        instance = bindings.CreateFromDocument(
-            xml_text=xml
-        )
-        if isinstance(instance, ebuttlm.message_type):
-            return cls.message_type_mapping[instance.header.type].create_from_raw_binding(instance)
-
-    @classmethod
-    def create_from_raw_binding(cls, **kwargs):
-        raise NotImplementedError()
-
-
-class TimelineUtilMixin(object):
-
-    def add_to_timeline(self, element):
-        pass
-
-
-class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTT1ObjectBase):
+class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
     """
     This class wraps the binding object representation of the XML and provides the features the applications in the
     specification require.
@@ -91,9 +64,6 @@ class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTT1ObjectBase):
 
     def set_end(self, end):
         self._ebutt1_content.body.end = end
-
-    def set_dur(self, dur):
-        self._ebutt1_content.body.dur = dur
 
     @property
     def binding(self):

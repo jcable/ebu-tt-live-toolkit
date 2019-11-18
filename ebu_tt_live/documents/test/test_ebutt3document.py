@@ -1,6 +1,7 @@
 from unittest import TestCase
 from datetime import timedelta, datetime
-from ebu_tt_live.documents import EBUTT3Document, EBUTT3ObjectBase, EBUTTAuthorsGroupControlRequest
+from ebu_tt_live.documents import EBUTT3Document, EBUTTAuthorsGroupControlRequest
+from ebu_tt_live.documents.base import EBUTTDocumentBase
 import os
 import six
 from ebu_tt_live.utils import compare_xml
@@ -62,7 +63,7 @@ class TestEBUTT3Document(TestCase):
         file_path = os.path.join(os.path.dirname(__file__), 'data', 'message.xml')
         with open(file_path) as xml_file:
             xml = xml_file.read()
-        instance = EBUTT3ObjectBase.create_from_xml(xml)
+        instance = EBUTTDocumentBase.create_from_xml(xml)
 
         self.assertIsInstance(instance, EBUTTAuthorsGroupControlRequest)
         self.assertEqual(instance.sequence_identifier, 'TestSequence')
@@ -75,7 +76,7 @@ class TestEBUTT3Document(TestCase):
         file_path = os.path.join(os.path.dirname(__file__), 'data', 'message.xml')
         with open(file_path) as xml_file:
             xml = xml_file.read()
-        instance = EBUTT3ObjectBase.create_from_xml(xml)
+        instance = EBUTTDocumentBase.create_from_xml(xml)
 
         re_xml = instance.get_xml()
 

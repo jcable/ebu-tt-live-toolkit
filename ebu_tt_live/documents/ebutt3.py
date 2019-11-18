@@ -1,5 +1,5 @@
 import logging
-from .base import SubtitleDocument, TimeBase, CloningDocumentSequence
+from .base import SubtitleDocument, TimeBase, CloningDocumentSequence, EBUTTDocumentBase
 from .ebutt3_segmentation import EBUTT3Segmenter
 from .ebutt3_splicer import EBUTT3Splicer
 from ebu_tt_live import bindings
@@ -25,31 +25,7 @@ log = logging.getLogger(__name__)
 document_logger = logging.getLogger('document_logger')
 
 
-
-class EBUTT3ObjectBase(object):
-
-    message_type_mapping = {}
-
-    def get_xml(self):
-        raise NotImplementedError()
-
-    def get_dom(self):
-        raise NotImplementedError()
-
-    @classmethod
-    def create_from_xml(cls, xml, **kwargs):
-        instance = bindings.CreateFromDocument(
-            xml_text=xml
-        )
-        if isinstance(instance, ebuttlm.message_type):
-            return cls.message_type_mapping[instance.header.type].create_from_raw_binding(instance)
-
-    @classmethod
-    def create_from_raw_binding(cls, **kwargs):
-        raise NotImplementedError()
-
-
-class EBUTTLiveMessage(EBUTT3ObjectBase):
+class EBUTTLiveMessage(EBUTTDocumentBase):
 
     _sender = None
     _recipient = None
@@ -132,10 +108,10 @@ class EBUTTAuthorsGroupControlRequest(EBUTTLiveMessage):
         )
 
 # Register the class in the base class
-EBUTT3ObjectBase.message_type_mapping[EBUTTAuthorsGroupControlRequest.message_type_id] = EBUTTAuthorsGroupControlRequest
+EBUTTDocumentBase.message_type_mapping[EBUTTAuthorsGroupControlRequest.message_type_id] = EBUTTAuthorsGroupControlRequest
 
 
-class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
+class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
     """
     This class wraps the binding object representation of the XML and provides the features the applications in the
     specification require. e.g:availability time.

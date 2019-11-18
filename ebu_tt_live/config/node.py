@@ -263,6 +263,8 @@ class SimpleProducer(ProducerMixin, NodeBase):
 class EBUTT1EBUTT3Producer(ProducerMixin, ConsumerMixin, NodeBase):
     required_config = Namespace()
     required_config.add_option('id', default='ebutt1-ebutt3-producer')
+    required_config.add_option('sequence_identifier', default='SequenceFromEBUTT1')
+
 
     def _create_component(self, config):
         self.component = processing_node.EBUTT1EBUTT3ProducerNode(
