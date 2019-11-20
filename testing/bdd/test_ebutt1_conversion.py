@@ -23,7 +23,6 @@ def when_documentMetadata_contains_documentIdentifier(template_dict):
 @when('the XML is parsed as a valid EBU-TT-1 document')
 def when_document_parsed_ebutt1(test_context, template_file, template_dict):
     xml_text = template_file.render(template_dict)
-    print(xml_text)
     ebutt1_document = EBUTT1Document.create_from_xml(xml_text)
     ebutt1_document.validate()
     test_context['ebutt1_document'] = ebutt1_document
@@ -34,18 +33,15 @@ def when_ebutt1_converted_to_ebutt3(test_context, template_file, template_dict):
     doc_xml = test_context["ebutt1_document"].get_xml()
     ebutt1_doc = EBUTT1Document.create_from_xml(doc_xml)
     converted_bindings = ebutt1_converter.convert_document(ebutt1_doc.binding)
-    print('we have converted bindings')
     ebutt3_document = EBUTT3Document.create_from_raw_binding(converted_bindings)
     test_context['ebutt3_document'] = ebutt3_document
 
 @then('the EBU-TT-3 document is valid')
 def then_ebutt3_doc_valid(test_context):
     test_context['ebutt3_document'].validate()
-    print('valid EBU-TT-3 document is:')
-    print(test_context['ebutt3_document'].get_xml())
+    assert isinstance(test_context['ebutt3_document'], EBUTT3Document)
 
 @then(parsers.parse('the sequenceIdentifier is "{value}"'))
 def then_sequence_identifier_is_value(test_context, value):
-    print('document sequence identifier is {}'.format(test_context['ebutt3_document'].sequence_identifier))
     assert test_context['ebutt3_document'].sequence_identifier == value
 

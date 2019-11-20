@@ -53,7 +53,6 @@ class EBUTT1EBUTT3Converter(object):
             return self.convert_unknown
 
     def convert_tt(self, tt_in, dataset):
-        print('convert_tt')
         dataset['timeBase'] = tt_in.timeBase
         new_elem = tt(
             head=self.convert_element(tt_in.head, dataset),
@@ -67,48 +66,24 @@ class EBUTT1EBUTT3Converter(object):
             _strict_keywords=False
         )
 
-        # new_elem = tt_type()
-        # new_elem.head = self.convert_element(tt_in.head, dataset)
-
-        print('made a tt_type')
         if 'documentIdentifier' in dataset:
-            print('overriding sequence identifier with documentIdentifier')
             new_elem.sequenceIdentifier = dataset['documentIdentifier']
-        else:
-            print('Didn''t find a documentIdentifier')
 
-        print('finished converting tt')
         return new_elem
 
     def convert_head(self, head_in, dataset):
-        print('convert_head')
         new_elem = head_type()
         head_children = self.convert_children(head_in, dataset)
-        print('head_children len = {}'.format(len(head_children)))
         for item in head_children:
-            if False: #isinstance(item, layout):
-                print('setting layout directly')
-                #new_elem.layout = item
-                for i in item.orderedContent():
-                    new_elem.layout = i
-            else:
-                print('trying to append to head a {}'.format(type(item)))
-                try:
-                    new_elem.append(item)
-                except ValidationError as e:
-                    print(e.details())
-                    raise(e)
+            new_elem.append(item)
         
-        print('finished convert_head')
         return new_elem
 
     def convert_headMetadata(self, headMetadata_in, dataset):
-        print('convert_headMetadata')
         new_elem = headMetadata_type(
             *self.convert_children(headMetadata_in, dataset)
         )
 
-        print('children converted')
         # Special handling for conformsToStandard. Throw out the old, add a new.
         # TODO: When XSD updated to allow ebuttm document metadata directly in
         # head metadata, check for this by uncommenting the following lines:
@@ -130,35 +105,23 @@ class EBUTT1EBUTT3Converter(object):
         # if new_elem.documentIdentifier is not None:
         #     _rememberDocumentIdentifier(new_elem.documentIdentifier, dataset)
         
-        if new_elem.documentMetadata is not None:
-            print('we have a documentMetadata')
-            if new_elem.documentMetadata.documentIdentifier is not None:
-                print('the documentMetadata has a documentIdentifier')
-                self._rememberDocumentIdentifier(new_elem.documentMetadata.documentIdentifier, dataset)
-            else:
-                print('the documentMetadata does not have a documentIdentifier')
-                print(new_elem.documentMetadata)
-        else:
-            print('we do not have a documentMetadata')
+        if new_elem.documentMetadata and new_elem.documentMetadata.documentIdentifier is not None:
+            self._rememberDocumentIdentifier(new_elem.documentMetadata.documentIdentifier, dataset)
 
-        print('finished converting headMetadata')
         return new_elem
 
     def _rememberDocumentIdentifier(self, documentIdentifier_in, dataset):
         if 'documentIdentifier' in dataset:
             raise Exception('Already got a documentIdentifier')
         dataset['documentIdentifier']=documentIdentifier_in
-        print('documentIdentifier = {}'.format(dataset['documentIdentifier']))
 
     def convert_styling(self, styling_in, dataset):
-        print('convert_styling')
         new_elem = styling(
             *self.convert_children(styling_in, dataset)
         )
         return new_elem
 
     def convert_style(self, style_in, dataset):
-        print('convert_style')
         new_elem = style_type(
             *self.convert_children(style_in, dataset),
             id=style_in.id,
@@ -183,18 +146,13 @@ class EBUTT1EBUTT3Converter(object):
         return new_elem
 
     def convert_layout(self, layout_in, dataset):
-        print('convert_layout')
         new_elem = layout(
             *self.convert_children(layout_in, dataset)
         )
 
-        print('made a layout with {} children'.format(len(new_elem.orderedContent())))
-        print('layout''s children are {}'.format(new_elem.orderedContent()))
-
         return new_elem
 
     def convert_region(self, region_in, dataset):
-        print('convert_region')
         new_elem = region_type(
             *self.convert_children(region_in, dataset),
             id=region_in.id,
@@ -211,7 +169,6 @@ class EBUTT1EBUTT3Converter(object):
         return new_elem
 
     def convert_body(self, body_in, dataset):
-        print('convert_body')
         if len(body_in.div) == 0:
             return None
         new_elem = body_type(
@@ -225,7 +182,6 @@ class EBUTT1EBUTT3Converter(object):
         return new_elem
 
     def convert_div(self, div_in, dataset):
-        print('convert_div')
         if len(div_in.orderedContent()) == 0:
             return None
         new_elem = div_type(
@@ -241,7 +197,6 @@ class EBUTT1EBUTT3Converter(object):
         return new_elem
 
     def convert_p(self, p_in, dataset):
-        print('convert_p')
         new_elem = p_type(
             *self.convert_children(p_in, dataset),
             id=p_in.id,
@@ -257,7 +212,6 @@ class EBUTT1EBUTT3Converter(object):
         return new_elem
 
     def convert_span(self, span_in, dataset):
-        print('convert_span')
         new_elem = span_type(
             *self.convert_children(span_in, dataset),
             id=span_in.id,
@@ -272,13 +226,10 @@ class EBUTT1EBUTT3Converter(object):
         return new_elem
 
     def convert_br(self, br_in, dataset):
-        print('convert_br')
         return br_type()
 
     def convert_unknown(self, element_in, dataset):
-        print('convert_unknown')
-        # return None
-
+        # Clone it without doing anything else. Probably needs some testing!
         new_elem = element_in.toDOM().cloneNode(deep=True).documentElement
         return new_elem
 
@@ -289,28 +240,20 @@ class EBUTT1EBUTT3Converter(object):
         :param dataset:
         :return:
         """
-        print('convert_children')
         output = []
 
         children = element.orderedContent()
-        print(' converting {} children'.format(len(children)))
 
         for item in children:
             if isinstance(item, NonElementContent):
-                print(' appending a NonElementContent')
                 output.append(copy.deepcopy(item.value))
             elif isinstance(item, ElementContent):
-                print(' converting an ElementContent')
                 conv_elem = self.convert_element(item.value, dataset)
                 if conv_elem is not None:
-                    print('  appending a converted element')
                     output.append(conv_elem)
-                else:
-                    print('  WARNING converted element is None')
             else:
                 raise Exception('Can this even happen!??!?!?!')
 
-        print('finished convert_children')
         return output
 
     def convert_element(self, element, dataset):
