@@ -1,18 +1,317 @@
+from ebu_tt_live.bindings import tt, tt_type, tt1_tt_type, tt1_body_type, \
+    body_type, div_type, tt1_head_type, tt1_layout_type, p_type, span_type,  \
+    br_type, head_type, style_type, styling, layout, \
+    region_type, ebuttdt, StyledElementMixin
+from ebu_tt_live.bindings._ebuttm import headMetadata_type, documentMetadata, \
+    metadataBase_type
+from ebu_tt_live.documents import EBUTT3Document
+from pyxb.binding.basis import NonElementContent, ElementContent
+import copy
 import logging
+from pyxb import ValidationError
 
 log = logging.getLogger(__name__)
 
 
 class EBUTT1EBUTT3Converter(object):
 
-    def __init__(self):
+    _semantic_dataset = None
+    _sequenceIdentifier = None
+
+    def __init__(self, sequence_id):
+        self._sequenceIdentifier = sequence_id
         pass
 
     def map_type(self, in_element):
-        return self.convert_unknown
+        if isinstance(in_element, tt1_tt_type):
+            return self.convert_tt
+        elif isinstance(in_element, tt1_head_type):
+            return self.convert_head
+        elif isinstance(in_element, tt1_body_type):
+            return self.convert_body
+        elif isinstance(in_element, div_type):
+            return self.convert_div
+        elif isinstance(in_element, p_type):
+            return self.convert_p
+        elif isinstance(in_element, span_type):
+            return self.convert_span
+        elif isinstance(in_element, br_type):
+            return self.convert_br
+        elif isinstance(in_element, tt1_layout_type):
+            return self.convert_layout
+        elif isinstance(in_element, region_type):
+            return self.convert_region
+        elif isinstance(in_element, styling):
+            return self.convert_styling
+        elif isinstance(in_element, style_type):
+            return self.convert_style
+        elif isinstance(in_element, headMetadata_type):
+            return self.convert_headMetadata
+        elif isinstance(in_element, metadataBase_type):
+            return self.convert_metadata
+        else:
+            return self.convert_unknown
 
-    def convert_unknown(self, element, dataset):
-        return None
+    def convert_tt(self, tt_in, dataset):
+        print('convert_tt')
+        dataset['timeBase'] = tt_in.timeBase
+        new_elem = tt(
+            head=self.convert_element(tt_in.head, dataset),
+            body=self.convert_element(tt_in.body, dataset),
+            timeBase='media',
+            lang=tt_in.lang,
+            space=tt_in.space,
+            cellResolution=tt_in.cellResolution,
+            sequenceIdentifier=self._sequenceIdentifier,
+            sequenceNumber = '1',
+            _strict_keywords=False
+        )
+
+        # new_elem = tt_type()
+        # new_elem.head = self.convert_element(tt_in.head, dataset)
+
+        print('made a tt_type')
+        if 'documentIdentifier' in dataset:
+            print('overriding sequence identifier with documentIdentifier')
+            new_elem.sequenceIdentifier = dataset['documentIdentifier']
+        else:
+            print('Didn''t find a documentIdentifier')
+
+        print('finished converting tt')
+        return new_elem
+
+    def convert_head(self, head_in, dataset):
+        print('convert_head')
+        new_elem = head_type()
+        head_children = self.convert_children(head_in, dataset)
+        print('head_children len = {}'.format(len(head_children)))
+        for item in head_children:
+            if False: #isinstance(item, layout):
+                print('setting layout directly')
+                #new_elem.layout = item
+                for i in item.orderedContent():
+                    new_elem.layout = i
+            else:
+                print('trying to append to head a {}'.format(type(item)))
+                try:
+                    new_elem.append(item)
+                except ValidationError as e:
+                    print(e.details())
+                    raise(e)
+        
+        print('finished convert_head')
+        return new_elem
+
+    def convert_headMetadata(self, headMetadata_in, dataset):
+        print('convert_headMetadata')
+        new_elem = headMetadata_type(
+            *self.convert_children(headMetadata_in, dataset)
+        )
+
+        print('children converted')
+        # Special handling for conformsToStandard. Throw out the old, add a new.
+        # TODO: When XSD updated to allow ebuttm document metadata directly in
+        # head metadata, check for this by uncommenting the following lines:
+        # if new_elem.conformsToStandard is not None:
+        #     new_elem.conformsToStandard=[
+        #         'urn:ebu:tt:live:2017-05']
+        if new_elem.documentMetadata is None:
+            new_elem.documentMetadata = documentMetadata(conformsToStandard=[
+                'urn:ebu:tt:live:2017-05'
+            ])
+        else:
+            new_elem.documentMetadata.conformsToStandard=[
+                'urn:ebu:tt:live:2017-05']
+
+        # We want to remember the documentIdentifier and use it later for the 
+        # sequence identifier
+        # TODO: When XSD updated to allow ebuttm document metadata directly in
+        # head metadata, check for this by uncommenting the following lines:
+        # if new_elem.documentIdentifier is not None:
+        #     _rememberDocumentIdentifier(new_elem.documentIdentifier, dataset)
+        
+        if new_elem.documentMetadata is not None:
+            print('we have a documentMetadata')
+            if new_elem.documentMetadata.documentIdentifier is not None:
+                print('the documentMetadata has a documentIdentifier')
+                self._rememberDocumentIdentifier(new_elem.documentMetadata.documentIdentifier, dataset)
+            else:
+                print('the documentMetadata does not have a documentIdentifier')
+                print(new_elem.documentMetadata)
+        else:
+            print('we do not have a documentMetadata')
+
+        print('finished converting headMetadata')
+        return new_elem
+
+    def _rememberDocumentIdentifier(self, documentIdentifier_in, dataset):
+        if 'documentIdentifier' in dataset:
+            raise Exception('Already got a documentIdentifier')
+        dataset['documentIdentifier']=documentIdentifier_in
+        print('documentIdentifier = {}'.format(dataset['documentIdentifier']))
+
+    def convert_styling(self, styling_in, dataset):
+        print('convert_styling')
+        new_elem = styling(
+            *self.convert_children(styling_in, dataset)
+        )
+        return new_elem
+
+    def convert_style(self, style_in, dataset):
+        print('convert_style')
+        new_elem = style_type(
+            *self.convert_children(style_in, dataset),
+            id=style_in.id,
+            style=style_in.style,
+            direction=style_in.direction,
+            fontFamily=style_in.fontFamily,
+            fontSize=style_in.fontSize,
+            lineHeight=style_in.lineHeight,
+            textAlign=style_in.textAlign,
+            color=style_in.color,
+            backgroundColor=style_in.backgroundColor,
+            fontStyle=style_in.fontStyle,
+            fontWeight=style_in.fontWeight,
+            textDecoration=style_in.textDecoration,
+            unicodeBidi=style_in.unicodeBidi,
+            wrapOption=style_in.wrapOption,
+            padding=style_in.padding,
+            multiRowAlign=style_in.multiRowAlign,
+            linePadding=style_in.linePadding,
+            _strict_keywords=False
+        )
+        return new_elem
+
+    def convert_layout(self, layout_in, dataset):
+        print('convert_layout')
+        new_elem = layout(
+            *self.convert_children(layout_in, dataset)
+        )
+
+        print('made a layout with {} children'.format(len(new_elem.orderedContent())))
+        print('layout''s children are {}'.format(new_elem.orderedContent()))
+
+        return new_elem
+
+    def convert_region(self, region_in, dataset):
+        print('convert_region')
+        new_elem = region_type(
+            *self.convert_children(region_in, dataset),
+            id=region_in.id,
+            origin=region_in.origin,
+            extent=region_in.extent,
+            style=region_in.style,
+            displayAlign=region_in.displayAlign,
+            padding=region_in.padding,
+            writingMode=region_in.writingMode,
+            showBackground=region_in.showBackground,
+            overflow=region_in.overflow,
+            _strict_keywords=False
+        )
+        return new_elem
+
+    def convert_body(self, body_in, dataset):
+        print('convert_body')
+        if len(body_in.div) == 0:
+            return None
+        new_elem = body_type(
+            *self.convert_children(body_in, dataset),
+            agent=body_in.agent,
+            role=body_in.role,
+            style=body_in.style,
+            begin=body_in.begin,
+            end=body_in.end
+        )
+        return new_elem
+
+    def convert_div(self, div_in, dataset):
+        print('convert_div')
+        if len(div_in.orderedContent()) == 0:
+            return None
+        new_elem = div_type(
+            *self.convert_children(div_in, dataset),
+            id=div_in.id,
+            region=div_in.region,
+            style=div_in.style,
+            lang=div_in.lang,
+            agent=div_in.agent,
+            begin=div_in.begin,
+            end=div_in.end
+        )
+        return new_elem
+
+    def convert_p(self, p_in, dataset):
+        print('convert_p')
+        new_elem = p_type(
+            *self.convert_children(p_in, dataset),
+            id=p_in.id,
+            space=p_in.space,
+            lang=p_in.lang,
+            region=p_in.region,
+            style=p_in.style,
+            begin=p_in.begin,
+            end=p_in.end,
+            agent=p_in.agent,
+            role=p_in.role
+        )
+        return new_elem
+
+    def convert_span(self, span_in, dataset):
+        print('convert_span')
+        new_elem = span_type(
+            *self.convert_children(span_in, dataset),
+            id=span_in.id,
+            space=span_in.space,
+            lang=span_in.lang,
+            style=span_in.style,
+            begin=span_in.begin,
+            end=span_in.end,
+            agent=span_in.agent,
+            role=span_in.role
+        )
+        return new_elem
+
+    def convert_br(self, br_in, dataset):
+        print('convert_br')
+        return br_type()
+
+    def convert_unknown(self, element_in, dataset):
+        print('convert_unknown')
+        # return None
+
+        new_elem = element_in.toDOM().cloneNode(deep=True).documentElement
+        return new_elem
+
+    def convert_children(self, element, dataset):
+        """
+        Recursive step
+        :param element:
+        :param dataset:
+        :return:
+        """
+        print('convert_children')
+        output = []
+
+        children = element.orderedContent()
+        print(' converting {} children'.format(len(children)))
+
+        for item in children:
+            if isinstance(item, NonElementContent):
+                print(' appending a NonElementContent')
+                output.append(copy.deepcopy(item.value))
+            elif isinstance(item, ElementContent):
+                print(' converting an ElementContent')
+                conv_elem = self.convert_element(item.value, dataset)
+                if conv_elem is not None:
+                    print('  appending a converted element')
+                    output.append(conv_elem)
+                else:
+                    print('  WARNING converted element is None')
+            else:
+                raise Exception('Can this even happen!??!?!?!')
+
+        print('finished convert_children')
+        return output
 
     def convert_element(self, element, dataset):
         converter = self.map_type(element)
@@ -23,6 +322,9 @@ class EBUTT1EBUTT3Converter(object):
             self._semantic_dataset = {}
         else:
             self._semantic_dataset = dataset
+
+        # Make sure that any new elements we correct get the right bindings
+        EBUTT3Document.load_types_for_document()
         converted_bindings = self.convert_element(
             root_element,
             self._semantic_dataset
