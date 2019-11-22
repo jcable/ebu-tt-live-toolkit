@@ -1,14 +1,13 @@
-from ebu_tt_live.bindings import tt, tt_type, tt1_tt_type, tt1_body_type, \
+from ebu_tt_live.bindings import tt, tt1_tt_type, tt1_body_type, \
     body_type, div_type, tt1_head_type, tt1_layout_type, p_type, span_type,  \
     br_type, head_type, style_type, styling, layout, \
-    region_type, ebuttdt, StyledElementMixin
+    region_type
 from ebu_tt_live.bindings._ebuttm import headMetadata_type, documentMetadata, \
     metadataBase_type
 from ebu_tt_live.documents import EBUTT3Document
 from pyxb.binding.basis import NonElementContent, ElementContent
 import copy
 import logging
-from pyxb import ValidationError
 
 log = logging.getLogger(__name__)
 
@@ -17,9 +16,11 @@ class EBUTT1EBUTT3Converter(object):
 
     _semantic_dataset = None
     _sequenceIdentifier = None
+    _use_doc_id_as_seq_id = False
 
-    def __init__(self, sequence_id):
+    def __init__(self, sequence_id, use_doc_id_as_seq_id=False):
         self._sequenceIdentifier = sequence_id
+        self._use_doc_id_as_seq_id = use_doc_id_as_seq_id
         pass
 
     def map_type(self, in_element):
@@ -62,11 +63,11 @@ class EBUTT1EBUTT3Converter(object):
             space=tt_in.space,
             cellResolution=tt_in.cellResolution,
             sequenceIdentifier=self._sequenceIdentifier,
-            sequenceNumber = '1',
+            sequenceNumber='1',
             _strict_keywords=False
         )
 
-        if 'documentIdentifier' in dataset:
+        if self._use_doc_id_as_seq_id and 'documentIdentifier' in dataset:
             new_elem.sequenceIdentifier = dataset['documentIdentifier']
 
         return new_elem
@@ -95,7 +96,7 @@ class EBUTT1EBUTT3Converter(object):
                 'urn:ebu:tt:live:2017-05'
             ])
         else:
-            new_elem.documentMetadata.conformsToStandard=[
+            new_elem.documentMetadata.conformsToStandard = [
                 'urn:ebu:tt:live:2017-05']
 
         # We want to remember the documentIdentifier and use it later for the 
@@ -113,7 +114,7 @@ class EBUTT1EBUTT3Converter(object):
     def _rememberDocumentIdentifier(self, documentIdentifier_in, dataset):
         if 'documentIdentifier' in dataset:
             raise Exception('Already got a documentIdentifier')
-        dataset['documentIdentifier']=documentIdentifier_in
+        dataset['documentIdentifier'] = documentIdentifier_in
 
     def convert_styling(self, styling_in, dataset):
         new_elem = styling(

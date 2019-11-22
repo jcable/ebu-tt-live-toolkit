@@ -27,9 +27,28 @@ def when_document_parsed_ebutt1(test_context, template_file, template_dict):
     ebutt1_document.validate()
     test_context['ebutt1_document'] = ebutt1_document
 
+@when('the EBU-TT-1 converter is set to use the documentIdentifier as a sequenceIdentifier')
+def when_converter_uses_docId_as_seqId(test_context):
+    test_context['use_doc_id_as_seq_id'] = True
+
+@when('the EBU-TT-1 converter is set not to use the documentIdentifier as a sequenceIdentifier')
+def when_converter_uses_docId_as_seqId(test_context):
+    test_context['use_doc_id_as_seq_id'] = False
+
+@when(parsers.parse('the EBU-TT-1 converter sequenceIdentifier is "{seq_id}"'))
+def when_converter_seq_id(test_context, seq_id):
+    test_context['converter_seq_id'] = seq_id
+
 @when('the EBU-TT-1 document is converted to EBU-TT-3')
 def when_ebutt1_converted_to_ebutt3(test_context, template_file, template_dict):
-    ebutt1_converter = EBUTT1EBUTT3Converter(sequence_id = 'TestConverter')
+    use_doc_id_as_seq_id = False
+    if 'use_doc_id_as_seq_id' in test_context:
+        use_doc_id_as_seq_id = test_context['use_doc_id_as_seq_id']
+    seq_id = 'TestConverter'
+    if 'converter_seq_id' in test_context:
+        seq_id = test_context['converter_seq_id']
+    ebutt1_converter = EBUTT1EBUTT3Converter(sequence_id = seq_id, 
+        use_doc_id_as_seq_id = use_doc_id_as_seq_id)
     doc_xml = test_context["ebutt1_document"].get_xml()
     ebutt1_doc = EBUTT1Document.create_from_xml(doc_xml)
     converted_bindings = ebutt1_converter.convert_document(ebutt1_doc.binding)
