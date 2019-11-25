@@ -48,7 +48,7 @@ class TestEBUTT3ToEBUTTDConverter(TestCase):
 
         ebutt3_to_ebuttd(document, self._media_clock)
 
-    def test_ericsson_1(self):
+    def test_ericsson_3(self):
 
         xml_file = self._load_asset('converter_ericsson3.xml')
 
