@@ -3,7 +3,7 @@ from ebu_tt_live.bindings import tt, tt1_tt_type, tt1_body_type, \
     br_type, head_type, style_type, styling, layout, \
     region_type
 from ebu_tt_live.bindings._ebuttm import headMetadata_type, documentMetadata, \
-    metadataBase_type
+    metadataBase_type, divMetadata_type
 from ebu_tt_live.documents import EBUTT3Document
 from pyxb.binding.basis import NonElementContent, ElementContent
 import copy
@@ -48,6 +48,8 @@ class EBUTT1EBUTT3Converter(object):
             return self.convert_style
         elif isinstance(in_element, headMetadata_type):
             return self.convert_headMetadata
+        elif isinstance(in_element, divMetadata_type):
+            return self.convert_divMetadata
         elif isinstance(in_element, metadataBase_type):
             return self.convert_metadata
         else:
@@ -115,6 +117,18 @@ class EBUTT1EBUTT3Converter(object):
         if 'documentIdentifier' in dataset:
             raise Exception('Already got a documentIdentifier')
         dataset['documentIdentifier'] = documentIdentifier_in
+
+    def convert_divMetadata(self, divmetadata_in, dataset):
+        new_elem = divMetadata_type(
+            *self.convert_children(divmetadata_in, dataset)
+        )
+        return new_elem
+
+    def convert_metadata(self, metadata_in, dataset):
+        new_elem = metadataBase_type(
+            *self.convert_children(metadata_in, dataset)
+        )
+        return new_elem
 
     def convert_styling(self, styling_in, dataset):
         new_elem = styling(
@@ -230,8 +244,7 @@ class EBUTT1EBUTT3Converter(object):
         return br_type()
 
     def convert_unknown(self, element_in, dataset):
-        # Clone it without doing anything else. Probably needs some testing!
-        new_elem = element_in.toDOM().cloneNode(deep=True).documentElement
+        new_elem = copy.deepcopy(element_in)
         return new_elem
 
     def convert_children(self, element, dataset):

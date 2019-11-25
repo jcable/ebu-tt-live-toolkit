@@ -1,8 +1,10 @@
 from ebu_tt_live import bindings
-from ebu_tt_live.bindings import _ebuttlm as ebuttlm
+from ebu_tt_live.bindings import _ebuttlm as ebuttlm, _ebuttm as metadata
 from ebu_tt_live.documents import SubtitleDocument
 from ebu_tt_live.documents.base import EBUTTDocumentBase
 from ebu_tt_live.documents.time_utils import TimelineUtilMixin
+from .base import TimeBase
+from pyxb import BIND
 
 class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
     """
@@ -16,9 +18,31 @@ class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
     def _cmp_key(self):
         raise NotImplementedError()
 
-    def __init__(self):
+    def __init__(self, time_base, lang, head, clock_mode=None, frame_rate=None, frame_rate_multiplier=None, drop_mode=None, marker_mode=None):
         self.load_types_for_document()
-        self._ebutt1_content = bindings.tt()
+        if not clock_mode and time_base is TimeBase.CLOCK:
+            clock_mode = 'local'
+        if time_base is TimeBase.SMPTE:
+            if not frame_rate:
+                frame_rate = '30'
+            if not frame_rate_multiplier:
+                frame_rate_multiplier = '1 1'
+            if not drop_mode:
+                drop_mode = 'nonDrop'
+            if not marker_mode:
+                marker_mode = 'discontinuous'
+
+        self._ebutt1_content = bindings.tt(
+            timeBase=time_base,
+            clockMode=clock_mode,
+            frameRate=frame_rate,
+            frameRateMultiplier=frame_rate_multiplier,
+            dropMode=drop_mode,
+            markerMode=marker_mode,
+            lang=lang,
+            head=head,
+            body=BIND()
+        )
         self.validate()
 
     def validate(self):
