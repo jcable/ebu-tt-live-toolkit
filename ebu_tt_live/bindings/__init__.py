@@ -19,7 +19,6 @@ from ebu_tt_live.bindings.validation.content import SubtitleContentContainer, Co
 from .validation.validator import SemanticValidator
 from ebu_tt_live.errors import SemanticValidationError, OutsideSegmentError, RegionExtendingOutsideDocumentError, InvalidRegionOriginType, InvalidRegionExtentType
 from ebu_tt_live.strings import ERR_SEMANTIC_VALIDATION_MISSING_ATTRIBUTES, \
-    ERR_SEMANTIC_VALIDATION_INVALID_ATTRIBUTES, \
     ERR_SEMANTIC_VALIDATION_UNEXPECTED_ATTRIBUTES, \
     ERR_SEMANTIC_STYLE_CIRCLE, ERR_SEMANTIC_STYLE_MISSING, \
     ERR_SEMANTIC_ELEMENT_BY_ID_MISSING, ERR_SEMANTIC_VALIDATION_EXPECTED

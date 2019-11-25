@@ -1,10 +1,10 @@
 from ebu_tt_live import bindings
-from ebu_tt_live.bindings import _ebuttlm as ebuttlm, _ebuttm as metadata
 from ebu_tt_live.documents import SubtitleDocument
 from ebu_tt_live.documents.base import EBUTTDocumentBase
 from ebu_tt_live.documents.time_utils import TimelineUtilMixin
 from .base import TimeBase
 from pyxb import BIND
+
 
 class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
     """
@@ -18,7 +18,9 @@ class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
     def _cmp_key(self):
         raise NotImplementedError()
 
-    def __init__(self, time_base, lang, head, clock_mode=None, frame_rate=None, frame_rate_multiplier=None, drop_mode=None, marker_mode=None):
+    def __init__(self, time_base, lang, head, clock_mode=None,
+                 frame_rate=None, frame_rate_multiplier=None,
+                 drop_mode=None, marker_mode=None):
         self.load_types_for_document()
         if not clock_mode and time_base is TimeBase.CLOCK:
             clock_mode = 'local'
@@ -64,7 +66,8 @@ class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
     @classmethod
     def create_from_xml(cls, xml):
         cls.load_types_for_document()
-        instance = cls.create_from_raw_binding(binding=bindings.CreateFromDocument(xml_text=xml))
+        instance = cls.create_from_raw_binding(
+            binding=bindings.CreateFromDocument(xml_text=xml))
         return instance
 
     @classmethod
@@ -100,4 +103,5 @@ class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
         return self._ebutt1_content.toDOM()
 
     def get_element_by_id(self, elem_id, elem_type=None):
-        return self.binding.get_element_by_id(elem_id=elem_id, elem_type=elem_type)
+        return self.binding.get_element_by_id(
+            elem_id=elem_id, elem_type=elem_type)

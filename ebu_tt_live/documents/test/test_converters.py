@@ -5,9 +5,10 @@ import os
 from ebu_tt_live.documents.converters import ebutt3_to_ebuttd, ebutt1_to_ebutt3
 from ebu_tt_live.documents.ebutt3 import EBUTT3Document
 from ebu_tt_live.documents.ebutt1 import EBUTT1Document
-from ebu_tt_live.clocks.local import LocalMachineClock
 from ebu_tt_live.clocks.media import MediaClock
-from ebu_tt_live.bindings import tt1_head_type, styling, style_type, tt1_layout_type, region_type, div_type, p_type, span_type, br_type, ebuttdt
+from ebu_tt_live.bindings import tt1_head_type, styling, \
+    style_type, tt1_layout_type, region_type, div_type, p_type, \
+    span_type, br_type, ebuttdt
 from pyxb.exceptions_ import PyXBException
 
 
@@ -49,17 +50,20 @@ class TestEBUTT3ToEBUTTDConverter(TestCase):
 
     def test_ericsson_1(self):
 
-        xml_file = self._load_asset('converter_ericsson1.xml')
+        xml_file = self._load_asset('converter_ericsson3.xml')
 
-        self._media_clock.adjust_time(timedelta(), ebuttdt.LimitedClockTimingType('12:11:50.000').timedelta)
+        self._media_clock.adjust_time(
+            timedelta(),
+            ebuttdt.LimitedClockTimingType('12:11:50.000').timedelta)
 
         document = EBUTT3Document.create_from_xml(xml_file)
         cdoc = ebutt3_to_ebuttd(document, self._media_clock)
 
+
 class TestEBUTT1ToEBUTT3Converter(TestCase):
     
     def setUp(self):
-        self._seqId='testConverter'
+        self._seqId = 'testConverter'
 
     def _load_asset(self, file_name):
         dirpath = os.path.dirname(os.path.abspath(__file__))
@@ -94,7 +98,10 @@ class TestEBUTT1ToEBUTT3Converter(TestCase):
                         style_type(id='s0')
                     ),
                     tt1_layout_type(
-                        region_type(id='r0', origin='0% 0%', extent='100% 100%')
+                        region_type(
+                            id='r0',
+                            origin='0% 0%',
+                            extent='100% 100%')
                     )
                 )
             )
@@ -104,7 +111,10 @@ class TestEBUTT1ToEBUTT3Converter(TestCase):
         document.add_div(div)
         document.validate()
 
-        ebutt1_to_ebutt3(document, sequence_id=self._seqId, use_doc_id_as_seq_id=True)
+        ebutt1_to_ebutt3(
+            document,
+            sequence_id=self._seqId,
+            use_doc_id_as_seq_id=True)
 
     def test_simple_media(self):
         
@@ -141,7 +151,10 @@ class TestEBUTT1ToEBUTT3Converter(TestCase):
         document.add_div(div)
         document.validate()
 
-        ebutt1_to_ebutt3(document, sequence_id=self._seqId, use_doc_id_as_seq_id=True)
+        ebutt1_to_ebutt3(
+            document,
+            sequence_id=self._seqId,
+            use_doc_id_as_seq_id=True)
 
     def test_ericsson_smpte(self):
 
@@ -150,14 +163,18 @@ class TestEBUTT1ToEBUTT3Converter(TestCase):
         xml_file = self._load_asset('converter_ericsson1_smpte.xml')
 
         document = EBUTT1Document.create_from_xml(xml_file)
-        cdoc = ebutt1_to_ebutt3(document, sequence_id=self._seqId, 
-        use_doc_id_as_seq_id=True)
+        cdoc = ebutt1_to_ebutt3(
+            document,
+            sequence_id=self._seqId,
+            use_doc_id_as_seq_id=True)
 
     def test_ericsson_media(self):
 
         xml_file = self._load_asset('converter_ericsson1_media.xml')
 
         document = EBUTT1Document.create_from_xml(xml_file)
-        cdoc = ebutt1_to_ebutt3(document, sequence_id=self._seqId, 
-        use_doc_id_as_seq_id=True)
+        cdoc = ebutt1_to_ebutt3(
+            document,
+            sequence_id=self._seqId, 
+            use_doc_id_as_seq_id=True)
 
