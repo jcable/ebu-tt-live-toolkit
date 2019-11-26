@@ -19,7 +19,8 @@ from ebu_tt_live.bindings.validation.content import SubtitleContentContainer, Co
 from .validation.validator import SemanticValidator
 from ebu_tt_live.errors import SemanticValidationError, OutsideSegmentError, RegionExtendingOutsideDocumentError, InvalidRegionOriginType, InvalidRegionExtentType
 from ebu_tt_live.strings import ERR_SEMANTIC_VALIDATION_MISSING_ATTRIBUTES, \
-    ERR_SEMANTIC_VALIDATION_INVALID_ATTRIBUTES, ERR_SEMANTIC_STYLE_CIRCLE, ERR_SEMANTIC_STYLE_MISSING, \
+    ERR_SEMANTIC_VALIDATION_UNEXPECTED_ATTRIBUTES, \
+    ERR_SEMANTIC_STYLE_CIRCLE, ERR_SEMANTIC_STYLE_MISSING, \
     ERR_SEMANTIC_ELEMENT_BY_ID_MISSING, ERR_SEMANTIC_VALIDATION_EXPECTED
 from pyxb.exceptions_ import IncompleteElementContentError, MissingAttributeError, SimpleTypeValueError, \
     UnrecognizedAttributeError
@@ -581,7 +582,7 @@ class tt_type(SemanticDocumentMixin, raw.tt_type):
         extra_attrs = self._semantic_attributes_present(smpte_attrs)
         if extra_attrs:
             raise SemanticValidationError(
-                ERR_SEMANTIC_VALIDATION_INVALID_ATTRIBUTES.format(
+                ERR_SEMANTIC_VALIDATION_UNEXPECTED_ATTRIBUTES.format(
                     elem_name='tt:tt',
                     attr_names=extra_attrs
                 )
@@ -607,7 +608,7 @@ class tt_type(SemanticDocumentMixin, raw.tt_type):
         extra_attrs = self._semantic_attributes_present(clock_attrs)
         if extra_attrs:
             raise SemanticValidationError(
-                ERR_SEMANTIC_VALIDATION_MISSING_ATTRIBUTES.format(
+                ERR_SEMANTIC_VALIDATION_UNEXPECTED_ATTRIBUTES.format(
                     elem_name='tt:tt',
                     attr_names=extra_attrs
                 )
@@ -1320,7 +1321,6 @@ class d_styling_type(SemanticValidationMixin, raw.d_styling_type):
     def _semantic_after_subtree_copy(self, copied_instance, dataset, element_content=None):
         pass
 
-
 raw.d_styling_type._SetSupersedingClass(d_styling_type)
 
 
@@ -1434,7 +1434,10 @@ class tt1_tt_type(tt_type):
         if self.sequenceNumber:
             raise UnrecognizedAttributeError(type(self), 'sequenceNumber')
 
-        super(tt_type, self)._validateBinding_vx()
+        # bypass the tt_type parent's _validateBinding_vx() 
+        # because it checks for constraints that are mutually 
+        # incompatible with the constraints checked here.
+        super(raw.tt_type, self)._validateBinding_vx()
 
 
 class tt1_head_type(SemanticValidationMixin, raw.head_type):
@@ -1449,7 +1452,7 @@ class tt1_head_type(SemanticValidationMixin, raw.head_type):
 
 
 class tt1_layout_type(layout):
-
+    
     def _validateBinding_vx(self):
         if len(self.region) == 0:
             raise IncompleteElementContentError(self, None, None, None)

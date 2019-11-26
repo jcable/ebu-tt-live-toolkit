@@ -400,8 +400,6 @@ class BodyTimingValidationMixin(TimingValidationMixin):
 
         return end_timedelta
 
-
-
     def _semantic_timebase_validation(self, dataset, element_content):
 
         super(BodyTimingValidationMixin, self)._semantic_timebase_validation(dataset, element_content)

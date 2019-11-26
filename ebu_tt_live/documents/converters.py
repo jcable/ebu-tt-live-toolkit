@@ -3,6 +3,7 @@ from ebu_tt_live.bindings.converters.ebutt3_ebuttd import EBUTT3EBUTTDConverter
 from ebu_tt_live.bindings.converters.ebutt1_ebutt3 import EBUTT1EBUTT3Converter
 
 from ebu_tt_live.documents.ebuttd import EBUTTDDocument
+from ebu_tt_live.documents.ebutt1 import EBUTT1Document
 from ebu_tt_live.documents.ebutt3 import EBUTT3Document
 from subprocess import Popen, PIPE
 import tempfile
@@ -34,14 +35,17 @@ def ebutt3_to_ebuttd(ebutt3_in, media_clock):
     return ebuttd_document
 
 
-def ebutt1_to_ebutt3(ebutt1_in):
+def ebutt1_to_ebutt3(ebutt1_in, sequence_id, use_doc_id_as_seq_id):
     """
     This function takes an EBUTT1Document instance and returns the same document as an EBUTT3Document instance.
     :param ebutt1_in:
     :return:
     """
-    converter = EBUTT1EBUTT3Converter()
-    ebutt3_bindings = converter.convert_document(ebutt1_in.binding)
+    converter = EBUTT1EBUTT3Converter(sequence_id=sequence_id, 
+        use_doc_id_as_seq_id=use_doc_id_as_seq_id)
+    doc_xml = ebutt1_in.get_xml()
+    ebutt1_doc = EBUTT1Document.create_from_xml(doc_xml)
+    ebutt3_bindings = converter.convert_document(ebutt1_doc.binding)
     ebutt3_document = EBUTT3Document.create_from_raw_binding(ebutt3_bindings)
     ebutt3_document.validate()
     return ebutt3_document

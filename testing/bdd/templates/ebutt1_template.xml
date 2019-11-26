@@ -26,7 +26,14 @@
         xmlns:xml="http://www.w3.org/XML/1998/namespace">
   <tt:head>
     <tt:metadata>
-      <ebuttm:documentMetadata/>
+      {% if head_metadata_documentIdentifier %}
+      <ebuttm:documentIdentifier>headDocId</ebuttm:documentIdentifier>
+      {% endif %}
+      <ebuttm:documentMetadata>
+        {% if doc_metadata_documentIdentifier %}
+        <ebuttm:documentIdentifier>docMetaDocId</ebuttm:documentIdentifier>
+        {% endif %}
+      </ebuttm:documentMetadata>
     </tt:metadata>
     {% if styling %}
     <tt:styling>
