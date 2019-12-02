@@ -23,8 +23,25 @@ have a sequence number. EBU-TT part 3 documents must have both.
 
 In order to set the sequence identifier the converter can be
 configured with the desired value, or it can be set to extract the
-document identifier from the `ebuttm:documentIdentifier` element
+document identifier from the ``ebuttm:documentIdentifier`` element
 and use it, if it exists.
 
-TODO: how to convert smpte timebase time expressions into clock or media
-timebase time expressions.
+If the EBU-TT part 1 document uses the ``smpte`` timebase, then all
+the time expressions must be converted to some other timebase.
+Currently they are all converted to ``media``, using a simple fixed
+offset based conversion strategy, encapsulated in the utility class
+:py:class:`ebu_tt_live.bindings.converters.timedelta_converter.FixedOffsetSMPTEtoTimedeltaConverter`. 
+This currently looks for the metadata attribute 
+``tt/head/metadata/ebuttm:documentMetadata/ebuttm:documentStartOfProgramme``
+and if it finds it, uses that as
+the zero point, otherwise it uses ``00:00:00:00``. This can be
+overridden by setting the ``smpte_start_of_programme`` parameter to the
+start of programme timecode to use instead.
+
+The document's frame rate, frame rate multiplier and drop mode are taken into
+account when doing the conversion. This means that illegal frame
+values will cause a
+:py:class:`ebu_tt_live.errors.TimeFormatError` exception to be raised.
+
+Elements with ``begin`` or ``end`` attributes that fall before the start of
+programme are discarded.
