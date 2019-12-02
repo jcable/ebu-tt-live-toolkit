@@ -192,12 +192,18 @@ class RetimingDelay(ConsumerMixin, ProducerMixin, NodeBase):
         self._create_input(config)
         self._create_output(config)
 
+
 class Denester(ConsumerMixin, ProducerMixin, NodeBase):
     required_config = Namespace()
+    required_config.add_option('id', default='denester')
+    required_config.add_option(
+        'sequence_identifier',
+        default='DenestedSequence1')
 
     def _create_component(self, config):
         self.component = processing_node.DenesterNode(
-            node_id=self.config.id
+            node_id=self.config.id,
+            sequence_identifier=self.config.sequence_identifier
         )
 
     def __init__(self, config, local_config):
