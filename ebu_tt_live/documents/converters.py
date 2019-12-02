@@ -42,6 +42,11 @@ def ebutt1_to_ebutt3(ebutt1_in,
     """
     Convert an EBUTT1Document instance to an EBUTT3Document instance.
 
+    This code is (currently!) the same as the code in
+    :py:class:`ebu_tt_live.node.ebutt1_ebutt3_producer.EBUTT1EBUTT3ProducerNode`
+    so it probably makes sense to use one of those rather than this utility
+    function.
+    
     :param EBUTT1Document ebutt1_in: The EBU-TT Part 1 document to convert
     :param string sequence_id: The default sequence identifier to use for the output
     :param Boolean use_doc_id_as_seq_id: Whether to use the ebuttm:documentIdentifier element value as the output sequence identifier, if it exists
