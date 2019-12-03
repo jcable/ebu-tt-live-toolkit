@@ -47,9 +47,7 @@ class EBUTTDEncoder(AbstractCombinedNode):
                 self.limit_sequence_to_one(document)
 
                 # Convert the document
-                converted_doc = EBUTTDDocument.create_from_raw_binding(
-                    self._ebuttd_converter.convert_document(document.binding)
-                )
+                converted_doc = self.convert_document(document)
 
                 # Specify the time_base since the FilesystemProducerImpl can't
                 # derive it otherwise.
@@ -74,5 +72,7 @@ class EBUTTDEncoder(AbstractCombinedNode):
                 'Ignoring incoming data that is not a document'
             )
 
-
-
+    def convert_document(self, document):
+        return EBUTTDDocument.create_from_raw_binding(
+            self._ebuttd_converter.convert_document(document.binding)
+        )
