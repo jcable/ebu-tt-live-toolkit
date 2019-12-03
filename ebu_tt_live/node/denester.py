@@ -65,6 +65,7 @@ class DenesterNode(AbstractCombinedNode):
         else:
             self.producer_carriage.emit_data(data=document, **kwargs)
 
+    @staticmethod
     def denest(document):
         divs = document.binding.body.div
         unnested_divs = []
@@ -82,6 +83,7 @@ class DenesterNode(AbstractCombinedNode):
 
         return document
 
+    @staticmethod
     def check_p_regions(divs):
         """
         Keeps only p elements where the region matches the parent
@@ -104,6 +106,7 @@ class DenesterNode(AbstractCombinedNode):
 
         return divs
 
+    @staticmethod
     def combine_divs(divs):
         """
         Takes the list of unnested divs, where one was created to
@@ -133,6 +136,7 @@ class DenesterNode(AbstractCombinedNode):
                 i += 1
         return new_divs
 
+    @staticmethod
     def div_attr(div):
         """Convert a specific subset of div attributes to a dict."""
         div_attributes = {}
@@ -143,6 +147,7 @@ class DenesterNode(AbstractCombinedNode):
         div_attributes["end"] = div.end
         return div_attributes
 
+    @staticmethod
     def merge_attr(parent_attr, div_attributes):
         """
         Merge two sets of attributes.
@@ -221,6 +226,7 @@ class DenesterNode(AbstractCombinedNode):
                     parent_attr["begin"])
         return merged_attributes
 
+    @staticmethod
     def calculate_end_times(parent_attr, child_attr, time_sync):
         if child_attr["end"] is not None \
            and parent_attr["end"] is None \
@@ -231,11 +237,13 @@ class DenesterNode(AbstractCombinedNode):
         else:
             return child_attr["end"]
 
+    @staticmethod
     def process_timing_from_timedelta(timing_type):
         if timing_type is None:
             return None
         return ebuttdt.FullClockTimingType.from_timedelta(timing_type)
 
+    @staticmethod
     def recurse(div,
                 dataset,
                 merged_attr={
@@ -316,6 +324,7 @@ class DenesterNode(AbstractCombinedNode):
 
         return new_divs
 
+    @staticmethod
     def recurse_span(span, dataset, span_styles=[]):
         if span.style is not None:
             span_styles = span_styles+span.style
@@ -342,6 +351,7 @@ class DenesterNode(AbstractCombinedNode):
                 new_spans.append(new_span)
         return new_spans
 
+    @staticmethod
     def compute_span_merged_styles(span_styles, dataset):
         """
         Combines all the nested styles of the span to create a new one
@@ -379,6 +389,7 @@ class DenesterNode(AbstractCombinedNode):
         new_style = DenesterNode.create_new_style(new_style, dataset)
         return new_style
 
+    @staticmethod
     def create_new_style(new_style, dataset):
         """
         Check if the style is the same as an existing style.
@@ -397,6 +408,7 @@ class DenesterNode(AbstractCombinedNode):
         dataset["styles"].append(new_style)
         return new_style
 
+    @staticmethod
     def calculate_font_size(styles):
         """
         Calculate the font size for a merged style.
@@ -424,6 +436,7 @@ class DenesterNode(AbstractCombinedNode):
 
         return font_size
 
+    @staticmethod
     def calculate_percentage_font_size(current_font_size, nested_font_size):
         """
         Calculate percentage of another font size.
@@ -457,6 +470,7 @@ class DenesterNode(AbstractCombinedNode):
 
                 return '{0:g}c'.format(calculated_font_size)
 
+    @staticmethod
     def get_value_from_style(styles, style_name):
         """
         Get the highest priority style from the styles of the span.
