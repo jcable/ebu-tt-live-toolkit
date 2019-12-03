@@ -1,9 +1,11 @@
-
 from datetime import timedelta
 from .base import AbstractCombinedNode
 from ebu_tt_live.clocks.media import MediaClock
 from ebu_tt_live.documents.converters import EBUTT3EBUTTDConverter
 from ebu_tt_live.documents import EBUTTDDocument, EBUTT3Document
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class EBUTTDEncoder(AbstractCombinedNode):
@@ -14,7 +16,11 @@ class EBUTTDEncoder(AbstractCombinedNode):
     _expects = EBUTT3Document
     _provides = EBUTTDDocument
 
-    def __init__(self, node_id, media_time_zero, default_ns=False, producer_carriage=None,
+    def __init__(self,
+                 node_id,
+                 media_time_zero,
+                 default_ns=False,
+                 producer_carriage=None,
                  consumer_carriage=None, **kwargs):
         super(EBUTTDEncoder, self).__init__(
             producer_carriage=producer_carriage,
@@ -35,14 +41,38 @@ class EBUTTDEncoder(AbstractCombinedNode):
     def process_document(self, document, **kwargs):
         # Convert each received document into EBU-TT-D
         if self.is_document(document):
-            self.limit_sequence_to_one(document)
 
+            if self.check_if_document_seen(document=document):
 
-            converted_doc = EBUTTDDocument.create_from_raw_binding(
-                self._ebuttd_converter.convert_document(document.binding)
+                self.limit_sequence_to_one(document)
+
+                # Convert the document
+                converted_doc = EBUTTDDocument.create_from_raw_binding(
+                    self._ebuttd_converter.convert_document(document.binding)
+                )
+
+                # Specify the time_base since the FilesystemProducerImpl can't
+                # derive it otherwise.
+                # Hard coded to 'media' because that's all that's permitted in
+                # EBU-TT-D. Alternative would be to extract it
+                # from the EBUTTDDocument but since it's the only permitted
+                # value that would be an unnecessary overhead...
+                self.producer_carriage.emit_data(
+                    data=converted_doc,
+                    sequence_identifier='default',
+                    time_base='media',
+                    **kwargs)
+            else:
+                log.warning(
+                    'Ignoring duplicate document: {}__{}'.format(
+                        document.sequence_identifier,
+                        document.sequence_number
+                    )
+                )
+        else:
+            log.warning(
+                'Ignoring incoming data that is not a document'
             )
-            # Specify the time_base since the FilesystemProducerImpl can't derive it otherwise.
-            # Hard coded to 'media' because that's all that's permitted in EBU-TT-D. Alternative
-            # would be to extract it from the EBUTTDDocument but since it's the only permitted
-            # value that would be an unnecessary overhead...
-            self.producer_carriage.emit_data(data=converted_doc, sequence_identifier='default', time_base='media', **kwargs)
+
+
+
