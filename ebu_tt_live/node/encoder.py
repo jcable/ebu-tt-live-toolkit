@@ -35,7 +35,7 @@ class EBUTTDEncoder(AbstractCombinedNode):
             media_clock=media_clock
         )
         self._default_ebuttd_doc = EBUTTDDocument(lang='en-GB')
-        self._default_ebuttd_doc.set_implicit_ns(self._default_ns)
+        self._default_ebuttd_doc.implicit_ns = self._default_ns
         self._default_ebuttd_doc.validate()
 
     def process_document(self, document, **kwargs):
@@ -73,6 +73,11 @@ class EBUTTDEncoder(AbstractCombinedNode):
             )
 
     def convert_document(self, document):
-        return EBUTTDDocument.create_from_raw_binding(
+        doc = EBUTTDDocument.create_from_raw_binding(
             self._ebuttd_converter.convert_document(document.binding)
         )
+        doc.implicit_ns = self._default_ebuttd_doc.implicit_ns
+        if doc.binding.lang is None:
+            doc.lang.binding = self._default_ebuttd_doc.binding.lang
+
+        return doc
