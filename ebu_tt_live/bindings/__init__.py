@@ -1515,7 +1515,6 @@ raw.d_layout_type._SetSupersedingClass(d_layout_type)
 class d_head_type(SemanticValidationMixin, raw.d_head_type):
     pass
 
-
 raw.d_head_type._SetSupersedingClass(d_head_type)
 
 
@@ -1745,7 +1744,6 @@ class d_span_type(
             parent_binding=None):
         self._semantic_postprocess_timing(
                 dataset=dataset, element_content=element_content)
-
 
 raw.d_span_type._SetSupersedingClass(d_span_type)
 
