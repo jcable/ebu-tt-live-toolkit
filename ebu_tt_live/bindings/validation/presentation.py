@@ -43,7 +43,7 @@ class StyledElementMixin(object):
     def _semantic_collect_applicable_styles(self, dataset, style_type, parent_binding, defer_font_size=False,
                                             extra_referenced_styles=None):
         """
-        This function identifies the styling dependdncy chain for the styled element in question.
+        This function identifies the styling dependency chain for the styled element in question.
 
         :param dataset: Semantic dataset
         :param style_type: the style_type to be used in the process (there are different style types for EBU-TT D and live).
