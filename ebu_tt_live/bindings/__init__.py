@@ -1274,8 +1274,7 @@ raw.d_layout_type._SetSupersedingClass(d_layout_type)
 class d_head_type(SemanticValidationMixin, raw.d_head_type):
     pass
 
-
-raw.d_layout_type._SetSupersedingClass(d_layout_type)
+raw.d_head_type._SetSupersedingClass(d_head_type)
 
 class d_region_type(SemanticValidationMixin,IDMixin, raw.d_region_type):
 
@@ -1417,6 +1416,9 @@ class d_span_type(IDMixin, TimingValidationMixin,StyledElementMixin ,SemanticVal
     def _semantic_after_traversal(self, dataset, element_content=None, parent_binding=None):
         self._semantic_postprocess_timing(
                 dataset=dataset, element_content=element_content)
+
+raw.d_span_type._SetSupersedingClass(d_span_type)
+
 # EBU TT 1 classes
 # ================
 
@@ -1480,7 +1482,7 @@ _document_specific_types = {
         raw.layout: layout,
         raw.body_type: body_type,
     },
-}
+    }
 
 
 def load_types_for_document(doc_type):
