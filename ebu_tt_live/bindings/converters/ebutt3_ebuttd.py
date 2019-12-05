@@ -198,7 +198,7 @@ class EBUTT3EBUTTDConverter(object):
             'urn:ebu:tt:distribution:2018-04'
             ],
             documentOriginatingSystem=project.name + '.' + project.version +
-            type(self).__name__
+            '.' + type(self).__name__
             )
         new_elem.metadata = metadata
 
