@@ -20,8 +20,10 @@ class EBUTTDEncoder(AbstractCombinedNode):
                  node_id,
                  media_time_zero,
                  default_ns=False,
+                 calculate_active_area=False,
                  producer_carriage=None,
-                 consumer_carriage=None, **kwargs):
+                 consumer_carriage=None,
+                 **kwargs):
         super(EBUTTDEncoder, self).__init__(
             producer_carriage=producer_carriage,
             consumer_carriage=consumer_carriage,
@@ -32,7 +34,8 @@ class EBUTTDEncoder(AbstractCombinedNode):
         media_clock = MediaClock()
         media_clock.adjust_time(timedelta(), media_time_zero)
         self._ebuttd_converter = EBUTT3EBUTTDConverter(
-            media_clock=media_clock
+            media_clock=media_clock,
+            calculate_active_area=calculate_active_area
         )
         self._default_ebuttd_doc = EBUTTDDocument(lang='en-GB')
         self._default_ebuttd_doc.implicit_ns = self._default_ns

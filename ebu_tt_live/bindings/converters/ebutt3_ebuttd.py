@@ -4,6 +4,10 @@ from ebu_tt_live.bindings import ttd, tt_type, body_type, d_body_type, \
     d_styling_type, head_type, style_type, styling, layout, d_layout_type, \
     region_type, d_region_type, ebuttdt, StyledElementMixin
 from ebu_tt_live.bindings._ebuttm import headMetadata_type, documentMetadata
+from ebu_tt_live.bindings._ebuttdt import PercentageExtentType, \
+    PercentageOriginType
+from ebu_tt_live.errors import InvalidRegionExtentType, InvalidRegionOriginType
+from ebu_tt_live.strings import ERR_REGION_ORIGIN_TYPE, ERR_REGION_EXTENT_TYPE
 import project
 import copy
 import logging
@@ -19,8 +23,9 @@ class EBUTT3EBUTTDConverter(object):
     _dataset_key_for_font_styles = 'adjusted_sizing_styles'
     _semantic_dataset = None
 
-    def __init__(self, media_clock):
+    def __init__(self, media_clock, calculate_active_area=False):
         self._media_clock = media_clock
+        self._do_calculate_active_area = calculate_active_area
 
     def _children_contain(self, container_elem, binding_type):
         element_types = [
@@ -161,10 +166,79 @@ class EBUTT3EBUTTDConverter(object):
             root_element.head.styling = d_styling_type()
         root_element.head.styling.style.extend(list(adjusted_fonts.values()))
 
+    def _calculate_active_area(self, document, dataset):
+        if 'activated_region_ids' not in dataset:
+            log.error('No activated_region_ids set in dataset')
+            return
+
+        activated_region_ids = dataset['activated_region_ids']
+        if len('activated_region_ids') == 0:
+            log.warn('No regions activated in document')
+
+            # Check for default region condition, which is a special case
+            # that only occurs when no regions are defined at all in the
+            # document. This is actually illegal in EBU-TT-D and should
+            # never occur
+            if document.head.layout is None \
+                    or len(document.head.layout.region) == 0:
+                log.warn('Default region used - not legal in EBU-TT-D')
+                document.activeArea = '0% 0% 100% 100%'
+            else:
+                log.warn('No regions referenced: not adding activeArea.')
+        elif document.head.layout is not None:
+            left = top = right = bottom = None
+            region_found = False
+
+            for region in document.head.layout.region:
+                if region.id in activated_region_ids:
+                    region_l, region_t, region_r, region_b = \
+                        self._decode_origin_and_extent(
+                            region.origin, region.extent)
+                    if not region_found:
+                        left = region_l
+                        right = region_r
+                        top = region_t
+                        bottom = region_b
+
+                        region_found = True
+                    else:
+                        if region_l < left:
+                            left = region_l
+                        if region_r > right:
+                            right = region_r
+                        if region_t < top:
+                            top = region_t
+                        if region_b > bottom:
+                            bottom = region_b
+
+            if region_found:
+                document.activeArea = '{}% {}% {}% {}%'.format(
+                    left, top, right - left, bottom - top
+                )
+            else:
+                log.warn('None of the active regions found')
+        else:
+            log.error(
+                'EBU-TT-D Document refers to regions but has no layout')
+
+    def _decode_origin_and_extent(self, origin, extent):
+        if not isinstance(origin, PercentageOriginType):
+            raise InvalidRegionOriginType(ERR_REGION_ORIGIN_TYPE)
+        if not isinstance(extent, PercentageExtentType):
+            raise InvalidRegionExtentType(ERR_REGION_EXTENT_TYPE)
+
+        origin_x = origin.horizontal
+        origin_y = origin.vertical
+        width = extent.horizontal
+        height = extent.vertical
+
+        return origin_x, origin_y, origin_x + width, origin_y + height
+
     def convert_tt(self, tt_in, dataset):
         dataset['timeBase'] = tt_in.timeBase
         dataset['cellResolution'] = tt_in.cellResolution
         dataset['extent'] = tt_in.extent
+        dataset['activated_region_ids'] = set()
         new_elem = ttd(
             head=self.convert_element(tt_in.head, dataset),
             body=self.convert_element(tt_in.body, dataset),
@@ -172,11 +246,14 @@ class EBUTT3EBUTTDConverter(object):
             lang=tt_in.lang,
             space=tt_in.space,
             cellResolution=tt_in.cellResolution,
+            activeArea=tt_in.activeArea,
             _strict_keywords=False
         )
         self._link_adjusted_fonts_styling(
             self._adjusted_font_style_map(),
             new_elem)
+        if self._do_calculate_active_area:
+            self._calculate_active_area(new_elem, dataset)
 
         return new_elem
 
@@ -259,8 +336,8 @@ class EBUTT3EBUTTDConverter(object):
         new_elem = d_region_type(
             *self.convert_children(region_in, dataset),
             id=region_in.id,
-            origin=origin,
-            extent=extent,
+            origin=PercentageOriginType(origin),
+            extent=PercentageExtentType(extent),
             style=region_in.style,
             displayAlign=region_in.displayAlign,
             padding=region_in.padding,
@@ -313,6 +390,7 @@ class EBUTT3EBUTTDConverter(object):
             wrapOption=computed_style.wrapOption,
             padding=computed_style.padding,
             linePadding=computed_style.linePadding,
+            fillLineGap=computed_style.fillLineGap,
             _strict_keywords=False
         )
         return new_elem
@@ -338,6 +416,8 @@ class EBUTT3EBUTTDConverter(object):
             style=div_in.style,
             agent=div_in.agent
         )
+        if new_elem.region is not None:
+            dataset['activated_region_ids'].add(new_elem.region)
         return new_elem
 
     def convert_p(self, p_in, dataset):
@@ -355,6 +435,8 @@ class EBUTT3EBUTTDConverter(object):
             agent=p_in.agent,
             role=p_in.role
         )
+        if new_elem.region is not None:
+            dataset['activated_region_ids'].add(new_elem.region)
         return new_elem
 
     def convert_span(self, span_in, dataset):

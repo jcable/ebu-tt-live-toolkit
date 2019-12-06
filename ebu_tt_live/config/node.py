@@ -314,6 +314,7 @@ class EBUTTDEncoder(ProducerMixin, ConsumerMixin, NodeBase):
     required_config = Namespace()
     required_config.add_option('id', default='ebuttd-encoder')
     required_config.add_option('media_time_zero', default='current')
+    required_config.add_option('calculate_active_area', default=False)
     required_config.add_option('default_namespace', default=False)
     required_config.clock = Namespace()
     required_config.clock.add_option('type', default='local', from_string_converter=get_clock)
@@ -329,6 +330,7 @@ class EBUTTDEncoder(ProducerMixin, ConsumerMixin, NodeBase):
         self.component = processing_node.EBUTTDEncoder(
             node_id=self.config.id,
             media_time_zero=mtz,
+            calculate_active_area=self.config.calculate_active_area,
             default_ns=self.config.default_namespace
         )
 
