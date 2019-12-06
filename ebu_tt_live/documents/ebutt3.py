@@ -136,8 +136,11 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
     # The sequence the document belongs to
     _sequence = None
 
-    def __init__(self, time_base, sequence_number, sequence_identifier, lang, clock_mode=None,
-                 availability_time=None, authors_group_identifier=None):
+    def __init__(self,
+                 time_base, sequence_number, sequence_identifier, lang,
+                 clock_mode=None, availability_time=None,
+                 authors_group_identifier=None,
+                 active_area=None):
         self.load_types_for_document()
         if not clock_mode and time_base is TimeBase.CLOCK:
             clock_mode = 'local'
@@ -148,6 +151,7 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
             authorsGroupIdentifier=authors_group_identifier,
             sequenceNumber=sequence_number,
             lang=lang,
+            activeArea=active_area,
             head=BIND(
                 metadata.headMetadata_type(
                     metadata.documentMetadata()
