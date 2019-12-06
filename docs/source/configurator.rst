@@ -118,7 +118,12 @@ Node type dependent options for [nodeN] : ::
 
    type="ebuttd-encoder"
    ├─media_time_zero : ["current" (default) | clock time at media time zero TODO: check format]
-   ├─default_namespace : ["false" (default) | "true"]
+   ├─default_namespace : ["false" (default) | "true"] Whether to specify that tt
+   │                     namespace elements should be prefixed (false) or put
+   │                     into a default namespace and not prefixed (true)
+   ├─calculate_active_area : ["false" (default) | "true"] whether to
+   │                         post-calculate the ittp:activeArea attribute on the
+   │                         tt element based on the actived regions 
    └─clock
      └─type : ["local" (default) | "auto" | "utc"]
 

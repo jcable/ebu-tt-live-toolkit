@@ -121,7 +121,8 @@ class style_type(
         'multiRowAlign': 'auto',
         'textAlign': 'start',
         'textDecoration': 'none',
-        'wrapOption': 'wrap'
+        'wrapOption': 'wrap',
+        'fillLineGap': 'false'
     }
     _default_attrs = None
 
@@ -141,7 +142,8 @@ class style_type(
             self.textDecoration == other.textDecoration and
             self.fontSize == other.fontSize and
             self.lineHeight == other.lineHeight and
-            self.wrapOption == other.wrapOption)
+            self.wrapOption == other.wrapOption and
+            self.fillLineGap == other.fillLineGap)
 
     def __repr__(self):
         return '<style ID: {id} at {addr}>'.format(
@@ -169,6 +171,7 @@ class style_type(
             wrapOption=self.wrapOption,
             padding=self.padding,
             linePadding=self.linePadding,
+            fillLineGap=self.fillLineGap,
             _strict_keywords=False
         )
         return copied_style
@@ -252,6 +255,8 @@ class style_type(
             self.linePadding = other.linePadding
         if self.multiRowAlign is None and other.multiRowAlign is not None:
             self.multiRowAlign = other.multiRowAlign
+        if self.fillLineGap is None and other.fillLineGap is not None:
+            self.fillLineGap = other.fillLineGap
         return self
 
     @classmethod
@@ -590,6 +595,7 @@ class tt_type(SemanticDocumentMixin, raw.tt_type):
             authorsGroupControlToken=self.authorsGroupControlToken,
             authorsGroupSelectedSequenceIdentifier=self.authorsGroupSelectedSequenceIdentifier,  # noqa:E501
             referenceClockIdentifier=self.referenceClockIdentifier,
+            activeArea=self.activeArea,
             _strict_keywords=False
         )
         return copied_tt

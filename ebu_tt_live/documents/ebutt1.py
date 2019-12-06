@@ -19,7 +19,7 @@ class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
 
     def __init__(self, time_base, lang, head, clock_mode=None,
                  frame_rate=None, frame_rate_multiplier=None,
-                 drop_mode=None, marker_mode=None):
+                 drop_mode=None, marker_mode=None, active_area=None):
         self.load_types_for_document()
         if not clock_mode and time_base is TimeBase.CLOCK:
             clock_mode = 'local'
@@ -41,6 +41,7 @@ class EBUTT1Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
             dropMode=drop_mode,
             markerMode=marker_mode,
             lang=lang,
+            activeArea=active_area,
             head=head,
             body=BIND()
         )
