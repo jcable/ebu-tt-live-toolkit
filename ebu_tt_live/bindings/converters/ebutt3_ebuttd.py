@@ -292,12 +292,14 @@ class EBUTT3EBUTTDConverter(object):
 
     def convert_layout(self, layout_in, dataset):
         new_elem = d_layout_type(
-            *self.convert_children(layout_in, dataset)
+            region=[self.convert_element(r, dataset) for r in layout_in.region]
         )
+
         # Fill in the gaps with default values
-        if not self._children_contain(new_elem, d_region_type):
+        if len(new_elem.region) == 0:
             log.info('converter added a default region')
             new_elem.append(d_region_type.create_default_value())
+
         return new_elem
 
     def convert_region(self, region_in, dataset):
@@ -399,25 +401,32 @@ class EBUTT3EBUTTDConverter(object):
         if len(body_in.div) == 0:
             return None
         new_elem = d_body_type(
-            *self.convert_children(body_in, dataset),
+            div=[self.convert_element(div, dataset) for div in body_in.div],
+            metadata=self.convert_element(body_in.metadata, dataset),
             agent=body_in.agent,
             role=body_in.role,
             style=body_in.style
         )
+
         return new_elem
 
     def convert_div(self, div_in, dataset):
-        if len(div_in.orderedContent()) == 0:
-            return None
         new_elem = d_div_type(
-            *self.convert_children(div_in, dataset),
+            p=[self.convert_element(p, dataset) for p in div_in.p],
+            metadata=self.convert_element(div_in.metadata, dataset),
+            # *self.convert_children(div_in, dataset),
             id=div_in.id,
             region=div_in.region,
             style=div_in.style,
             agent=div_in.agent
         )
+        if len(new_elem.orderedContent()) == 0:
+            log.warn('Removing an empty div element')
+            return None
+
         if new_elem.region is not None:
             dataset['activated_region_ids'].add(new_elem.region)
+
         return new_elem
 
     def convert_p(self, p_in, dataset):
