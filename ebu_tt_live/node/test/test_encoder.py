@@ -170,8 +170,6 @@ class TestEBUTTDEncoderSuccess(TestCase):
             )
         )
 
-        doc.validate()
-
         self.encoder2.process_document(document=doc)
         self.encoder2.producer_carriage.emit_data.assert_called_once()
         output_doc = \
@@ -208,8 +206,6 @@ class TestEBUTTDEncoderSuccess(TestCase):
                     timedelta(hours=11, minutes=32, seconds=5))
             )
         )
-
-        doc.validate()
 
         self.encoder2.process_document(document=doc)
         self.encoder2.producer_carriage.emit_data.assert_called_once()
