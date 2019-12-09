@@ -76,6 +76,7 @@ class EBUTTDEncoder(AbstractCombinedNode):
             )
 
     def convert_document(self, document):
+        document.validate()
         doc = EBUTTDDocument.create_from_raw_binding(
             self._ebuttd_converter.convert_document(document.binding)
         )
