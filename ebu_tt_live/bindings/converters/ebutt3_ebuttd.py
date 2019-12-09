@@ -5,7 +5,8 @@ from ebu_tt_live.bindings import ttd, tt_type, body_type, d_body_type, \
     region_type, d_region_type, ebuttdt, StyledElementMixin
 from ebu_tt_live.bindings._ebuttm import headMetadata_type, documentMetadata
 from ebu_tt_live.bindings._ebuttdt import PercentageExtentType, \
-    PercentageOriginType
+    PercentageOriginType, PercentageLineHeightType, \
+    CellFontSizeType, PercentageFontSizeType
 from ebu_tt_live.errors import InvalidRegionExtentType, InvalidRegionOriginType
 from ebu_tt_live.strings import ERR_REGION_ORIGIN_TYPE, ERR_REGION_EXTENT_TYPE
 import project
@@ -16,10 +17,13 @@ from pyxb.binding.basis import NonElementContent, ElementContent
 log = logging.getLogger(__name__)
 
 
+DEFAULT_CELL_FONT_SIZE = CellFontSizeType('1c')
+
+
 class EBUTT3EBUTTDConverter(object):
 
     _media_clock = None
-    _font_size_style_template = 'autogenFontStyle_{}_{}'
+    _font_size_style_template = 'autogenFontStyle_{}_{}_{}'
     _dataset_key_for_font_styles = 'adjusted_sizing_styles'
     _semantic_dataset = None
 
@@ -29,7 +33,7 @@ class EBUTT3EBUTTDConverter(object):
 
     def _children_contain(self, container_elem, binding_type):
         element_types = [
-            type(item.value) for item in container_elem.orderedContent() 
+            type(item.value) for item in container_elem.orderedContent()
             if isinstance(item, ElementContent)]
         return binding_type in element_types
 
@@ -55,7 +59,12 @@ class EBUTT3EBUTTDConverter(object):
         return self._semantic_dataset.setdefault(
             self._dataset_key_for_font_styles, {})
 
-    def _get_font_size_style(self, vertical, dataset, horizontal=None):
+    def _get_font_size_style(
+            self,
+            vertical,
+            dataset,
+            horizontal=None,
+            line_height=None):
         """
         Get a style with a font size, even if one doesn't already exist.
 
@@ -63,28 +72,40 @@ class EBUTT3EBUTTDConverter(object):
         style or creates it on demand.
         :param vertical:
         :param horizontal:
+        :param line_height:
         :return:
         """
+        adjusted_line_height = 'n'
+
+        if isinstance(line_height, PercentageLineHeightType):
+            adjusted_line_height = line_height.vertical
+
         font_style_id = \
-            self._font_size_style_template.format(horizontal, vertical)
+            self._font_size_style_template.format(
+                horizontal, vertical, adjusted_line_height)
         adjusted_font_style_map = self._adjusted_font_style_map()
         if font_style_id in adjusted_font_style_map:
             instance = adjusted_font_style_map[font_style_id]
             return instance
-        elif horizontal is None:
-            instance = d_style_type(
-                id=font_style_id,
-                fontSize=ebuttdt.PercentageFontSizeType(vertical)
-            )
         else:
+            font_size = None
+            if vertical is not None:
+                if horizontal is None:
+                    font_size = ebuttdt.PercentageFontSizeType(
+                        vertical)
+                else:
+                    font_size = ebuttdt.PercentageFontSizeType(
+                        horizontal, vertical)
+
             instance = d_style_type(
                 id=font_style_id,
-                fontSize=ebuttdt.PercentageFontSizeType(horizontal, vertical)
+                fontSize=font_size,
+                lineHeight=line_height
             )
 
-        adjusted_font_style_map[font_style_id] = instance
+            adjusted_font_style_map[font_style_id] = instance
 
-        return instance
+            return instance
 
     def _fix_fontsize(self, elem, celem, parent, dataset):
         """
@@ -101,61 +122,92 @@ class EBUTT3EBUTTDConverter(object):
         :param dataset: semantic dataset
         :return:
         """
-        if isinstance(elem, (p_type, span_type)):
+        if isinstance(elem, (body_type, div_type, p_type, span_type)):
+            if elem.computed_style is None:
+                import pdb
+                pdb.set_trace()
+            specified_font_size = elem.specified_style.fontSize
+            specified_line_height = elem.specified_style.lineHeight
+
+            if specified_font_size is None and specified_line_height is None:
+                # Waste no more time here
+                return
+
             computed_font_size = elem.computed_style.fontSize
             computed_line_height = elem.computed_style.lineHeight
 
-            if isinstance(elem, p_type):
-                # Since we eliminated all our fontSize attributes from the
-                # original styles here it is as simple as computing based
-                # on the default value. p does not recurse
-                default_font_size = ebuttdt.CellFontSizeType('1c')
-                if default_font_size == computed_font_size:
-                    return
-                else:
-                    relative_font_size = computed_font_size / default_font_size
-                    adjusted_style = self._get_font_size_style(
-                        vertical=relative_font_size.vertical,
-                        dataset=dataset
+            required_font_size = None
+            required_line_height = None
+
+            if specified_font_size is not None:
+                # Fallback for body element fontSize is the default value
+                # because EBU-TT Live does not allow fontSize on region
+                # elements.
+                if isinstance(elem, body_type) and computed_font_size is None:
+                    computed_font_size = DEFAULT_CELL_FONT_SIZE
+
+                if isinstance(elem, (body_type, div_type, p_type)):
+                    # Since we eliminated all our fontSize attributes from the
+                    # original styles here it is as simple as computing based
+                    # on the default value.
+                    if isinstance(computed_font_size,
+                                  CellFontSizeType) \
+                       and computed_font_size != DEFAULT_CELL_FONT_SIZE:
+                        required_font_size = \
+                            computed_font_size / DEFAULT_CELL_FONT_SIZE
+                    elif isinstance(computed_font_size,
+                                    PercentageFontSizeType):
+                        required_font_size = computed_font_size
+
+                elif isinstance(elem, span_type):
+                    parent_computed_font_size = parent.computed_style.fontSize
+                    if parent_computed_font_size != computed_font_size:
+                        required_font_size = \
+                            computed_font_size / parent_computed_font_size
+
+            if specified_line_height is not None:
+                if isinstance(
+                        computed_line_height, ebuttdt.CellLineHeightType):
+                    required_line_height = ebuttdt.PercentageLineHeightType(
+                        '{0:g}%'.format(
+                            round(computed_line_height.vertical /
+                                  computed_font_size.vertical * 100, 2))
                     )
-
-            elif isinstance(elem, span_type):
-                parent_computed_font_size = parent.computed_style.fontSize
-                if parent_computed_font_size == computed_font_size:
-                    return
-                else:
-                    relative_font_size = computed_font_size / \
-                        parent_computed_font_size
-                    adjusted_style = self._get_font_size_style(
-                        vertical=relative_font_size.vertical,
-                        dataset=dataset
+                elif isinstance(computed_line_height,
+                                ebuttdt.PercentageLineHeightType):
+                    required_line_height = computed_line_height
+                elif isinstance(computed_line_height,
+                                ebuttdt.PixelLineHeightType):
+                    required_line_height = ebuttdt.PercentageLineHeightType(
+                        '{0:g}%'.format(round((computed_line_height.vertical /
+                                               dataset['extent'].vertical) /
+                                              computed_font_size.vertical *
+                                              100, 2))
                     )
+                elif computed_line_height == 'normal':
+                    required_line_height = computed_line_height
 
-            if isinstance(computed_line_height, ebuttdt.CellLineHeightType):
-                adjusted_style.lineHeight = ebuttdt.PercentageLineHeightType(
-                    '{0:g}%'.format(
-                        round(computed_line_height.vertical /
-                              computed_font_size.vertical * 100, 2))
+            if required_font_size is not None or \
+               required_line_height is not None:
+                # Get or make a style and use it
+                adjusted_style = self._get_font_size_style(
+                    vertical=required_font_size.vertical
+                    if required_font_size is not None else None,
+                    horizontal=None,  # H component prohibited in EBU-TT-D
+                    line_height=required_line_height
+                    if required_line_height is not None else None,
+                    dataset=dataset
                 )
-            elif isinstance(computed_line_height,
-                            ebuttdt.PercentageLineHeightType):
-                adjusted_style.lineHeight = computed_line_height
-            elif isinstance(computed_line_height, ebuttdt.PixelLineHeightType):
-                adjusted_style.lineHeight = ebuttdt.PercentageLineHeightType(
-                    '{0:g}%'.format(round((computed_line_height.vertical /
-                                           dataset['extent'].vertical) /
-                                          computed_font_size.vertical *
-                                          100, 2))
-                )
-            elif computed_line_height == 'normal':
-                adjusted_style.lineHeight = computed_line_height
 
-            if celem.style is None:
-                celem.style = [
-                    adjusted_style.id
-                ]
-            else:
-                celem.style.insert(0, adjusted_style.id)
+                if celem.style is None:
+                    celem.style = [
+                        adjusted_style.id
+                    ]
+                else:
+                    celem.style.insert(0, adjusted_style.id)
+        else:
+            log.warn(
+                'EBUTT3EBUTTDConverter._fix_fontsize() called on unexpected element')  # noqa: E501
 
     def _link_adjusted_fonts_styling(self, adjusted_fonts, root_element):
         if not adjusted_fonts:
@@ -249,6 +301,7 @@ class EBUTT3EBUTTDConverter(object):
             activeArea=tt_in.activeArea,
             _strict_keywords=False
         )
+        self._fix_fontsize(tt_in.body, new_elem.body, tt_in, dataset)
         self._link_adjusted_fonts_styling(
             self._adjusted_font_style_map(),
             new_elem)
@@ -395,14 +448,31 @@ class EBUTT3EBUTTDConverter(object):
             fillLineGap=computed_style.fillLineGap,
             _strict_keywords=False
         )
+
         return new_elem
 
     def convert_body(self, body_in, dataset):
-        if len(body_in.div) == 0:
+        new_div_list = []
+        for div in body_in.div:
+            new_div = self.convert_element(div, dataset)
+            if new_div is not None:
+                self._fix_fontsize(
+                    elem=div,
+                    celem=new_div,
+                    parent=body_in,
+                    dataset=dataset
+                )
+                new_div_list.append(new_div)
+
+        new_metadata = self.convert_element(body_in.metadata, dataset)
+
+        if len(new_div_list) == 0 and new_metadata is None:
+            log.warn('Removing an empty body element')
             return None
+
         new_elem = d_body_type(
-            div=[self.convert_element(div, dataset) for div in body_in.div],
-            metadata=self.convert_element(body_in.metadata, dataset),
+            div=new_div_list,
+            metadata=new_metadata,
             agent=body_in.agent,
             role=body_in.role,
             style=body_in.style
@@ -411,18 +481,32 @@ class EBUTT3EBUTTDConverter(object):
         return new_elem
 
     def convert_div(self, div_in, dataset):
+        new_p_list = []
+        for p in div_in.p:
+            new_p = self.convert_element(p, dataset)
+            if new_p is not None:
+                self._fix_fontsize(
+                    elem=p,
+                    celem=new_p,
+                    parent=div_in,
+                    dataset=dataset
+                )
+                new_p_list.append(new_p)
+
+        new_metadata = self.convert_element(div_in.metadata, dataset)
+
+        if len(new_p_list) == 0 and new_metadata is None:
+            log.warn('Removing an empty div element')
+            return None
+
         new_elem = d_div_type(
-            p=[self.convert_element(p, dataset) for p in div_in.p],
-            metadata=self.convert_element(div_in.metadata, dataset),
-            # *self.convert_children(div_in, dataset),
+            p=new_p_list,
+            metadata=new_metadata,
             id=div_in.id,
             region=div_in.region,
             style=div_in.style,
             agent=div_in.agent
         )
-        if len(new_elem.orderedContent()) == 0:
-            log.warn('Removing an empty div element')
-            return None
 
         if new_elem.region is not None:
             dataset['activated_region_ids'].add(new_elem.region)
