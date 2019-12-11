@@ -9,6 +9,7 @@ from ebu_tt_live.bindings import _ebuttdt as datatypes
 from datetime import timedelta
 from unittest import TestCase
 from mock import MagicMock
+import project
 
 
 class TestEBUTTDEncoderSuccess(TestCase):
@@ -216,6 +217,30 @@ class TestEBUTTDEncoderSuccess(TestCase):
         self.assertEqual(
             output_doc.binding.activeArea.xsdLiteral(),
             '12.5% 75.0% 50.0% 33.33%')
+
+    def test_metadata(self):
+        doc = self._create_test_document()
+
+        self.encoder.process_document(document=doc)
+        self.encoder.producer_carriage.emit_data.assert_called_once()
+        output_doc = \
+            self.encoder.producer_carriage.emit_data.call_args[1]['data']
+        self.assertIsInstance(output_doc, EBUTTDDocument)
+
+        # Check documentConformsToStandard
+        conforms_to_standard = \
+            output_doc.binding.head.metadata.documentMetadata.conformsToStandard
+        self.assertEqual(len(conforms_to_standard), 2)
+        self.assertIn('urn:ebu:tt:distribution:2018-04', conforms_to_standard)
+        self.assertIn('http://www.w3.org/ns/ttml/profile/imsc1/text', conforms_to_standard)
+
+        # Check documentOriginatingSystem
+        expected_originating_system = project.name + '.' + project.version + \
+            '.EBUTT3EBUTTDConverter'
+        self.assertEqual(
+            output_doc.binding.head.metadata.documentMetadata.documentOriginatingSystem,
+            expected_originating_system
+        )
 
     def test_control_request(self):
         # The message should not pass through the encoder
