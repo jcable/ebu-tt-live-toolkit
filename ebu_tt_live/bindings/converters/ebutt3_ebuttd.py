@@ -7,13 +7,13 @@ from ebu_tt_live.bindings._ebuttm import headMetadata_type, documentMetadata
 from ebu_tt_live.bindings._ebuttdt import PercentageExtentType, \
     PercentageOriginType, PercentageLineHeightType, \
     CellFontSizeType, PercentageFontSizeType
+from ebu_tt_live.project import description, name, version
 from ebu_tt_live.errors import InvalidRegionExtentType, \
     InvalidRegionOriginType, \
     SemanticValidationError
 from ebu_tt_live.strings import ERR_REGION_ORIGIN_TYPE, \
     ERR_REGION_EXTENT_TYPE, \
     ERR_SEMANTIC_VALIDATION_EXPECTED
-import project
 import copy
 import logging
 from pyxb.binding.basis import NonElementContent, ElementContent
@@ -330,7 +330,7 @@ class EBUTT3EBUTTDConverter(object):
             'http://www.w3.org/ns/ttml/profile/imsc1/text',
             'urn:ebu:tt:distribution:2018-04'
             ],
-            documentOriginatingSystem=project.name + '.' + project.version +
+            documentOriginatingSystem=name + '.' + version +
             '.' + type(self).__name__
             )
         new_elem.metadata = metadata
