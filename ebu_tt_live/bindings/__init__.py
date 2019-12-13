@@ -356,7 +356,7 @@ class style_type(
         Get the set of the unspecified style attributes.
 
         :return: set of attribute names that were inheriting the default
-        in the computed style. Important at inheritance override
+                 in the computed style. Important at inheritance override
         """
 
         if self._default_attrs is None:
