@@ -65,6 +65,22 @@ bindings Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`_ittp` Module
+-------------------
+
+.. automodule:: ebu_tt_live.bindings._ittp
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`_itts` Module
+-------------------
+
+.. automodule:: ebu_tt_live.bindings._itts
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`pyxb_utils` Module
 ------------------------
 

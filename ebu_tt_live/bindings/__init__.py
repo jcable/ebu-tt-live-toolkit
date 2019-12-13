@@ -11,6 +11,8 @@ from . import _ebutts as ebutts
 from . import _ttm as ttm
 from . import _ttp as ttp
 from . import _tts as tts
+from . import _ittp as ittp
+from . import _itts as itts
 from .pyxb_utils import xml_parsing_context, get_xml_parsing_context
 from .validation.base import SemanticDocumentMixin, SemanticValidationMixin, \
     IDMixin
@@ -59,7 +61,9 @@ namespace_prefix_map = {
     'ebuttm': ebuttm.Namespace,
     'ebutts': ebutts.Namespace,
     'ebuttp': ebuttp.Namespace,
-    'ebuttlm': ebuttlm.Namespace
+    'ebuttlm': ebuttlm.Namespace,
+    'ittp': ittp.Namespace,
+    'itts': itts.Namespace
 }
 
 
@@ -117,7 +121,8 @@ class style_type(
         'multiRowAlign': 'auto',
         'textAlign': 'start',
         'textDecoration': 'none',
-        'wrapOption': 'wrap'
+        'wrapOption': 'wrap',
+        'fillLineGap': 'false'
     }
     _default_attrs = None
 
@@ -137,7 +142,8 @@ class style_type(
             self.textDecoration == other.textDecoration and
             self.fontSize == other.fontSize and
             self.lineHeight == other.lineHeight and
-            self.wrapOption == other.wrapOption)
+            self.wrapOption == other.wrapOption and
+            self.fillLineGap == other.fillLineGap)
 
     def __repr__(self):
         return '<style ID: {id} at {addr}>'.format(
@@ -165,6 +171,7 @@ class style_type(
             wrapOption=self.wrapOption,
             padding=self.padding,
             linePadding=self.linePadding,
+            fillLineGap=self.fillLineGap,
             _strict_keywords=False
         )
         return copied_style
@@ -248,6 +255,8 @@ class style_type(
             self.linePadding = other.linePadding
         if self.multiRowAlign is None and other.multiRowAlign is not None:
             self.multiRowAlign = other.multiRowAlign
+        if self.fillLineGap is None and other.fillLineGap is not None:
+            self.fillLineGap = other.fillLineGap
         return self
 
     @classmethod
@@ -347,7 +356,7 @@ class style_type(
         Get the set of the unspecified style attributes.
 
         :return: set of attribute names that were inheriting the default
-        in the computed style. Important at inheritance override
+                 in the computed style. Important at inheritance override
         """
 
         if self._default_attrs is None:
@@ -586,6 +595,7 @@ class tt_type(SemanticDocumentMixin, raw.tt_type):
             authorsGroupControlToken=self.authorsGroupControlToken,
             authorsGroupSelectedSequenceIdentifier=self.authorsGroupSelectedSequenceIdentifier,  # noqa:E501
             referenceClockIdentifier=self.referenceClockIdentifier,
+            activeArea=self.activeArea,
             _strict_keywords=False
         )
         return copied_tt
