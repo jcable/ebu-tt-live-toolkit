@@ -412,7 +412,8 @@ nodes_by_type = {
     'buffer-delay': BufferDelay,
     'retiming-delay': RetimingDelay,
     'distributor': Distributor,
-    'handover': Handover
+    'handover': Handover,
+    'denester': Denester
 }
 
 
