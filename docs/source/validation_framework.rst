@@ -138,7 +138,7 @@ Hence the SemanticValidationMixin also has an overloaded _setAttribute function,
 which applies 2 hooks for the types in which custom code can enforce the right
 behaviour. The complexity and layered architecture of the parser limits the
 capability to pass around a context object the same way the semantic validation
-can so in the :py:class:`ebu_tt_live.bindings.PyXB_utils.xml_parsing_context`
+can so in the :py:class:`ebu_tt_live.bindings.pyxb_utils.xml_parsing_context`
 context manager there is a threadLocal object that keeps a similar dictionary to
 the one used at the semantic validation. The difference is that the
 :py:func:`ebu_tt_live.bindings.CreateFromDocument` function resets the context
