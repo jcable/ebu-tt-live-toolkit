@@ -1407,6 +1407,27 @@ class layout(SemanticValidationMixin, raw.layout):
         return self
 
 
+class HeadMetadata_type(ebuttm.headMetadata_type):
+
+    # The default level of Nondetermism is 20. In experiments with real
+    # world files, we have found that some files exceed this. Horrible
+    # patch coming up to set it to a hopefully-big-enough number to deal
+    # with real world scenarios. Unfortunately this is not something that
+    # we seem to be able to deal with deterministically, and is
+    # largely dependent on the input data, for example the number of
+    # ttm:agent elements as a child of the head metadata element. We would
+    # love to back this change out and make some better change that does
+    # not generate so much Nondeterminism.
+    # NB PyXB does not seem to provide any configuration options for
+    # setting this by choice, hence our rude patch here.
+    def _resetAutomaton(self):
+        automatonConfiguration = super()._resetAutomaton()
+        automatonConfiguration.PermittedNondeterminism = 50
+        return automatonConfiguration
+
+ebuttm.headMetadata_type._SetSupersedingClass(HeadMetadata_type)
+
+
 # EBU TT D classes
 # ================
 

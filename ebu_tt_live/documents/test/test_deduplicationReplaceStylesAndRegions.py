@@ -3,6 +3,7 @@ from ebu_tt_live import bindings
 from ebu_tt_live.bindings.pyxb_utils import RecursiveOperation
 from ebu_tt_live.bindings import ebuttdt as datatypes
 from ebu_tt_live.bindings import ebuttm as metadata
+from ebu_tt_live.bindings import HeadMetadata_type
 from ebu_tt_live.node import deduplicator
 from ebu_tt_live.documents.ebutt3 import EBUTT3Document
 from ebu_tt_live.bindings import load_types_for_document
@@ -19,7 +20,7 @@ class TestReplaceStylesAndRegions(TestCase):
             lang='en-GB'
         )
         head_elem = bindings.head_type(
-            metadata.headMetadata_type(
+            HeadMetadata_type(
                 metadata.documentMetadata()
             ),
             bindings.styling(

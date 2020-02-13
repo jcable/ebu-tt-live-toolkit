@@ -152,9 +152,7 @@
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="metadata" type="tt:d_metadata_type" minOccurs="0"/>
-			<xs:choice maxOccurs="unbounded">
-				<xs:element name="p" type="tt:d_p_type"/>
-			</xs:choice>
+			<xs:element maxOccurs="unbounded" name="p" type="tt:d_p_type"/>
 		</xs:sequence>
 		<xs:attribute ref="xml:id">
 			<xs:annotation>

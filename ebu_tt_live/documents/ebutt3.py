@@ -5,7 +5,8 @@ from .ebutt3_segmentation import EBUTT3Segmenter
 from .ebutt3_splicer import EBUTT3Splicer
 from ebu_tt_live.bindings import _ebuttm as metadata, _ebuttlm as ebuttlm, \
     tt, CreateFromDocument, load_types_for_document, p_type, \
-    BindingDOMSupport, Namespace, namespace_prefix_map
+    BindingDOMSupport, Namespace, namespace_prefix_map, \
+    HeadMetadata_type
 from ebu_tt_live.strings import ERR_DOCUMENT_SEQUENCE_MISMATCH, \
     ERR_DOCUMENT_NOT_COMPATIBLE, ERR_DOCUMENT_NOT_PART_OF_SEQUENCE, \
     ERR_DOCUMENT_SEQUENCE_INCONSISTENCY, DOC_DISCARDED, DOC_TRIMMED, \
@@ -159,7 +160,7 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
             lang=lang,
             activeArea=active_area,
             head=BIND(
-                metadata.headMetadata_type(
+                HeadMetadata_type(
                     metadata.documentMetadata()
                 )
             ),

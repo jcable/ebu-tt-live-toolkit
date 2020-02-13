@@ -5,6 +5,7 @@ from .base import AbstractCombinedNode
 from datetime import timedelta, datetime
 from ebu_tt_live.bindings._ebuttdt import LimitedClockTimingType, FullClockTimingType
 from ebu_tt_live.bindings import _ebuttm as metadata
+from ebu_tt_live.bindings import HeadMetadata_type
 from ebu_tt_live.documents import EBUTT3Document
 from ebu_tt_live.bindings.pyxb_utils import RecursiveOperation, StopBranchIteration
 from ebu_tt_live.bindings.validation.timing import TimingValidationMixin
@@ -44,7 +45,7 @@ class RetimingDelayNode(AbstractCombinedNode):
                 document.sequence_identifier = self._document_sequence
 
                 if document.binding.head.metadata is None:
-                    document.binding.head.metadata = metadata.headMetadata_type(
+                    document.binding.head.metadata = HeadMetadata_type(
                         metadata.documentMetadata()
                     )
 

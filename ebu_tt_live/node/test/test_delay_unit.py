@@ -5,7 +5,8 @@ from ebu_tt_live.node.delay import RetimingDelayNode, BufferDelayNode
 from ebu_tt_live.carriage.interface import IProducerCarriage
 from ebu_tt_live.documents import EBUTT3Document, EBUTTAuthorsGroupControlRequest
 from ebu_tt_live.errors import UnexpectedSequenceIdentifierError
-from ebu_tt_live.bindings._ebuttm import documentMetadata, headMetadata_type, appliedProcessing_type
+from ebu_tt_live.bindings._ebuttm import documentMetadata, appliedProcessing_type
+from ebu_tt_live.bindings import HeadMetadata_type
 
 
 class TestRetimingDelayNode(TestCase):
@@ -66,7 +67,7 @@ class TestRetimingDelayNode(TestCase):
     def test_if_metadata_applied_processing_is_defined(self):
 
         def test(data):
-            self.assertIsInstance(data.binding.head.metadata, headMetadata_type)
+            self.assertIsInstance(data.binding.head.metadata, HeadMetadata_type)
             self.assertIsInstance(data.binding.head.metadata.documentMetadata, documentMetadata)
             self.assertEqual(len(data.binding.head.metadata.documentMetadata.appliedProcessing), 1);
             self.assertIsInstance(data.binding.head.metadata.documentMetadata.appliedProcessing[0], appliedProcessing_type)

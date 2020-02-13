@@ -1,8 +1,8 @@
 from ebu_tt_live.bindings import tt, tt1_tt_type, tt1_body_type, \
     body_type, div_type, tt1_head_type, tt1_layout_type, p_type, span_type,  \
     br_type, head_type, style_type, styling, layout, \
-    region_type, load_types_for_document
-from ebu_tt_live.bindings._ebuttm import headMetadata_type, documentMetadata, \
+    region_type, load_types_for_document, HeadMetadata_type
+from ebu_tt_live.bindings._ebuttm import documentMetadata, \
     metadataBase_type, divMetadata_type
 from ebu_tt_live.bindings._ebuttdt import FullClockTimingType
 from ebu_tt_live.errors import TimeNegativeError
@@ -61,7 +61,7 @@ class EBUTT1EBUTT3Converter(object):
             return self.convert_styling
         elif isinstance(in_element, style_type):
             return self.convert_style
-        elif isinstance(in_element, headMetadata_type):
+        elif isinstance(in_element, HeadMetadata_type):
             return self.convert_headMetadata
         elif isinstance(in_element, divMetadata_type):
             return self.convert_divMetadata
@@ -98,7 +98,7 @@ class EBUTT1EBUTT3Converter(object):
         return new_elem
 
     def convert_headMetadata(self, headMetadata_in, dataset):
-        new_elem = headMetadata_type(
+        new_elem = HeadMetadata_type(
             *self.convert_children(headMetadata_in, dataset)
         )
 

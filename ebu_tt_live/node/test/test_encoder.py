@@ -6,6 +6,7 @@ from ebu_tt_live.errors import UnexpectedSequenceIdentifierError
 from ebu_tt_live import bindings
 from ebu_tt_live.bindings import _ebuttm as metadata
 from ebu_tt_live.bindings import _ebuttdt as datatypes
+from ebu_tt_live.bindings import HeadMetadata_type
 from datetime import timedelta
 from unittest import TestCase
 from mock import MagicMock
@@ -24,7 +25,7 @@ class TestEBUTTDEncoderSuccess(TestCase):
         )
 
         head_elem = bindings.head_type(
-            metadata.headMetadata_type(
+            HeadMetadata_type(
                 metadata.documentMetadata()
             ),
             bindings.styling(

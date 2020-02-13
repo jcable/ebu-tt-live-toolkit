@@ -2,8 +2,9 @@ from ebu_tt_live.bindings import ttd, tt_type, body_type, d_body_type, \
     div_type, d_div_type, p_type, d_p_type, span_type, d_span_type, \
     br_type, d_br_type, d_head_type, d_style_type, \
     d_styling_type, head_type, style_type, styling, layout, d_layout_type, \
-    region_type, d_region_type, ebuttdt, StyledElementMixin
-from ebu_tt_live.bindings._ebuttm import headMetadata_type, documentMetadata
+    region_type, d_region_type, ebuttdt, StyledElementMixin, \
+    HeadMetadata_type
+from ebu_tt_live.bindings._ebuttm import documentMetadata
 from ebu_tt_live.bindings._ebuttdt import PercentageExtentType, \
     PercentageOriginType, PercentageLineHeightType, \
     CellFontSizeType, PercentageFontSizeType
@@ -329,7 +330,7 @@ class EBUTT3EBUTTDConverter(object):
             else:
                 new_elem.append(item)
 
-        metadata = headMetadata_type()
+        metadata = HeadMetadata_type()
         metadata.documentMetadata = documentMetadata(conformsToStandard=[
             'http://www.w3.org/ns/ttml/profile/imsc1/text',
             'urn:ebu:tt:distribution:2018-04'

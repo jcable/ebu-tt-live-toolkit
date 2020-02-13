@@ -3,7 +3,7 @@ from .common import create_loggers
 from ebu_tt_live import bindings
 from ebu_tt_live.bindings import _ebuttm as metadata
 from ebu_tt_live.bindings import _ebuttdt as datatypes
-from ebu_tt_live.bindings import load_types_for_document
+from ebu_tt_live.bindings import load_types_for_document, HeadMetadata_type
 from ebu_tt_live.documents.ebutt3 import EBUTT3Document
 from pyxb import BIND
 from datetime import timedelta, datetime
@@ -26,7 +26,7 @@ def main():
     )
 
     head_elem = bindings.head_type(
-            metadata.headMetadata_type(
+            HeadMetadata_type(
                 metadata.documentMetadata()
             ),
             bindings.styling(
