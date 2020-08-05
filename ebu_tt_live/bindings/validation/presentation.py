@@ -46,11 +46,11 @@ class StyledElementMixin(object):
         This function identifies the styling dependdncy chain for the styled element in question.
 
         :param dataset: Semantic dataset
-        :param style_type: the style_type to be used in the process (there are different style types for EBU-TT D and
-        live).
+        :param style_type: the style_type to be used in the process (there are different style types for EBU-TT D and live).
         :param parent_binding: The immediate parent of the styled element in the document structure
         :param defer_font_size: If True then fontsize can stay percentage in case it could not be calculated
         :param extra_referenced_styles: Used by region to inject its extra style attributes
+
         :return:
         """
 
@@ -67,7 +67,7 @@ class StyledElementMixin(object):
             # Styles cascade
             for style_id in self.style:
                 try:
-                    style = dataset['tt_element'].get_element_by_id(elem_id=style_id, elem_type=style_type)
+                    style = dataset['tt_element'].get_element_by_id(elem_id=style_id, elem_type=self._compatible_style_type)
                     for style_binding in style.ordered_styles(dataset=dataset):
                         if style_binding not in referenced_styles:
                             referenced_styles.append(style_binding)

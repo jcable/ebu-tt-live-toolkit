@@ -14,6 +14,9 @@ class EBUTTDDocument(SubtitleDocument, TimelineUtilMixin):
     _ebuttd_content = None
     _implicit_ns = None
 
+    # Encoding to use when creating XML representations
+    _encoding = 'UTF-8'
+
     def __init__(self, lang):
         self._ebuttd_content = bindings.ttd(
             timeBase='media',
@@ -24,7 +27,16 @@ class EBUTTDDocument(SubtitleDocument, TimelineUtilMixin):
             lang=lang
         )
 
-    def set_implicit_ns(self, value):
+    @property
+    def binding(self):
+        return self._ebuttd_content
+
+    @property
+    def implicit_ns(self):
+        return self._implicit_ns
+
+    @implicit_ns.setter
+    def implicit_ns(self, value):
         if not isinstance(value, bool):
             raise ValueError()
         self._implicit_ns = value
@@ -65,12 +77,18 @@ class EBUTTDDocument(SubtitleDocument, TimelineUtilMixin):
                 namespace_prefix_map=bindings.namespace_prefix_map
             )
 
-    def get_xml(self):
-        return self._ebuttd_content.toxml(
-            bds=self._get_bds()
-        )
+    def get_xml(self, indent=None, newl=None):
+        return str(self._ebuttd_content.toxml(
+            encoding=self._encoding,
+            bds=self._get_bds(),
+            indent=indent,
+            newl=newl
+        ), encoding=self._encoding)
 
     def get_dom(self):
         return self._ebuttd_content.toDOM(
             bds=self._get_bds()
         )
+
+    def get_element_by_id(self, elem_id, elem_type=None):
+        return self.binding.get_element_by_id(elem_id=elem_id, elem_type=elem_type)

@@ -8,6 +8,7 @@ bindings Package
     :members:
     :undoc-members:
     :show-inheritance:
+    :private-members:
 
 :mod:`_ebuttdt` Module
 ----------------------
@@ -65,6 +66,22 @@ bindings Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`_ittp` Module
+-------------------
+
+.. automodule:: ebu_tt_live.bindings._ittp
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`_itts` Module
+-------------------
+
+.. automodule:: ebu_tt_live.bindings._itts
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`pyxb_utils` Module
 ------------------------
 
@@ -79,5 +96,6 @@ Subpackages
 .. toctree::
 
     ebu_tt_live.bindings.raw
+    ebu_tt_live.bindings.converters
     ebu_tt_live.bindings.validation
 

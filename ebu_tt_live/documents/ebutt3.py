@@ -1,55 +1,35 @@
 import logging
-from .base import SubtitleDocument, TimeBase, CloningDocumentSequence
+from .base import SubtitleDocument, TimeBase, CloningDocumentSequence, \
+    EBUTTDocumentBase
 from .ebutt3_segmentation import EBUTT3Segmenter
 from .ebutt3_splicer import EBUTT3Splicer
-from ebu_tt_live import bindings
-from ebu_tt_live.bindings import _ebuttm as metadata, TimingValidationMixin
-from ebu_tt_live.bindings import _ebuttlm as ebuttlm
+from ebu_tt_live.bindings import _ebuttm as metadata, _ebuttlm as ebuttlm, \
+    tt, CreateFromDocument, load_types_for_document, p_type, \
+    BindingDOMSupport, Namespace, namespace_prefix_map
 from ebu_tt_live.strings import ERR_DOCUMENT_SEQUENCE_MISMATCH, \
     ERR_DOCUMENT_NOT_COMPATIBLE, ERR_DOCUMENT_NOT_PART_OF_SEQUENCE, \
-    ERR_DOCUMENT_SEQUENCE_INCONSISTENCY, DOC_DISCARDED, DOC_TRIMMED, DOC_REQ_SEGMENT, DOC_SEQ_REQ_SEGMENT, \
-    DOC_INSERTED, DOC_SEMANTIC_VALIDATION_SUCCESSFUL, ERR_SEQUENCE_FROM_DOCUMENT, \
+    ERR_DOCUMENT_SEQUENCE_INCONSISTENCY, DOC_DISCARDED, DOC_TRIMMED, \
+    DOC_REQ_SEGMENT, DOC_SEQ_REQ_SEGMENT, \
+    DOC_INSERTED, DOC_SEMANTIC_VALIDATION_SUCCESSFUL, \
+    ERR_SEQUENCE_FROM_DOCUMENT, \
     ERR_DOCUMENT_SEQUENCENUMBER_COLLISION, ERR_AUTHORS_GROUP_MISMATCH
-from ebu_tt_live.errors import IncompatibleSequenceError, DocumentDiscardedError, \
-    SequenceOverridden, SequenceNumberCollisionError, UnexpectedAuthorsGroupError
+from ebu_tt_live.errors import IncompatibleSequenceError, \
+    DocumentDiscardedError, \
+    SequenceOverridden, SequenceNumberCollisionError, \
+    UnexpectedAuthorsGroupError
 from ebu_tt_live.clocks import get_clock_from_document
 from datetime import timedelta
 from pyxb import BIND
 from sortedcontainers import sortedset
-from sortedcontainers import sortedlist
-from ebu_tt_live.documents.time_utils import TimelineUtilMixin, TimingEventBegin, TimingEventEnd
-import gc
+from ebu_tt_live.documents.time_utils import TimelineUtilMixin, \
+    TimingEventBegin, TimingEventEnd
 
 
 log = logging.getLogger(__name__)
 document_logger = logging.getLogger('document_logger')
 
 
-
-class EBUTT3ObjectBase(object):
-
-    message_type_mapping = {}
-
-    def get_xml(self):
-        raise NotImplementedError()
-
-    def get_dom(self):
-        raise NotImplementedError()
-
-    @classmethod
-    def create_from_xml(cls, xml, **kwargs):
-        instance = bindings.CreateFromDocument(
-            xml_text=xml
-        )
-        if isinstance(instance, ebuttlm.message_type):
-            return cls.message_type_mapping[instance.header.type].create_from_raw_binding(instance)
-
-    @classmethod
-    def create_from_raw_binding(cls, **kwargs):
-        raise NotImplementedError()
-
-
-class EBUTTLiveMessage(EBUTT3ObjectBase):
+class EBUTTLiveMessage(EBUTTDocumentBase):
 
     _sender = None
     _recipient = None
@@ -131,11 +111,12 @@ class EBUTTAuthorsGroupControlRequest(EBUTTLiveMessage):
             # so orderedContent is needed and indexing the first component.
         )
 
+
 # Register the class in the base class
-EBUTT3ObjectBase.message_type_mapping[EBUTTAuthorsGroupControlRequest.message_type_id] = EBUTTAuthorsGroupControlRequest
+EBUTTDocumentBase.message_type_mapping[EBUTTAuthorsGroupControlRequest.message_type_id] = EBUTTAuthorsGroupControlRequest
 
 
-class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
+class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTTDocumentBase):
     """
     This class wraps the binding object representation of the XML and provides the features the applications in the
     specification require. e.g:availability time.
@@ -143,6 +124,8 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
 
     # The XML binding holding the content of the document
     _ebutt3_content = None
+    _implicit_ns = None
+
     # The availability time can be set by the carriage implementation for
     # example
     _availability_time = None
@@ -156,17 +139,25 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
     # The sequence the document belongs to
     _sequence = None
 
-    def __init__(self, time_base, sequence_number, sequence_identifier, lang, clock_mode=None,
-                 availability_time=None, authors_group_identifier=None):
+    # Encoding to use when creating XML representations
+    _encoding = 'UTF-8'
+
+    def __init__(self,
+                 time_base, sequence_number, sequence_identifier, lang,
+                 clock_mode=None, availability_time=None,
+                 authors_group_identifier=None,
+                 active_area=None):
+        self.load_types_for_document()
         if not clock_mode and time_base is TimeBase.CLOCK:
             clock_mode = 'local'
-        self._ebutt3_content = bindings.tt(
+        self._ebutt3_content = tt(
             timeBase=time_base,
             clockMode=clock_mode,
             sequenceIdentifier=sequence_identifier,
             authorsGroupIdentifier=authors_group_identifier,
             sequenceNumber=sequence_number,
             lang=lang,
+            activeArea=active_area,
             head=BIND(
                 metadata.headMetadata_type(
                     metadata.documentMetadata()
@@ -181,6 +172,7 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
 
     @classmethod
     def create_from_raw_binding(cls, binding, availability_time=None):
+        cls.load_types_for_document()
         instance = cls.__new__(cls)
         instance._ebutt3_content = binding
         if availability_time is not None:
@@ -190,13 +182,18 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
 
     @classmethod
     def create_from_xml(cls, xml, availability_time=None):
+        cls.load_types_for_document()
         instance = cls.create_from_raw_binding(
-            binding=bindings.CreateFromDocument(
+            binding=CreateFromDocument(
                 xml_text=xml
             ),
             availability_time=availability_time
         )
         return instance
+
+    @classmethod
+    def load_types_for_document(cls):
+        load_types_for_document('ebutt3')
 
     def _cmp_key(self):
         return self.sequence_number
@@ -331,7 +328,7 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
         affected_elements = self.lookup_range_on_timeline(begin=begin, end=end)
         affected_paragraphs = []
         for item in affected_elements:
-            if isinstance(item, bindings.p_type):
+            if isinstance(item, p_type):
                 affected_paragraphs.append(item)
 
         if begin is not None and self.resolved_begin_time < begin:
@@ -356,6 +353,16 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
             )
 
         return '\n'.join(str_lines)
+
+    @property
+    def implicit_ns(self):
+        return self._implicit_ns
+
+    @implicit_ns.setter
+    def implicit_ns(self, value):
+        if not isinstance(value, bool):
+            raise ValueError()
+        self._implicit_ns = value
 
     def validate(self):
         # Reset timeline
@@ -382,12 +389,15 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
         # This only changes if the body does not declare a begin time.
         # Same for end time.
         if self._ebutt3_content.body is not None:
-            self._computed_begin_time = self._ebutt3_content.body.computed_begin_time
-            self._computed_end_time = self._ebutt3_content.body.computed_end_time
+            self._computed_begin_time = \
+                self._ebutt3_content.body.computed_begin_time
+            self._computed_end_time = \
+                self._ebutt3_content.body.computed_end_time
         else:
             self._computed_begin_time = availability_time
             self._computed_end_time = availability_time
 
+        return result
 
     def add_div(self, div):
         body = self._ebutt3_content.body
@@ -406,8 +416,24 @@ class EBUTT3Document(TimelineUtilMixin, SubtitleDocument, EBUTT3ObjectBase):
     def binding(self):
         return self._ebutt3_content
 
-    def get_xml(self):
-        return self._ebutt3_content.toxml()
+    def _get_bds(self):
+        if self._implicit_ns:
+            return BindingDOMSupport(
+                namespace_prefix_map=namespace_prefix_map,
+                default_namespace=Namespace
+            )
+        else:
+            return BindingDOMSupport(
+                namespace_prefix_map=namespace_prefix_map
+            )
+
+    def get_xml(self, indent='  ', newl='\n'):
+        return str(self._ebutt3_content.toxml(
+            encoding=self._encoding,
+            bds=self._get_bds(),
+            indent=indent,
+            newl=newl
+        ), encoding=self._encoding)
 
     def get_dom(self):
         return self._ebutt3_content.toDOM()
