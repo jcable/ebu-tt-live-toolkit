@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<tt:tt ebuttp:sequenceIdentifier="TestSequence" ebuttp:sequenceNumber="1" ttp:clockMode="local" ttp:timeBase="clock" xmlns:ebuttm="urn:ebu:tt:metadata" tts:extent="800px 600px" xmlns:ebuttp="urn:ebu:tt:parameters" xmlns:tt="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:f="urn:foreign" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ebutts="urn:ebu:tt:style" xml:lang="it">
+  <tt:head>
+    <tt:metadata>
+      <ebuttm:documentMetadata />
+    </tt:metadata>
+    <tt:styling>
+      <tt:style xml:id="S2" tts:color="#614a3a" />
+      <tt:style xml:id="S3" tts:backgroundColor="#000000" tts:fontSize="200%"/>
+      <tt:style xml:id="S4" tts:color="#FFFF00" tts:fontSize="150%"/>
+    </tt:styling>
+    <tt:layout>
+      <tt:region xml:id="R7" tts:origin="14% 60%" tts:extent="71.25% 24%" style="S2" />
+    </tt:layout>
+  </tt:head>
+  <tt:body begin="500ms" dur="00:00:05">
+    <tt:div xml:id="d1" xml:lang="fr" region="R7">
+      <tt:p xml:id="C582" region="R7" style="S2">
+        <tt:span style="S3">No, don't! You'll set him off!</tt:span>
+        <tt:br />
+        <tt:span style="S3"><tt:span style="S4">GUNSHOT</tt:span></tt:span>
+      </tt:p>      
+    </tt:div>
+  </tt:body>
+</tt:tt>

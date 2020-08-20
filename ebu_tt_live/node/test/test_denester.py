@@ -53,6 +53,11 @@ class TestDenesterNode(TestCase):
             expected_xml_4 = in_file.read()
         self.expected_doc_4 = EBUTT3Document.create_from_xml(expected_xml_4)
 
+        xml_file_9 = "testing/bdd/templates/nested_spans_hardcoded_style.xml"
+        with open(xml_file_9, 'r') as in_file:
+            input_xml_5 = in_file.read()
+        self.actual_doc_5 = EBUTT3Document.create_from_xml(input_xml_5)
+
     def test_merged_attr_styles_(self):
         excepted_div_attr = {
             "styles": ["S1", "S2"],
@@ -484,3 +489,10 @@ class TestDenesterNode(TestCase):
         assert \
             DenesterNode.compute_span_merged_styles(span_styles, dataset).id \
             == "nest"
+
+    def test_nested_spans_styles_are_created(self):
+        expected_style_ids = ["S2", "S3", "S4", "S3S4"]
+        denested_doc = DenesterNode.denest(self.actual_doc_5)
+        actual_styles =  denested_doc.binding.head.styling.style
+        actual_styles_ids = [style.id for style in actual_styles]
+        assert expected_style_ids == actual_styles_ids
