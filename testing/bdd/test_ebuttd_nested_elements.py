@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from itertools import chain
 from pytest_bdd import scenarios, given, when, then, parsers
 
 scenarios('features/nesting/ebuttd_nested_elements.feature')
@@ -54,12 +55,12 @@ def then_span_contains_no_spans(test_context):
         for tmp in list(element):
             assert tmp.tag != "{http://www.w3.org/ns/ttml}span"
 
-@then('the second span\'s style is outerinnerYellow')
-def combine_span_styles(test_context):
+@then(parsers.parse('span {span_number:d} has style "{style_refs}"'))
+def span_n_has_style_stylerefs(test_context, span_number, style_refs):
     document = test_context['ebuttd_document']
     tree = ET.fromstring(document.get_xml())
     elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div/{http://www.w3.org/ns/ttml}p/{http://www.w3.org/ns/ttml}span')
-    assert elements[1].get("style") == "autogenFontStyle_n_200_n outerinnerYellow"
+    assert elements[span_number].get("style") == style_refs
 
 @then('the second span contains a br')
 def second_span_contains_br(test_context):
@@ -76,6 +77,13 @@ def no_duplicate_styles(test_context, style_name):
     for element in elements:
         assert element.get("{http://www.w3.org/XML/1998/namespace}id") != style_name
 
+@then(parsers.parse('the style "{style_id}" exists'))
+def style_exists(test_context, style_id):
+    document = test_context['ebuttd_document']
+    tree = ET.fromstring(document.get_xml())
+    elements = tree.findall('{http://www.w3.org/ns/ttml}head/{http://www.w3.org/ns/ttml}styling/{http://www.w3.org/ns/ttml}style')
+    style_ids = [element.get("{http://www.w3.org/XML/1998/namespace}id") for element in elements]
+    assert style_id in style_ids
 
 @then(parsers.parse('any span with the style "{style_name}" also has the style "{size_style}"'))
 def percentage_size_for_nested_styles(test_context, style_name, size_style):
@@ -86,6 +94,14 @@ def percentage_size_for_nested_styles(test_context, style_name, size_style):
         styles = element.get("style").split(" ")
         if style_name in styles:
             assert size_style in styles
+
+@then(parsers.parse('no span references style "{style_id}"'))
+def no_span_references_style(test_context, style_id):
+    document = test_context['ebuttd_document']
+    tree = ET.fromstring(document.get_xml())
+    elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div/{http://www.w3.org/ns/ttml}p/{http://www.w3.org/ns/ttml}span')
+    style_ids = set(chain(*[element.get("style").split(" ") for element in elements]))
+    assert style_id not in style_ids
 
 @when(parsers.parse('it contains a div with id "{div_id}"'))
 def given_div(test_context, template_dict, div_id):

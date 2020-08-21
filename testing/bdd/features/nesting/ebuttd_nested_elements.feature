@@ -1,10 +1,10 @@
 Feature: Merging nested elements
 
-
     Scenario: If a div contains no tt:p elements it is discarded
         Given an xml file <xml_file>
         When the document is generated
         And the EBU-TT-Live document is denested
+        And the EBU-TT-Live document is valid
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
         And all divs contain at least one p element
@@ -17,6 +17,7 @@ Feature: Merging nested elements
         Given an xml file <xml_file>
         When the document is generated
         And the EBU-TT-Live document is denested
+        And the EBU-TT-Live document is valid
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
         And no div contains any other divs
@@ -31,6 +32,7 @@ Feature: Merging nested elements
         And it has p1_region <p1_region>
         And the document is generated
         And the EBU-TT-Live document is denested
+        And the EBU-TT-Live document is valid
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
         And p elements do not have a region
@@ -46,6 +48,7 @@ Feature: Merging nested elements
         And it has p2_region <p2_region>
         When the document is generated
         And the EBU-TT-Live document is denested
+        And the EBU-TT-Live document is valid
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
         And there is one div containing one p
@@ -58,6 +61,7 @@ Feature: Merging nested elements
         Given an xml file <xml_file>
         When the document is generated
         And the EBU-TT-Live document is denested
+        And the EBU-TT-Live document is valid
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
         And no span contains any other spans
@@ -70,18 +74,41 @@ Feature: Merging nested elements
         Given an xml file <xml_file>
         When the document is generated
         And the EBU-TT-Live document is denested
+        And the EBU-TT-Live document is valid
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
-        And the second span's style is outerinnerYellow
+        And span 1 has style "autogenFontStyle_n_200_n outerinnerYellow"
+        And the style "outerinnerYellow" exists
+        And span 21 has style "autogenFontStyle_n_12.5_n nestSizingnestSizingnestSizing"
+        And the style "nestSizingnestSizingnestSizing" exists
 
         Examples:
             | xml_file                   |
             | nested_spans_hardcoded.xml |
 
+    Scenario: Nested spans with styles should create new, combined styles that make it to the EBU-TT_D
+        Given an xml file <xml_file>
+        When the XML is parsed as a valid EBU-TT-1 document
+        And the EBU-TT-1 converter is set to use the documentIdentifier as a sequenceIdentifier
+        And the EBU-TT-1 converter is set to use a FixedOffsetSMPTEConverter
+        And the EBU-TT-1 document is converted to EBU-TT-Live
+        And the EBU-TT-Live document is valid
+        And the EBU-TT-Live document is denested
+        And the EBU-TT-Live document is valid
+        And the EBU-TT-Live document is converted to EBU-TT-D
+        Then EBUTTD document is valid
+        And span 2 has style "S2S6"
+        And the style "S2S6" exists
+
+        Examples:
+            | xml_file                               |
+            | nested_spans_ebuttd_style_creation.xml |
+
     Scenario: Nested spans with br children should create new spans with br children
         Given an xml file <xml_file>
         When the document is generated
         And the EBU-TT-Live document is denested
+        And the EBU-TT-Live document is valid
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
         And the second span contains a br
@@ -94,9 +121,11 @@ Feature: Merging nested elements
         Given an xml file <xml_file>
         When the document is generated
         And the EBU-TT-Live document is denested
+        And the EBU-TT-Live document is valid
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
         And there is no style named "nestnest"
+        And no span references style "nestnest"
 
         Examples:
             | xml_file                   |
@@ -106,6 +135,7 @@ Feature: Merging nested elements
         Given an xml file <xml_file>
         When the document is generated
         And the EBU-TT-Live document is denested
+        And the EBU-TT-Live document is valid
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
         And any span with the style "nestSizing" also has the style "autogenFontStyle_n_50_n"
