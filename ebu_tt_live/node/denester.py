@@ -76,7 +76,6 @@ class DenesterNode(AbstractCombinedNode):
         divs = document.binding.body.div
         unnested_divs = []
         dataset = {}
-        dataset["styling"] = document.binding.head.styling
         dataset["document"] = document.binding
         dataset[ELEMENT_TIMES_KEY] = [
             ElementTimes(
@@ -533,9 +532,10 @@ class DenesterNode(AbstractCombinedNode):
         """
         new_style = None
         styles = []
-        if dataset["styling"] is not None:
+        styling = dataset["document"].head.styling 
+        if styling is not None:
             for style_name in span_styles:  # go through styles in xml
-                for style in dataset["styling"].style:
+                for style in styling.style:
                     if style.id == style_name:
                         styles.append(style)
         new_style = style_type(
@@ -575,17 +575,17 @@ class DenesterNode(AbstractCombinedNode):
         the name are the same.
         If not, a new style is created and added to the dataset.
         """
-        if dataset["styling"] is None:
+        styling = dataset["document"].head.styling
+        if styling is None:
             # not sure how we can get here, but if so, make a styling
             dataset["document"].head.append(styling())
-            dataset["styling"] = dataset["document"].head.styling
-        for style in dataset["styling"].style:
+        for style in styling.style:
             if new_style.id == style.id:
                 return new_style
             if new_style.check_equal(style):
                 new_style.id = style.id
                 return new_style
-        dataset["styling"].append(new_style)
+        styling.append(new_style)
         return new_style
 
     @staticmethod
