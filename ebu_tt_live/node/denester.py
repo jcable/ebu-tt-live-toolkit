@@ -532,10 +532,9 @@ class DenesterNode(AbstractCombinedNode):
         """
         new_style = None
         styles = []
-        styling = dataset["document"].head.styling 
-        if styling is not None:
+        if dataset["document"].head.styling is not None:
             for style_name in span_styles:  # go through styles in xml
-                for style in styling.style:
+                for style in dataset["document"].head.styling.style:
                     if style.id == style_name:
                         styles.append(style)
         new_style = style_type(
@@ -575,17 +574,16 @@ class DenesterNode(AbstractCombinedNode):
         the name are the same.
         If not, a new style is created and added to the dataset.
         """
-        styling = dataset["document"].head.styling
-        if styling is None:
+        if dataset["document"].head.styling is None:
             # not sure how we can get here, but if so, make a styling
             dataset["document"].head.append(styling())
-        for style in styling.style:
+        for style in dataset["document"].head.styling.style:
             if new_style.id == style.id:
                 return new_style
             if new_style.check_equal(style):
                 new_style.id = style.id
                 return new_style
-        styling.append(new_style)
+        dataset["document"].head.styling.append(new_style)
         return new_style
 
     @staticmethod

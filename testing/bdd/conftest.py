@@ -223,15 +223,9 @@ def when_converter_set_to_use_fixed_offset_smpte_converter(test_context):
 
 @when('the EBU-TT-1 document is converted to EBU-TT-Live')
 def when_ebutt1_converted_to_ebutt3(test_context, template_file, template_dict):
-    use_doc_id_as_seq_id = False
-    if 'use_doc_id_as_seq_id' in test_context:
-        use_doc_id_as_seq_id = test_context['use_doc_id_as_seq_id']
-    seq_id = 'TestConverter'
-    if 'converter_seq_id' in test_context:
-        seq_id = test_context['converter_seq_id']
-    time_converter = None
-    if 'smpte_to_timedelta_converter' in test_context:
-        time_converter = test_context['smpte_to_timedelta_converter']
+    use_doc_id_as_seq_id = test_context.get('use_doc_id_as_seq_id', False)
+    seq_id = test_context.get('converter_seq_id', 'TestConverter')
+    time_converter = test_context.get('smpte_to_timedelta_converter')
     ebutt1_converter = EBUTT1EBUTT3Converter(
         sequence_id=seq_id, 
         use_doc_id_as_seq_id=use_doc_id_as_seq_id)
