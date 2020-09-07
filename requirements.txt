@@ -6,7 +6,7 @@ sphinx-autobuild
 sphinxcontrib-plantuml
 recommonmark
 sphinx-rtd-theme
-pytest-bdd==3.4.0
+pytest-bdd<4.0.0
 pytest-cov
 pytest-mock
 pytest-capturelog
