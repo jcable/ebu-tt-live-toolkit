@@ -225,7 +225,7 @@ class TestEBUTT1ToEBUTT3Converter(TestCase):
 
     def test_ericsson_foreign_namespace_metadata(self):
 
-        xml_file = self._load_asset('converter_ericsson1_foreign_namespace_metadata.xml')
+        xml_file = self._load_asset('converter_foreign_namespace_metadata.xml')
 
         document = EBUTT1Document.create_from_xml(xml_file)
         ebutt1_to_ebutt3(
