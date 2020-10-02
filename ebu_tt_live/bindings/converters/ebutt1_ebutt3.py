@@ -3,7 +3,8 @@ from ebu_tt_live.bindings import tt, tt1_tt_type, tt1_body_type, \
     br_type, head_type, style_type, styling, layout, \
     region_type, load_types_for_document
 from ebu_tt_live.bindings._ebuttm import headMetadata_type, documentMetadata, \
-    metadataBase_type, divMetadata_type
+    divMetadata_type, bodyMetadata_type, pMetadata_type, spanMetadata_type, \
+    metadataBase_type
 from ebu_tt_live.bindings._ebuttdt import FullClockTimingType
 from ebu_tt_live.errors import TimeNegativeError
 from ebu_tt_live.strings import ERR_TIME_NEGATIVE
@@ -65,6 +66,12 @@ class EBUTT1EBUTT3Converter(object):
             return self.convert_headMetadata
         elif isinstance(in_element, divMetadata_type):
             return self.convert_divMetadata
+        elif isinstance(in_element, bodyMetadata_type):
+            return self.convert_bodyMetadata
+        elif isinstance(in_element, pMetadata_type):
+            return self.convert_pMetadata
+        elif isinstance(in_element, spanMetadata_type):
+            return self.convert_spanMetadata
         elif isinstance(in_element, metadataBase_type):
             return self.convert_metadata
         else:
@@ -140,6 +147,24 @@ class EBUTT1EBUTT3Converter(object):
     def convert_divMetadata(self, divmetadata_in, dataset):
         new_elem = divMetadata_type(
             *self.convert_children(divmetadata_in, dataset)
+        )
+        return new_elem
+
+    def convert_bodyMetadata(self, bodymetadata_in, dataset):
+        new_elem = bodyMetadata_type(
+            *self.convert_children(bodymetadata_in, dataset)
+        )
+        return new_elem
+
+    def convert_pMetadata(self, pmetadata_in, dataset):
+        new_elem = pMetadata_type(
+            *self.convert_children(pmetadata_in, dataset)
+        )
+        return new_elem
+
+    def convert_spanMetadata(self, spanmetadata_in, dataset):
+        new_elem = spanMetadata_type(
+            *self.convert_children(spanmetadata_in, dataset)
         )
         return new_elem
 
