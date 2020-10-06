@@ -1883,7 +1883,7 @@ class d_p_type(
             dataset=dataset,
             element_content=element_content)
         self._semantic_pop_styles(dataset=dataset)
-        self._semantic_validate_active_areas(dataset=dataset)
+        self._semantic_validate_ttd_active_areas(dataset=dataset)
 
 
 d_p_type._compatible_style_type = d_style_type
