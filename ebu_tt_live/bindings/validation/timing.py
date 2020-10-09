@@ -5,6 +5,7 @@ from ebu_tt_live.errors import LogicError, SemanticValidationError, OutsideSegme
 from ebu_tt_live.strings import ERR_SEMANTIC_VALIDATION_TIMING_TYPE
 import itertools
 
+
 class TimingValidationMixin(object):
     """
     This mixin is meant to be applied to timed elements (body, div, p, span) and provides parser hooks for timing
@@ -283,7 +284,7 @@ class TimingValidationMixin(object):
     # This section covers the copying operations of timed containers.
 
     # this semantic validation only applies on ebu-tt-d type elements where the the origin and extent units are in %
-    def _semantic_validate_active_areas(self, dataset):
+    def _semantic_validate_ttd_active_areas(self, dataset):
         # Get the document instance
         doc = dataset['document']
         if self.computed_begin_time is not None and self.computed_end_time is not None:
@@ -291,24 +292,15 @@ class TimingValidationMixin(object):
             if len(affected_elements) > 1:
                 for elem1, elem2 in itertools.combinations(affected_elements, 2):
                   if elem1 != elem2:
+                    # we only care if the elements both have regions
                     if elem1.region is not None and elem2.region is not None \
-                        and elem1.region != elem2.region: #checking if the elements have regions
+                       and elem1.region != elem2.region:
                         # Getting coordinates from the attribute eg ['14% 16%']
                         elem1_region = dataset['elements_by_id'][elem1.region]
                         elem2_region = dataset['elements_by_id'][elem2.region]
-                        origins_1 = elem1_region.origin.split(' ')
-                        origins_2 = elem2_region.origin.split(' ')
-                        l1 =  [float(origin.strip('%')) for origin in origins_1] 
-                        l2 =  [float(origin.strip('%')) for origin in origins_2] 
-                        extents_1 = elem1_region.extent.split(' ')
-                        extents_2 = elem1_region.extent.split(' ')
-                        r1 = [float(extent.strip('%')) for extent in extents_1] 
-                        r2 = [float(extent.strip('%')) for extent in extents_2] 
-                        # Checking for overlapping rectangles
-                        if l1[0] < r2[0] and r1[0] > l2[0] and l1[1] > r2[1] and r1[1] < l2[1]:
+                        if elem1_region.overlaps(elem2_region):
                             raise OverlappingActiveElementsError(self)
-    
- 
+
     def is_in_segment(self, begin=None, end=None):
         if begin is not None:
             if self.computed_end_time is not None and self.computed_end_time <= begin:

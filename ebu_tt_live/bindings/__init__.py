@@ -1616,6 +1616,34 @@ class d_region_type(
            or (l1[1] + r1[1]) > 100.0:
             raise RegionExtendingOutsideDocumentError(self)
 
+    def overlaps(self, other):
+        """
+        Check if this overlaps with another EBU-TT-D region.
+
+        Must be EBU-TT-D regions because the code assumes that the
+        origin and extent are both in % units.
+        """
+        def decode(oeval):
+            """
+            Decode an extent or origin string into a list of two floats.
+            """
+            sps = oeval.split(' ')
+            return [float(sp.strip('%')) for sp in sps]
+
+        topleft_self = decode(self.origin)
+        topleft_other = decode(other.origin)
+        extents_self = decode(self.extent)
+        extents_other = decode(other.extent)
+        bottomright_self = [o + e for o, e in zip(topleft_self, extents_self)]
+        bottomright_other = \
+            [o + e for o, e in zip(topleft_other, extents_other)]
+
+        # Test for overlapping rectangles
+        return topleft_self[0] < bottomright_other[0] \
+            and bottomright_self[0] > topleft_other[0] \
+            and topleft_self[1] < bottomright_other[1] \
+            and bottomright_self[1] > topleft_other[1]
+
 
 raw.d_region_type._SetSupersedingClass(d_region_type)
 
@@ -1883,7 +1911,7 @@ class d_p_type(
             dataset=dataset,
             element_content=element_content)
         self._semantic_pop_styles(dataset=dataset)
-        self._semantic_validate_active_areas(dataset=dataset)
+        self._semantic_validate_ttd_active_areas(dataset=dataset)
 
 
 d_p_type._compatible_style_type = d_style_type
