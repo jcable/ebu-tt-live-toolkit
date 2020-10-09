@@ -1616,6 +1616,30 @@ class d_region_type(
            or (l1[1] + r1[1]) > 100.0:
             raise RegionExtendingOutsideDocumentError(self)
 
+    def overlaps(self, other):
+        """
+        Checks if this overlaps with another EBU-TT-D region.
+
+        Must be EBU-TT-D regions because the code assumes that the
+        origin and extent are both in % units.
+        """
+        origins_self = self.origin.split(' ')
+        origins_other = other.origin.split(' ')
+        topleft_self = [float(origin.strip('%')) for origin in origins_self]
+        topleft_other = [float(origin.strip('%')) for origin in origins_other]
+        extents_self = self.extent.split(' ')
+        extents_other = other.extent.split(' ')
+        extents_self = [float(extent.strip('%')) for extent in extents_self]
+        extents_other = [float(extent.strip('%')) for extent in extents_other]
+        bottomright_self = [o + e for o, e in zip(topleft_self, extents_self)]
+        bottomright_other = [o + e for o, e in zip(topleft_other, extents_other)]
+
+        # Test for overlapping rectangles
+        return topleft_self[0] < bottomright_other[0] \
+            and bottomright_self[0] > topleft_other[0] \
+            and topleft_self[1] < bottomright_other[1] \
+            and bottomright_self[1] > topleft_other[1]
+
 
 raw.d_region_type._SetSupersedingClass(d_region_type)
 

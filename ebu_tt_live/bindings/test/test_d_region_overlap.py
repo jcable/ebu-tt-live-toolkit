@@ -1,6 +1,5 @@
 from unittest import TestCase
 from ebu_tt_live.bindings import d_region_type
-from ebu_tt_live.bindings.validation.timing import EBUTTDRegionsOverlap
 
 
 class TestEBUTTDRegionNoOverlap(TestCase):
@@ -32,9 +31,9 @@ class TestEBUTTDRegionNoOverlap(TestCase):
                     extent=e
                 )
                 self.assertFalse(
-                    EBUTTDRegionsOverlap(self._fixed_region, test_region))
+                    self._fixed_region.overlaps(test_region))
                 self.assertFalse(
-                    EBUTTDRegionsOverlap(test_region, self._fixed_region))
+                    test_region.overlaps(self._fixed_region))
 
 
 class TestEBUTTDRegionYesOverlap(TestCase):
@@ -67,6 +66,6 @@ class TestEBUTTDRegionYesOverlap(TestCase):
                     extent=e
                 )
                 self.assertTrue(
-                    EBUTTDRegionsOverlap(self._fixed_region, test_region))
+                    self._fixed_region.overlaps(test_region))
                 self.assertTrue(
-                    EBUTTDRegionsOverlap(test_region, self._fixed_region))
+                    test_region.overlaps(self._fixed_region))

@@ -6,29 +6,6 @@ from ebu_tt_live.strings import ERR_SEMANTIC_VALIDATION_TIMING_TYPE
 import itertools
 
 
-def EBUTTDRegionsOverlap(region1, region2):
-    """
-    Checks if two EBU-TT-D regions overlap.
-
-    Must be EBU-TT-D regions because the code assumes that the
-    origin and extent are both in % units.
-    """
-    origins_1 = region1.origin.split(' ')
-    origins_2 = region2.origin.split(' ')
-    l1 = [float(origin.strip('%')) for origin in origins_1]
-    l2 = [float(origin.strip('%')) for origin in origins_2]
-    extents_1 = region1.extent.split(' ')
-    extents_2 = region2.extent.split(' ')
-    e1 = [float(extent.strip('%')) for extent in extents_1]
-    e2 = [float(extent.strip('%')) for extent in extents_2]
-    r1 = [o + e for o, e in zip(l1, e1)]
-    r2 = [o + e for o, e in zip(l2, e2)]
-
-    # Test for overlapping rectangles
-    return l1[0] < r2[0] and r1[0] > l2[0] and \
-        l1[1] < r2[1] and r1[1] > l2[1]
-
-
 class TimingValidationMixin(object):
     """
     This mixin is meant to be applied to timed elements (body, div, p, span) and provides parser hooks for timing
@@ -321,7 +298,7 @@ class TimingValidationMixin(object):
                         # Getting coordinates from the attribute eg ['14% 16%']
                         elem1_region = dataset['elements_by_id'][elem1.region]
                         elem2_region = dataset['elements_by_id'][elem2.region]
-                        if EBUTTDRegionsOverlap(elem1_region, elem2_region):
+                        if elem1_region.overlaps(elem2_region):
                             raise OverlappingActiveElementsError(self)
 
     def is_in_segment(self, begin=None, end=None):
