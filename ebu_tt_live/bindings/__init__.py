@@ -1618,21 +1618,25 @@ class d_region_type(
 
     def overlaps(self, other):
         """
-        Checks if this overlaps with another EBU-TT-D region.
+        Check if this overlaps with another EBU-TT-D region.
 
         Must be EBU-TT-D regions because the code assumes that the
         origin and extent are both in % units.
         """
-        origins_self = self.origin.split(' ')
-        origins_other = other.origin.split(' ')
-        topleft_self = [float(origin.strip('%')) for origin in origins_self]
-        topleft_other = [float(origin.strip('%')) for origin in origins_other]
-        extents_self = self.extent.split(' ')
-        extents_other = other.extent.split(' ')
-        extents_self = [float(extent.strip('%')) for extent in extents_self]
-        extents_other = [float(extent.strip('%')) for extent in extents_other]
+        def decode(oeval):
+            """
+            Decode an extent or origin string into a list of two floats.
+            """
+            sps = oeval.split(' ')
+            return [float(sp.strip('%')) for sp in sps]
+
+        topleft_self = decode(self.origin)
+        topleft_other = decode(other.origin)
+        extents_self = decode(self.extent)
+        extents_other = decode(other.extent)
         bottomright_self = [o + e for o, e in zip(topleft_self, extents_self)]
-        bottomright_other = [o + e for o, e in zip(topleft_other, extents_other)]
+        bottomright_other = \
+            [o + e for o, e in zip(topleft_other, extents_other)]
 
         # Test for overlapping rectangles
         return topleft_self[0] < bottomright_other[0] \
