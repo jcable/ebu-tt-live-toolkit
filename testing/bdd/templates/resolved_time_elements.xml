@@ -123,6 +123,10 @@
             </tt:span>
 {% endif %}
 
+{% if br == "True" %}
+            <tt:br/>
+{% endif %}
+
 {% if span2_begin or span2_end %}
             <tt:span
 {% if span2_begin %}

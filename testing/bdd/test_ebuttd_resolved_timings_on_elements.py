@@ -60,25 +60,48 @@ def then_it_has_span2_resulted_begin_time(test_context, span2_resulted_begin_tim
     document_generated_span_begin_time = elements[1].get('begin')
     assert span2_resulted_begin_time == document_generated_span_begin_time
 
+@then('span3 resulted begin time is <span3_resulted_begin_time>')
+def then_it_has_span3_resulted_begin_time(test_context, span3_resulted_begin_time):
+    document = test_context['ebuttd_document']
+    tree = ET.fromstring(document.get_xml())
+    elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div/{http://www.w3.org/ns/ttml}p/{http://www.w3.org/ns/ttml}span')
+    document_generated_span_begin_time = elements[2].get('begin')
+    assert span3_resulted_begin_time == document_generated_span_begin_time
+
 @then('span1 resulted end time is <span1_resulted_end_time>')
 def then_it_has_span1_resulted_end_time(test_context, span1_resulted_end_time):
     document = test_context['ebuttd_document']
     tree = ET.fromstring(document.get_xml())
     elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div/{http://www.w3.org/ns/ttml}p/{http://www.w3.org/ns/ttml}span')
     document_generated_span_end_time = elements[0].get('end')
-    if document_generated_span_end_time is not None:
-        assert span1_resulted_end_time == document_generated_span_end_time
-    else:
-        assert None == document_generated_span_end_time
+    assert (span1_resulted_end_time == document_generated_span_end_time
+        or span1_resulted_end_time == 'None' and document_generated_span_end_time is None)
 
-@then('span2 resulted begin time is <span2_resulted_begin_time>')
-def then_it_has_span2_resulted_begin_time(test_context, span2_resulted_begin_time):
+@then('span2 resulted end time is <span2_resulted_end_time>')
+def then_it_has_span2_resulted_end_time(test_context, span2_resulted_end_time):
     document = test_context['ebuttd_document']
     tree = ET.fromstring(document.get_xml())
     elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div/{http://www.w3.org/ns/ttml}p/{http://www.w3.org/ns/ttml}span')
-    document_generated_span_end_time = elements[1].get('end')    
-    assert span2_resulted_begin_time == document_generated_span_end_time
+    document_generated_span_end_time = elements[1].get('end')
+    assert (span2_resulted_end_time == document_generated_span_end_time
+        or span2_resulted_end_time == 'None' and document_generated_span_end_time is None)
 
+@then('span3 resulted end time is <span3_resulted_end_time>')
+def then_it_has_span3_resulted_end_time(test_context, span3_resulted_end_time):
+    document = test_context['ebuttd_document']
+    tree = ET.fromstring(document.get_xml())
+    elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div/{http://www.w3.org/ns/ttml}p/{http://www.w3.org/ns/ttml}span')
+    document_generated_span_end_time = elements[2].get('end')
+    assert (span3_resulted_end_time == document_generated_span_end_time
+        or span3_resulted_end_time == 'None' and document_generated_span_end_time is None)
+
+@then('span2 contains one br')
+def then_span2_contains_a_br(test_context):
+    document = test_context['ebuttd_document']
+    tree = ET.fromstring(document.get_xml())
+    span_elements = tree.findall('{http://www.w3.org/ns/ttml}body/{http://www.w3.org/ns/ttml}div/{http://www.w3.org/ns/ttml}p/{http://www.w3.org/ns/ttml}span')
+    br = span_elements[1].findall('{http://www.w3.org/ns/ttml}br')
+    assert (len(br) == 1)
 
 @then('no timings present on p')
 def then_no_timings_present_on_p(test_context):

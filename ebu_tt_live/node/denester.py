@@ -426,7 +426,7 @@ class DenesterNode(AbstractCombinedNode):
                         # we must be the source of it.
                         span.compEnd = span.compEnd - p_begin_time
                         span.end = dataset["document"].get_timing_type(span.compEnd)
-                    else:
+                    elif span.compEnd is not None:
                         span.compEnd = span.compEnd - p_begin_time
 
                 dataset[ELEMENT_TIMES_KEY].pop()

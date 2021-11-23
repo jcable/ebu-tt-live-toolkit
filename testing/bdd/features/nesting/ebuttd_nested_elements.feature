@@ -97,7 +97,7 @@ Feature: Merging nested elements
         And the EBU-TT-Live document is valid
         And the EBU-TT-Live document is converted to EBU-TT-D
         Then EBUTTD document is valid
-        And span 2 has style "S2S6"
+        And span 3 has style "S2S6"
         And the style "S2S6" exists
 
         Examples:
