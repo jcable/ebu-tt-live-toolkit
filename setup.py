@@ -28,7 +28,7 @@ setup(
     description=description,
     install_requires=[
         "PyXB",
-        "ipdb>=0.10.1,<0.10.3",  # This will eventually be removed from here
+        "ipdb",  # This will eventually be removed from here
         "configobj",
         "pyyaml",
         "twisted",
