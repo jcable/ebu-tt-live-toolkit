@@ -573,6 +573,9 @@ class EBUTT3EBUTTDConverter(object):
     def convert_p(self, p_in, dataset):
         specify_times = not self._child_spans_specify_times(p_in, dataset)
         dataset['span_specify_times'] = not specify_times
+        dataset['br_begin'] = None if specify_times else p_in.computed_begin_time
+        dataset['br_end'] = None if specify_times else p_in.computed_end_time
+        dataset['br_in_a_span'] = False
 
         new_elem = d_p_type(
             *self.convert_children(p_in, dataset),
@@ -595,6 +598,8 @@ class EBUTT3EBUTTDConverter(object):
 
     def convert_span(self, span_in, dataset):
         specify_times = dataset['span_specify_times']
+        br_in_a_span = dataset['br_in_a_span']
+        dataset['br_in_a_span'] = True
 
         new_elem = d_span_type(
             *self.convert_children(span_in, dataset),
@@ -610,10 +615,26 @@ class EBUTT3EBUTTDConverter(object):
             agent=span_in.agent,
             role=span_in.role
         )
+
+        dataset['br_in_a_span'] = br_in_a_span
         return new_elem
 
     def convert_br(self, br_in, dataset):
-        return d_br_type()
+        new_elem = None
+
+        if (dataset['br_in_a_span'] is False and
+           (dataset['br_begin'] is not None or dataset['br_end'] is not None)):
+            new_elem = d_span_type(
+                *[d_br_type()],
+                begin=None if dataset['br_begin'] is None else
+                self._process_timing_from_timedelta(dataset['br_begin']),
+                end=None if dataset['br_end'] is None else
+                self._process_timing_from_timedelta(dataset['br_end'])
+            )
+        else:
+            new_elem = d_br_type()
+
+        return new_elem
 
     def map_type(self, in_element):
         if isinstance(in_element, tt_type):

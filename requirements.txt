@@ -1,6 +1,6 @@
 --index-url https://pypi.python.org/simple/
 
-ipython==4.2.0
+ipython
 sphinx
 sphinx-autobuild
 sphinxcontrib-plantuml
@@ -9,7 +9,6 @@ sphinx-rtd-theme
 pytest-bdd<4.0.0
 pytest-cov
 pytest-mock
-pytest-capturelog
 pytest-subtests
 pytest-twisted
 coverage

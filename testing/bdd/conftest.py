@@ -305,6 +305,10 @@ def when_nestedSpan_end(nestedSpan_end, template_dict):
 def when_span1_end(span1_end, template_dict):
     template_dict['span1_end'] = span1_end
 
+@when('it has br <br>')
+def when_br(br, template_dict):
+    template_dict['br'] = br
+
 @when('it has span2 begin time <span2_begin>')
 def when_span2_begin(span2_begin, template_dict):
     template_dict['span2_begin'] = span2_begin

@@ -28,7 +28,7 @@ setup(
     description=description,
     install_requires=[
         "PyXB",
-        "ipdb>=0.10.1,<0.10.3",  # This will eventually be removed from here
+        "ipdb",  # This will eventually be removed from here
         "configobj",
         "pyyaml",
         "twisted",
@@ -36,8 +36,7 @@ setup(
         "nltk",
         "sortedcontainers",
         "configman",
-        "six",
-        "hyperlink<17.2.0"  # This should be removed if https://github.com/python-hyper/hyperlink/issues/16 is fixed
+        "six"
     ],
     license="BSD3",
     packages=packages,
