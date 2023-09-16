@@ -23,7 +23,7 @@ Make sure you have nodejs, Python 3.9 and poetry. On a Mac:
     brew install python@3.9
     brew install poetry
 
-Clone the repository and checkout the dazzler branch:
+Clone the repository:
 
     git clone git@github.com:jcable/ebu-tt-live-toolkit.git  
     cd ebu-tt-live-toolkit
