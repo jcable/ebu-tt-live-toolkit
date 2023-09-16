@@ -21,7 +21,7 @@ ebu-run = 'ebu_tt_live.scripts.ebu_run:main'
 validator = 'ebu_tt_live.scripts.validator:main'
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.10"
+python = "^3.9"
 pyxb = "^1.2.6"
 zope-interface = "^6.0"
 ipdb = "^0.13.13"
