@@ -56,6 +56,8 @@ To start sending some timed text to a browser run:
     open ebu_tt_live/ui/test/index.html
     ebu-run --admin.conf ebu_tt_live/examples/config/simple_producer.json
 
+In the browser tab click 'connect' and you should start seeing xml files in the display area.
+
 Preparing the build environment without poetry
 ==============================================
 
