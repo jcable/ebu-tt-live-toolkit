@@ -719,8 +719,8 @@ files = [
 ]
 
 [package.dependencies]
-decorator = {version = "*", markers = "python_version > \"3.6\" and python_version < \"3.11\""}
-ipython = {version = ">=7.31.1", markers = "python_version > \"3.6\" and python_version < \"3.11\""}
+decorator = {version = "*", markers = "python_version > \"3.6\""}
+ipython = {version = ">=7.31.1", markers = "python_version > \"3.6\""}
 tomli = {version = "*", markers = "python_version > \"3.6\" and python_version < \"3.11\""}
 
 [[package]]
@@ -1268,13 +1268,14 @@ pyqt5 = ["qt5reactor[pyqt5] (>=0.6.2)"]
 pyside2 = ["qt5reactor[pyside2] (>=0.6.3)"]
 
 [[package]]
-name = "pyxb"
-version = "1.2.6"
-description = "Python XML Schema Bindings"
+name = "pyxb-x"
+version = "1.2.6.1"
+description = "PyXB-X (\"pixbix\") is a pure Python package that generates Python source code for classes that correspond to data structures defined by XMLSchema."
 optional = false
 python-versions = "*"
 files = [
-    {file = "PyXB-1.2.6.tar.gz", hash = "sha256:2a00f38dd1d87b88f92d79bc5a09718d730419b88e814545f472bbd5a3bf27b4"},
+    {file = "PyXB-X-1.2.6.1.tar.gz", hash = "sha256:60e908d2555882c81aff54a24f27ed097c5feec61ac97ebdf6684cdf6aa6f209"},
+    {file = "PyXB_X-1.2.6.1-py3-none-any.whl", hash = "sha256:09a12a8c3b82f3ef8f9b3fd460b435236500b65270c6f39a0dc47a11231b3667"},
 ]
 
 [[package]]
@@ -2008,5 +2009,5 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.9,<3.10"
-content-hash = "45a8244fa383d30a0800f29bebe11bd7048646240613b16fb5fe69868855eea0"
+python-versions = "^3.9"
+content-hash = "78e13334abacf039d36671fe1274d7499d30ac757809fa634543d8382d47354c"
