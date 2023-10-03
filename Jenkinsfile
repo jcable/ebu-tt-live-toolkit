@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    env.VERSION = sh( script: 'git tag --contains ${GIT_COMMIT}', returnStdout: true).replace('v', '')
+                    env.VERSION = '0.1.0'
                 }
                 sh 'buildah  --security-opt seccomp=unconfined build-using-dockerfile -f Dockerfile --tag dazzler-tt:${VERSION} .'
             }
