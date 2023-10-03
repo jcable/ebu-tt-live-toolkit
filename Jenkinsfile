@@ -12,7 +12,7 @@ pipeline {
         }
         stage('Release') {
             steps {
-                sh 'cosmos-release ecs-service dazzler-tt ${VERSION} myAppImage=dazzler-tt:${VERSION}'
+                sh 'cosmos-release ecs-service --backend podman dazzler-tt ${VERSION} myAppImage=dazzler-tt:${VERSION}'
 
             }
         }
