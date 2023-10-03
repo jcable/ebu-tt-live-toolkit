@@ -1,5 +1,3 @@
-ulimit -n
-
 pipeline {
     agent any
 
