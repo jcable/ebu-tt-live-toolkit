@@ -5,10 +5,6 @@ description = ""
 authors = ["jcable <julian.cable@bbc.co.uk>"]
 readme = "README.md"
 
-packages=[
-    { include = "ebu_tt_live" }
-]
-
 [tool.poetry.scripts]
 ebu-dummy-encoder = 'ebu_tt_live.scripts.ebu_dummy_encoder:main'
 ebu-interactive-shell = 'ebu_tt_live.scripts.ebu_interactive_shell:main'
