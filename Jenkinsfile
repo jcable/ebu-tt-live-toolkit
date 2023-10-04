@@ -13,13 +13,12 @@ pipeline {
         stage('Release') {
             steps {
                 sh 'cosmos-release ecs-service --backend podman dazzler-tt ${VERSION} myAppImage=dazzler-tt:${VERSION}'
-
             }
         }
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-                sh 'cosmos deploy-ecs dazzler-tt test'
+                sh 'cosmos deploy -r ${VERSION} dazzler-tt test'
             }
         }
     }
