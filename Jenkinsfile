@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    env.VERSION = '0.1.0'
+                    env.VERSION = '0.1.1'
                 }
                 sh 'buildah  --security-opt seccomp=unconfined build-using-dockerfile -f Dockerfile --tag dazzler-tt:${VERSION} .'
             }
