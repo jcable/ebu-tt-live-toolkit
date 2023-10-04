@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["jcable <julian.cable@bbc.co.uk>"]
 readme = "README.md"
+packages = [{include = "ebu_tt_live"}]
 
 [tool.poetry.scripts]
 ebu-dummy-encoder = 'ebu_tt_live.scripts.ebu_dummy_encoder:main'
@@ -32,6 +33,9 @@ sphinx-rtd-theme = "^1.3.0"
 pyxb-x = "^1.2.6.1"
 configman = "^1.3.0"
 
+[tool.poetry.group.dev]
+optional = true
+
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.15.0"
 Sphinx = "^7.2.6"
@@ -47,7 +51,14 @@ pytest-runner = "^6.0.0"
 pytest = "^7.4.2"
 Jinja2 = "^3.1.2"
 mock = "^5.1.0"
+commitizen = "^2.38.0"
+coverage = "^7.0.0"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.0"
+tag_format = "v$version"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
