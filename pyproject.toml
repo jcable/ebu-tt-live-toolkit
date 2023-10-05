@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ebu-tt-live"
-version = "0.1.0"
+version = "3.1.0"
 description = ""
 authors = ["jcable <julian.cable@bbc.co.uk>"]
 readme = "README.md"
@@ -18,8 +18,8 @@ ebu-run = 'ebu_tt_live.scripts.ebu_run:main'
 validator = 'ebu_tt_live.scripts.validator:main'
 
 [tool.poetry.dependencies]
-python = "^3.9"
-zope-interface = "^6.0"
+python = "^3.7"
+zope-interface = "^5.0"
 ipdb = "^0.13.13"
 configobj = "^5.0.8"
 pyyaml = "^6.0.1"
