@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ebu-tt-live-toolkit"
+name = "ebu-tt-live"
 version = "0.1.0"
 description = ""
 authors = ["jcable <julian.cable@bbc.co.uk>"]
